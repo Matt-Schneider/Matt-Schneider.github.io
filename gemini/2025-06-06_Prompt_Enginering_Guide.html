@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 4 Faces of Change: An Infographic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F0F4F8;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .flowchart-step {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .flowchart-arrow {
+            color: #9CA3AF;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">The 4 Faces of Change</h1>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto">Successful innovation isn't about a single hero. It's an ecosystem of distinct roles, each essential for turning a bold vision into lasting value.</p>
+        </header>
+
+        <section id="archetypes" class="mb-16">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <div class="bg-white rounded-lg p-6 text-center border-t-4 border-[#00A6ED] shadow-lg">
+                    <div class="text-5xl mb-4">🚀</div>
+                    <h3 class="text-2xl font-bold text-[#00A6ED] mb-2">The Trailblazer</h3>
+                    <p class="text-slate-600">The visionary pioneer who creates new paradigms and asks, "What is possible?"</p>
+                </div>
+
+                <div class="bg-white rounded-lg p-6 text-center border-t-4 border-[#7FB800] shadow-lg">
+                    <div class="text-5xl mb-4">🤝</div>
+                    <h3 class="text-2xl font-bold text-[#7FB800] mb-2">The Change Champion</h3>
+                    <p class="text-slate-600">The social catalyst who builds buy-in and asks, "How can I help my colleagues embrace this?"</p>
+                </div>
+
+                <div class="bg-white rounded-lg p-6 text-center border-t-4 border-[#FFB400] shadow-lg">
+                    <div class="text-5xl mb-4">🎯</div>
+                    <h3 class="text-2xl font-bold text-[#FFB400] mb-2">The Strategic Adopter</h3>
+                    <p class="text-slate-600">The pragmatic first customer who validates ideas and asks, "How can this give us an edge?"</p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 text-center border-t-4 border-[#F6511D] shadow-lg">
+                    <div class="text-5xl mb-4">⚙️</div>
+                    <h3 class="text-2xl font-bold text-[#F6511D] mb-2">The Deliberate Implementer</h3>
+                    <p class="text-slate-600">The methodical executor who scales solutions and asks, "How do we make this work reliably?"</p>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="risk-comparison" class="mb-16 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-3xl font-bold text-center mb-2">The Innovation Risk Spectrum</h2>
+            <p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">Each archetype has a unique relationship with risk. Trailblazers thrive on uncertainty, while Implementers work to eliminate it. This balance is critical for sustainable innovation.</p>
+            <div class="chart-container h-96 md:h-[450px]">
+                <canvas id="riskSpectrumChart"></canvas>
+            </div>
+        </section>
+
+        <section id="lifecycle" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-2">The Lifecycle of an Idea</h2>
+            <p class="text-center text-slate-600 mb-12 max-w-2xl mx-auto">Innovation journeys through four distinct phases, with a different archetype taking the lead at each critical handoff.</p>
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-4">
+                
+                <div class="text-center flowchart-step bg-white p-4 rounded-lg w-60">
+                    <div class="text-3xl">💡</div>
+                    <h4 class="font-bold text-[#00A6ED]">Phase 1: Genesis</h4>
+                    <p class="text-sm text-slate-500">A <span class="font-semibold">Trailblazer</span> creates a raw, unproven, but powerful new concept.</p>
+                </div>
+
+                <div class="text-4xl flowchart-arrow transform md:-rotate-0 rotate-90">➡️</div>
+
+                <div class="text-center flowchart-step bg-white p-4 rounded-lg w-60">
+                    <div class="text-3xl">💰</div>
+                    <h4 class="font-bold text-[#FFB400]">Phase 2: Validation</h4>
+                    <p class="text-sm text-slate-500">A <span class="font-semibold">Strategic Adopter</span> provides the first investment and real-world test case.</p>
+                </div>
+                
+                <div class="text-4xl flowchart-arrow transform md:-rotate-0 rotate-90">➡️</div>
+
+                <div class="text-center flowchart-step bg-white p-4 rounded-lg w-60">
+                    <div class="text-3xl">❤️</div>
+                    <h4 class="font-bold text-[#7FB800]">Phase 3: Internalization</h4>
+                    <p class="text-sm text-slate-500"><span class="font-semibold">Change Champions</span> build grassroots support and overcome human resistance.</p>
+                </div>
+
+                <div class="text-4xl flowchart-arrow transform md:-rotate-0 rotate-90">➡️</div>
+
+                <div class="text-center flowchart-step bg-white p-4 rounded-lg w-60">
+                    <div class="text-3xl">📈</div>
+                    <h4 class="font-bold text-[#F6511D]">Phase 4: Operationalization</h4>
+                    <p class="text-sm text-slate-500"><span class="font-semibold">Deliberate Implementers</span> engineer the solution for scale, stability, and reliability.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="motivation-comparison" class="mb-16 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-3xl font-bold text-center mb-2">Comparing Core Functions</h2>
+             <p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">While all roles contribute to change, their primary functions are fundamentally different, spanning from pure creation to structured integration.</p>
+            <div class="chart-container h-80 md:h-96">
+                <canvas id="functionDonutChart"></canvas>
+            </div>
+        </section>
+
+
+        <section id="details-table" class="bg-white rounded-lg shadow-md p-6">
+             <h2 class="text-3xl font-bold text-center mb-2">Archetypes at a Glance</h2>
+             <p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">A direct comparison of what defines each role, their primary motivation, and their core function in the ecosystem.</p>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dimension</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-[#00A6ED]">Trailblazer</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-[#7FB800]">Change Champion</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-[#FFB400]">Strategic Adopter</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-[#F6511D]">Deliberate Implementer</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap font-semibold">Primary Motivation</td>
+                            <td class="px-6 py-4 whitespace-nowrap">Vision & Impact</td>
+                            <td class="px-6 py-4 whitespace-nowrap">Peer Support</td>
+                            <td class="px-6 py-4 whitespace-nowrap">Competitive Advantage</td>
+                            <td class="px-6 py-4 whitespace-nowrap">Process & Stability</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap font-semibold">Relationship to Innovation</td>
+                            <td class="px-6 py-4 whitespace-nowrap">Creator</td>
+                            <td class="px-6 py-4 whitespace-nowrap">Facilitator</td>
+                            <td class="px-6 py-4 whitespace-nowrap">First Consumer</td>
+                            <td class="px-6 py-4 whitespace-nowrap">Integrator</td>
+                        </tr>
+                         <tr>
+                            <td class="px-6 py-4 whitespace-nowrap font-semibold">Risk Profile</td>
+                            <td class="px-6 py-4 whitespace-nowrap">High Risk-Tolerance</td>
+                            <td class="px-6 py-4 whitespace-nowrap">Low-to-Moderate</td>
+                            <td class="px-6 py-4 whitespace-nowrap">Calculated Risk-Taker</td>
+                            <td class="px-6 py-4 whitespace-nowrap">Risk-Averse</td>
+                        </tr>
+                        <tr>
+                           <td class="px-6 py-4 whitespace-nowrap font-semibold">Scope of Influence</td>
+                           <td class="px-6 py-4 whitespace-nowrap">Industry / Societal</td>
+                           <td class="px-6 py-4 whitespace-nowrap">Internal / Peer-Level</td>
+                           <td class="px-6 py-4 whitespace-nowrap">Market Segment</td>
+                           <td class="px-6 py-4 whitespace-nowrap">Project / Process</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const palette = {
+            blue: '#00A6ED',
+            green: '#7FB800',
+            yellow: '#FFB400',
+            red: '#F6511D',
+            slate: '#475569',
+            lightBlue: 'rgba(0, 166, 237, 0.2)',
+            lightGreen: 'rgba(127, 184, 0, 0.2)',
+            lightYellow: 'rgba(255, 180, 0, 0.2)',
+            lightRed: 'rgba(246, 81, 29, 0.2)'
+        };
+
+        const tooltipConfig = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            }
+                            return label;
+                        }
+                    }
+                },
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        };
+
+        function wrapLabel(str, max_width) {
+            const words = str.split(' ');
+            let lines = [];
+            let current_line = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                if ((current_line + " " + words[i]).length > max_width) {
+                    lines.push(current_line);
+                    current_line = words[i];
+                } else {
+                    current_line += " " + words[i];
+                }
+            }
+            lines.push(current_line);
+            return lines;
+        }
+
+
+        const riskSpectrumCtx = document.getElementById('riskSpectrumChart').getContext('2d');
+        new Chart(riskSpectrumCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Trailblazer',
+                    data: [{x: 1, y: 9}],
+                    backgroundColor: palette.blue,
+                    pointRadius: 15,
+                    pointHoverRadius: 20,
+                }, {
+                    label: 'Change Champion',
+                    data: [{x: 6, y: 4}],
+                    backgroundColor: palette.green,
+                    pointRadius: 15,
+                    pointHoverRadius: 20,
+                }, {
+                    label: 'Strategic Adopter',
+                    data: [{x: 4, y: 7}],
+                    backgroundColor: palette.yellow,
+                    pointRadius: 15,
+                    pointHoverRadius: 20,
+                }, {
+                    label: 'Deliberate Implementer',
+                    data: [{x: 9, y: 2}],
+                    backgroundColor: palette.red,
+                    pointRadius: 15,
+                    pointHoverRadius: 20,
+                }]
+            },
+            options: {
+                ...tooltipConfig,
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Need for Structure & Planning',
+                            font: { size: 14 }
+                        },
+                        min: 0,
+                        max: 10,
+                        ticks: {
+                            callback: (value) => {
+                                if (value === 0) return 'Low';
+                                if (value === 10) return 'High';
+                                return '';
+                            }
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Tolerance for Risk & Uncertainty',
+                            font: { size: 14 }
+                        },
+                        min: 0,
+                        max: 10,
+                        ticks: {
+                           callback: (value) => {
+                                if (value === 0) return 'Low';
+                                if (value === 10) return 'High';
+                                return '';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const functionDonutCtx = document.getElementById('functionDonutChart').getContext('2d');
+        new Chart(functionDonutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Visionary/Pioneer', 'Advocate/Catalyst', 'First Customer/Validator', 'Executor/Scaler'],
+                datasets: [{
+                    label: 'Core Function',
+                    data: [25, 25, 25, 25],
+                    backgroundColor: [palette.blue, palette.green, palette.yellow, palette.red],
+                    borderColor: '#FFFFFF',
+                    borderWidth: 4,
+                }]
+            },
+            options: {
+                ...tooltipConfig,
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '50%',
+            }
+        });
+    </script>
+
+</body>
+</html>
