@@ -1,1 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matt Schneider</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #f9f9f9; color: #333; }
+    header { text-align: center; margin-bottom: 2rem; }
+    nav ul { list-style: none; padding: 0; display: flex; gap: 1rem; justify-content: center; }
+    nav a { text-decoration: none; color: #007acc; }
+    nav a:hover { text-decoration: underline; }
+    main section { margin-bottom: 2rem; background: #fff; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    footer { margin-top: 3rem; text-align: center; font-size: 0.9rem; color: #666; }
+    h2 { border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Welcome to Matt Schneider's Website</h1>
+    <p>Explore the available pages and documents below.</p>
+  </header>
 
+  <main>
+    <section id="html-content">
+      <h2>HTML Pages</h2>
+      <ul id="html-list"></ul>
+    </section>
+
+    <section id="markdown-content">
+      <h2>Markdown Documents</h2>
+      <ul id="markdown-list"></ul>
+    </section>
+
+      <section id="history">
+        <h2>History</h2>
+        <ul>
+          <li>2025-08-03: Added homepage with links to other pages and created this history section.</li>
+          <li>2025-08-03: Updated homepage to list all HTML and Markdown files automatically.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Matt Schneider</p>
+    </footer>
+    <script>
+      async function loadFiles() {
+        const repo = 'Matt-Schneider/Matt-Schneider.github.io';
+        try {
+          const res = await fetch(`https://api.github.com/repos/${repo}/git/trees/main?recursive=1`);
+          if (!res.ok) throw new Error('Unable to fetch repository contents');
+          const data = await res.json();
+          const htmlList = document.getElementById('html-list');
+          const mdList = document.getElementById('markdown-list');
+          data.tree.forEach(item => {
+            if (item.type === 'blob') {
+              if (item.path.endsWith('.html') && item.path !== 'index.html') {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = item.path;
+                a.textContent = item.path;
+                li.appendChild(a);
+                htmlList.appendChild(li);
+              } else if (item.path.endsWith('.md')) {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = item.path;
+                a.textContent = item.path;
+                li.appendChild(a);
+                mdList.appendChild(li);
+              }
+            }
+          });
+          if (!htmlList.children.length) {
+            htmlList.innerHTML = '<li>No HTML pages found.</li>';
+          }
+          if (!mdList.children.length) {
+            mdList.innerHTML = '<li>No markdown documents found.</li>';
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      document.addEventListener('DOMContentLoaded', loadFiles);
+    </script>
+  </body>
+</html>
