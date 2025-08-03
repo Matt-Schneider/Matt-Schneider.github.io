@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VMware Cloud Foundation 5.2 Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: auto;
+        }
+        .answer-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .answer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .selected {
+            background-color: #3b82f6 !important; /* blue-500 */
+            color: white !important;
+            border-color: #2563eb !important; /* blue-600 */
+        }
+        .correct {
+            background-color: #22c55e !important; /* green-500 */
+            color: white !important;
+            border-color: #16a34a !important; /* green-600 */
+        }
+        .incorrect {
+            background-color: #ef4444 !important; /* red-500 */
+            color: white !important;
+            border-color: #dc2626 !important; /* red-600 */
+        }
+        /* Custom scrollbar for summary */
+        .summary-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .summary-content::-webkit-scrollbar-track {
+            background: #f1f5f9; /* slate-100 */
+        }
+        .summary-content::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* slate-400 */
+            border-radius: 4px;
+        }
+        .summary-content::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* slate-500 */
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 flex items-center justify-center min-h-screen p-4">
+
+    <div id="quiz-app" class="quiz-container w-full bg-white p-6 sm:p-8 rounded-2xl shadow-xl">
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">VMware Cloud Foundation 5.2 Quiz</h1>
+            <p class="text-slate-600 mb-8">Test your knowledge with 60 questions from the 2V0-11.25 exam guide. Questions and answers are shuffled each time.</p>
+            <button id="start-btn" class="w-full sm:w-auto bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:scale-105">
+                Start Quiz
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Question <span id="question-number"></span>/<span id="total-questions"></span></h2>
+                <div id="timer" class="text-lg font-semibold text-blue-600"></div>
+            </div>
+            <div id="question-container" class="mb-6">
+                <p id="question-text" class="text-lg text-slate-700 leading-relaxed"></p>
+                <p id="question-instruction" class="text-sm text-slate-500 mt-2 italic"></p>
+            </div>
+            <div id="answers-container" class="grid grid-cols-1 gap-4">
+                <!-- Answer buttons will be injected here -->
+            </div>
+            <div class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <button id="finish-btn" class="w-full sm:w-auto bg-amber-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-amber-600 transition-all">Finish Now</button>
+                <button id="next-btn" class="w-full sm:w-auto bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition-all hidden">Next Question</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden">
+             <h2 class="text-3xl font-bold text-center text-slate-900 mb-4">Quiz Complete!</h2>
+            <div class="bg-slate-50 p-6 rounded-lg text-center mb-6">
+                <p class="text-lg text-slate-600">Your Score:</p>
+                <p id="score-text" class="text-5xl font-bold text-blue-600 my-2">0/0</p>
+                <p id="percentage-text" class="text-xl font-medium text-slate-700">0%</p>
+            </div>
+            <div id="summary-container" class="mt-8">
+                <h3 class="text-2xl font-bold mb-4 text-center">Review Your Answers</h3>
+                <div id="summary-details" class="summary-content max-h-[40vh] overflow-y-auto space-y-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <!-- Summary details will be injected here -->
+                </div>
+            </div>
+            <div class="mt-8 text-center flex flex-col sm:flex-row justify-center items-center gap-4">
+                 <button id="restart-btn" class="w-full sm:w-auto bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:scale-105">
+                    Try Again
+                </button>
+                <button id="retry-failed-btn" class="w-full sm:w-auto bg-orange-500 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-orange-600 transition-all duration-300 transform hover:scale-105 hidden">
+                    Retry Failed Questions
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "What is a symptom of an issue with vSphere HA?",
+                options: [
+                    "Snapshots cannot be created or consolidated.",
+                    "VMs are not restarted after a host failure.",
+                    "VMs are not being migrated using vMotion.",
+                    "Hosts frequently disconnect from vCenter Server."
+                ],
+                answer: "VMs are not restarted after a host failure.",
+                multi: false
+            },
+            {
+                question: "Which prerequisite task must be completed before deploying VMware Cloud Foundation (VCF) using VMware Cloud Builder?",
+                options: [
+                    "Ensure that all ESXi hosts are connected to a single vCenter Server.",
+                    "Verify network configurations and DNS settings for all components.",
+                    "Verify configurations on Virtual Distributed Switch on the ESXi hosts that will be used for the deployment.",
+                    "Ensure HCX is configured for workload migration."
+                ],
+                answer: "Verify network configurations and DNS settings for all components.",
+                multi: false
+            },
+            {
+                question: "The administrator has been tasked with applying asynchronous software updates to the VMware Cloud Foundation (VCF) instance using the VMware Async Patch CLI Tool. Which four steps would an administrator take to complete the task?",
+                options: [
+                    "Download the bundles from SDDC Manager.",
+                    "Download the bundles.",
+                    "Upload the confirmation to SDDC Manager.",
+                    "Apply the patches directly through the Async Patch CLI Tool.",
+                    "Enable the bundles.",
+                    "Apply the patches through the SDDC Manager UI.",
+                    "Upload the bundles to SDDC Manager."
+                ],
+                answer: ["Download the bundles.", "Enable the bundles.", "Apply the patches through the SDDC Manager UI.", "Upload the bundles to SDDC Manager."],
+                multi: true,
+                count: 4
+            },
+            {
+                question: "While deploying the first VI workload domain in a VMware Cloud Foundation (VCF) solution, which two steps will always be performed by SDDC Manager?",
+                options: [
+                    "Deploy an NSX Edge cluster and configure BGP routing on the T0 Gateway.",
+                    "Deploy a new NSX Manager instance for the VI workload domain.",
+                    "Configure vSAN as a principal storage for the VI workload domain.",
+                    "Deploy and configure a new vCenter Server instance for the VI workload domain.",
+                    "Connect a new vCenter Server instance to the Application Virtual Network."
+                ],
+                answer: ["Deploy a new NSX Manager instance for the VI workload domain.", "Deploy and configure a new vCenter Server instance for the VI workload domain."],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "What is the primary benefit of using HCX Replication Assisted vMotion (RAV) for VM migration?",
+                options: [
+                    "It requires no configuration changes to the VM(s) within the destination environment.",
+                    "It performs a test migration to ensure compatibility.",
+                    "It ensures zero downtime to the VM(s).",
+                    "It provides the fastest migration method by powering off the VM(s) before initiating the migration."
+                ],
+                answer: "It ensures zero downtime to the VM(s).",
+                multi: false
+            },
+            {
+                question: "An administrator has been tasked with deploying a new VMware Cloud Foundation (VCF) environment and is preparing the physical hosts that will be used for the management domain. The administrator has completed several tasks. A combination of which two additional tasks must the administrator complete before starting the bring-up of the management domain?",
+                options: [
+                    "Upload the Cloud Builder appliance OVA file to the new shared NFS datastore.",
+                    "Create a new vSphere Standard Switch for the VCF ESXi management network on each ESXi host.",
+                    "Configure a new shared NFS datastore on each ESXi host.",
+                    "Replace the SSL certificate with either a CA signed or self-signed certificate on each ESXi host.",
+                    "Configure VLAN 10 on the VM network Port Group of the vSphere Standard Switch on each ESXi host."
+                ],
+                answer: ["Create a new vSphere Standard Switch for the VCF ESXi management network on each ESXi host.", "Configure VLAN 10 on the VM network Port Group of the vSphere Standard Switch on each ESXi host."],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "How do virtual machine (VM) storage policies in a VMware vSphere environment contribute to optimizing resource utilization, ensuring data availability, and meeting application-specific requirements?",
+                options: [
+                    "By guaranteeing storage IOPs for a particular virtual machine",
+                    "By regulating and optimizing storage traffic between virtual machines",
+                    "By streamlining the process of automating virtual machine backups",
+                    "By defining and enforcing storage requirements, such as performance, availability, and redundancy"
+                ],
+                answer: "By defining and enforcing storage requirements, such as performance, availability, and redundancy",
+                multi: false
+            },
+            {
+                question: "An administrator configures a Local Content Library on vCenter Server A, enables publishing, and creates Subscribed Content Libraries on vCenter Server B and vCenter Server C using the publishing URL. However, the contents of the subscribed libraries on vCenter B and C are not synchronizing with the source library on vCenter A. Which step should the administrator take to troubleshoot the issue?",
+                options: [
+                    "Recreate the Subscribed Content Libraries on vCenter B and C with a new publishing URL from vCenter Server A to reset the synchronization configuration.",
+                    "Verify that network connectivity exists between vCenter Server A and the other two vCenters, and ensure that the required ports for Content Library synchronization are open.",
+                    "Enable bidirectional synchronization on the Content Library settings to ensure updates are propagated back and forth between vCenter Server A and the subscribed libraries.",
+                    "Manually export the library content from vCenter Server A and import it into the subscribed libraries on vCenter B and C to initialize synchronization."
+                ],
+                answer: "Verify that network connectivity exists between vCenter Server A and the other two vCenters, and ensure that the required ports for Content Library synchronization are open.",
+                multi: false
+            },
+            {
+                question: "An administrator is using VMware Aria Automation to automate the provisioning of virtual machines in their VMware Cloud Foundation (VCF) environment. They notice that the deployment requests are failing frequently. What step should the administrator take in VMware Aria Operations for Logs to diagnose the cause of the failures?",
+                options: [
+                    "Check the Audit Logs to see if there are any unauthorized access attempts.",
+                    "Review the Alert Definitions to ensure alerts for request failures are configured and enabled.",
+                    "Access the Dashboard page to get an overview of system health and performance metrics.",
+                    "Use the Interactive Analytics feature to search for error messages related to the requests."
+                ],
+                answer: "Use the Interactive Analytics feature to search for error messages related to the requests.",
+                multi: false
+            },
+            {
+                question: "Which two steps should an administrator perform to configure the backup of the VMware Cloud Foundation (VCF) SDDC Manager and NSX components to allow them to be recovered in the event of a full site failure?",
+                options: [
+                    "Backup the NSX Manager configuration by exporting it to an archive file.",
+                    "Configure the backup settings in SDDC Manager.",
+                    "Configure image-based backup for the NSX Manager cluster.",
+                    "Prepare an external SFTP server to store file-based backups.",
+                    "Define a scheduled task in vCenter to create a snapshot of the NSX Edge cluster."
+                ],
+                answer: ["Configure the backup settings in SDDC Manager.", "Prepare an external SFTP server to store file-based backups."],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "A Cloud Administrator has been tasked with verifying all of the prerequisites are in place prior to deploying VMware Aria Suite Lifecycle. Which three items must the Cloud Administrator ensure are available prior to deploying VMware Aria Suite Lifecycle?",
+                options: [
+                    "Connectivity between Application Virtual Networks, Management Network, and network services (DNS and NTP)",
+                    "A DNS A Record for lcm.vcf.company.com that points to 10.0.0.150",
+                    "The IP address for the Standalone Tier 1 Load Balancer for VMware Aria components is prepared",
+                    "A DNS PTR Record for 10.0.0.1 that points to lcm.vcf.company.com",
+                    "A CA-signed SSL certificate for Aria Suite Lifecycle added to SDDC Manager"
+                ],
+                answer: ["Connectivity between Application Virtual Networks, Management Network, and network services (DNS and NTP)", "A DNS A Record for lcm.vcf.company.com that points to 10.0.0.150", "The IP address for the Standalone Tier 1 Load Balancer for VMware Aria components is prepared"],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An administrator is configuring a newly provisioned workload domain within a VMware Cloud Foundation (VCF) environment. The workload domain will contain virtual machines hosting applications which are considered business critical, and the administrator wants to ensure that the virtual machines are given priority over other network traffic types. Which three steps should the administrator perform to achieve this goal?",
+                options: [
+                    "Configure a bandwidth resource allocation for the virtual machine traffic type.",
+                    "Enable Network I/O control (NIOC) on the workload domain vSphere Distributed Switch (vDS).",
+                    "Create a new vSphere Distributed Switch (vDS) specifically for virtual machine traffic.",
+                    "Configure dedicated physical network adapters for the ESXi management traffic.",
+                    "Disable bandwidth resource allocations for all other traffic types to ensure virtual machine traffic gets full bandwidth.",
+                    "Configure a new network resource pool to assign shares, limits and reservations for the virtual machine traffic."
+                ],
+                answer: ["Configure a bandwidth resource allocation for the virtual machine traffic type.", "Enable Network I/O control (NIOC) on the workload domain vSphere Distributed Switch (vDS).", "Configure a new network resource pool to assign shares, limits and reservations for the virtual machine traffic."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An administrator needs to ensure that all ESXi hosts in a cluster have a consistent configuration. Which three steps are necessary to achieve this?",
+                options: [
+                    "Attach the host profile to all hosts in the cluster.",
+                    "Extract the host profile from the configured reference host.",
+                    "Right-click the host profile from the reference host and select duplicate host profile.",
+                    "Configure the desired settings on an ESXi host.",
+                    "Detach the host profile from all hosts in the cluster.",
+                    "Manually configure each host to match the reference host settings."
+                ],
+                answer: ["Attach the host profile to all hosts in the cluster.", "Extract the host profile from the configured reference host.", "Configure the desired settings on an ESXi host."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An administrator is tasked to configure a Content Library to share its contents across multiple vCenter Server instances. What are the necessary steps and considerations to ensure the library is accessible for the consumption by the other vCenter instances?",
+                options: [
+                    "Create a Local Content Library on each vCenter Server instance and manually synchronize the content.",
+                    "Create a Subscribed Content Library on each vCenter Server instance without enabling synchronization.",
+                    "Create a Local Content Library on a primary vCenter Server instance and enable the \"Publish\" option.",
+                    "create a Subscribed Content Library on the primary vCenter instance and enable the \"Publish\" option."
+                ],
+                answer: "Create a Local Content Library on a primary vCenter Server instance and enable the \"Publish\" option.",
+                multi: false
+            },
+            {
+                question: "Which feature of VMware Data Services Manager enhances security and compliance?",
+                options: [
+                    "Automated workload migration",
+                    "Network traffic encryption",
+                    "Storage replication",
+                    "Database-level authentication"
+                ],
+                answer: "Database-level authentication",
+                multi: false
+            },
+            {
+                question: "An administrator is tasked with deploying a new, highly-available application on a VMware Cloud Foundation (VCF)-based private cloud. The new application will include both virtual machines and containers. Which two components of VCF could the administrator use to complete the task?",
+                options: [
+                    "HCX",
+                    "Aria Suite Lifecycle",
+                    "NSX",
+                    "Aria operations",
+                    "vSphere Supervisor"
+                ],
+                answer: ["NSX", "vSphere Supervisor"],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "What are three prerequisites for deploying an NSX Edge cluster in a VMware Cloud Foundation (VCF) solution?",
+                options: [
+                    "Set up vSAN storage policies for the Edge VMs.",
+                    "Verify that the NSX host overlay VLAN and NSX Edge overlay VLAN are routed to each other.",
+                    "Create DNS entries for the NSX Edge nodes.",
+                    "Use separate VLAN IDs and subnets for the NSX host overlay and NSX Edge overlay networks.",
+                    "Configure BGP as a dynamic routing protocol on the physical switches.",
+                    "Install Aria Operations and enable Edge Cluster monitoring."
+                ],
+                answer: ["Verify that the NSX host overlay VLAN and NSX Edge overlay VLAN are routed to each other.", "Create DNS entries for the NSX Edge nodes.", "Use separate VLAN IDs and subnets for the NSX host overlay and NSX Edge overlay networks."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "What is the primary use case for Aria Operations within VMware Cloud Foundation (VCF)?",
+                options: [
+                    "To provide comprehensive monitoring, analytics, and performance management of the cloud infrastructure",
+                    "To automate workload deployments across multiple cloud environments",
+                    "To enable network virtualization and security",
+                    "To manage and analyze log data from various sources"
+                ],
+                answer: "To provide comprehensive monitoring, analytics, and performance management of the cloud infrastructure",
+                multi: false
+            },
+            {
+                question: "An administrator is tasked with enabling Workload Management (vSphere Supervisor) on a VMware Cloud Foundation (VCF) workload domain using the SDDC Manager UI. Which three are prerequisites for enabling Workload Management?",
+                options: [
+                    "Verify that the vSphere Distributed Switch is configured with sufficient port groups.",
+                    "Verify at least one Content Library is available.",
+                    "Verify all hosts within the selected Sphere clusters have the proper vSphere with Tanzu licensing to support Workload Management.",
+                    "Verify at least one NSX Edge cluster is deployed and available.",
+                    "Verify that the cluster is running vSAN."
+                ],
+                answer: ["Verify at least one Content Library is available.", "Verify all hosts within the selected Sphere clusters have the proper vSphere with Tanzu licensing to support Workload Management.", "Verify at least one NSX Edge cluster is deployed and available."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "What three steps are required to commission a new host into the SDDC Manager inventory?",
+                options: [
+                    "Self-signed certificate regenerated based on FQDN of host.",
+                    "Four NIC ports with a minimum 10 Gbps speed.",
+                    "Delete all disk partitions on HDD/SSD.",
+                    "Update the DNS records and add the host directly to the SDDC Manager appliance using the root credentials.",
+                    "Manually import the host into the vCenter Server inventory and assign it to a cluster.",
+                    "A supported version of ESXi installed on the host."
+                ],
+                answer: ["Self-signed certificate regenerated based on FQDN of host.", "Delete all disk partitions on HDD/SSD.", "A supported version of ESXi installed on the host."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An administrator recently incorrectly deployed a new isolated VI workload domain within an existing VMware Cloud Foundation (VCF) instance. How can the administrator reconfigure the VI workload domain to share the SSO domain from the management workload domain?",
+                options: [
+                    "From the management domain vCenter Server instance, use the rsautil command to add the VI workload domain to the management domain.",
+                    "From the VI workload domain vCenter Server instance, add the management domain SSO and remove the isolated SSO.",
+                    "From the SDDC Manager console, migrate the VI workload domain to the management domain.",
+                    "A new VI workload domain must be created through SDDC Manager."
+                ],
+                answer: "A new VI workload domain must be created through SDDC Manager.",
+                multi: false
+            },
+            {
+                question: "Following an internal security audit of the new VMware Cloud Foundation (VCF) instance, a finding was documented for remediation: All users from the custom administrators group could access the DCUI on all ESXi hosts. The policy states only users in the restricted administrators group should have direct access. Which two actions should the administrator perform to remediate this?",
+                options: [
+                    "Disable SSH and the ESXi Shell.",
+                    "Add the custom administrators group to the DCUI.Access advanced system setting.",
+                    "Add the restricted administrators group to the DCUI.Access advanced system setting.",
+                    "Enable Strict Lockdown Mode.",
+                    "Enable Normal Lockdown Mode."
+                ],
+                answer: ["Add the restricted administrators group to the DCUI.Access advanced system setting.", "Enable Normal Lockdown Mode."],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "An administrator has been tasked with creating a view of key performance indicators for their VMware Cloud Foundation (VCF) private cloud and an automated monthly report that shows the capacity consumed by each development team who use the environment. Which VCF component should the administrator configure to complete their objectives?",
+                options: [
+                    "VMware Aria Operations for Logs",
+                    "VMware Aria Operations",
+                    "VMware Aria Operations for Networks",
+                    "VMware Aria Operations for Applications"
+                ],
+                answer: "VMware Aria Operations",
+                multi: false
+            },
+            {
+                question: "An administrator has deployed a new VI Workload Domain and must deploy a Kubernetes cluster on the vSphere Supervisor. Which three steps should be followed to successfully deploy the Kubernetes cluster?",
+                options: [
+                    "Configure a vSphere Namespace and assign resource quotas.",
+                    "Deploy a vSphere Pod Service.",
+                    "Create a new VM template for the Kubernetes nodes.",
+                    "Deploy an NSX Edge Cluster.",
+                    "Enable Workload Management on the vSphere Cluster within SDDC Manager."
+                ],
+                answer: ["Configure a vSphere Namespace and assign resource quotas.", "Deploy an NSX Edge Cluster.", "Enable Workload Management on the vSphere Cluster within SDDC Manager."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An organization is using VMware Aria Automation for automating virtual machine deployments. Recently, some deployment requests have been failing. An administrator needs to use Aria Automation to troubleshoot these failures. Which two steps should be taken?",
+                options: [
+                    "Disable integrations and re-run deployment.",
+                    "Check the request logs for error messages.",
+                    "Disable all automation policies temporarily.",
+                    "Review the provisioning diagrams for patterns of failure.",
+                    "Re-run the failed deployments without any changes."
+                ],
+                answer: ["Check the request logs for error messages.", "Review the provisioning diagrams for patterns of failure."],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "An administrator is responsible for maintaining a VMware Cloud Foundation (VCF) instance. The administrator has been tasked with scaling the CPU and RAM resources. Which three configuration limitations must the administrator consider when completing the task?",
+                options: [
+                    "To add Memory to a powered on virtual machine, Memory Hot Add must be enabled.",
+                    "To remove Memory to a powered on virtual machine, Memory Hot Add must be enabled.",
+                    "To add vCPUs to a powered on virtual machine CPU Hot Add must be enabled.",
+                    "To enable Memory Hot Add feature, the virtual machine compatibility must be ESXi 7.0 Update 2 or later.",
+                    "To add vCPUs to a powered down virtual machine, CPU Hot Add must be enabled.",
+                    "To enable the CPU Hot Add or Memory Hot Add feature, the virtual machine must be powered off."
+                ],
+                answer: ["To add Memory to a powered on virtual machine, Memory Hot Add must be enabled.", "To add vCPUs to a powered on virtual machine CPU Hot Add must be enabled.", "To enable the CPU Hot Add or Memory Hot Add feature, the virtual machine must be powered off."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "What is the recommended method for IP address allocation for the management interface of VMware ESXi hosts in a VMware Cloud Foundation (VCF) environment?",
+                options: [
+                    "Dynamic IP addresses assigned via DHCP without any reservations",
+                    "Dynamic IP addresses assigned via DHCP with a reservation based on MAC address",
+                    "Static IP addresses assigned manually",
+                    "Static IP address assigned using VMware NSX IP Pools"
+                ],
+                answer: "Static IP addresses assigned manually",
+                multi: false
+            },
+            {
+                question: "An administrator is enabling VMware's Virtual Machine Encryption for an existing VMware Cloud Foundation (VCF) Workload Domain in order to meet their organization's compliance regulations. Which three steps should the administrator take to complete this task?",
+                options: [
+                    "Configure a Key Management Server (KMS) and add it to the vCenter.",
+                    "Enable SSH on the ESXi hosts to manage encryption keys.",
+                    "Create an encryption policy in vCenter.",
+                    "Apply the encryption policy to the ESXi hosts.",
+                    "Apply the encryption policy to the existing VMs.",
+                    "Enable the encryption feature on the ESXi hosts."
+                ],
+                answer: ["Configure a Key Management Server (KMS) and add it to the vCenter.", "Create an encryption policy in vCenter.", "Apply the encryption policy to the existing VMs."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An administrator needs to ensure that specific virtual machines within a VMware Cloud Foundation (VCF) environment use storage that can tolerate at least two host failures within a vSAN cluster. Due to financial limitations, the configuration used must prioritize providing the highest level of usable disk space for the datastore. Which three steps should be performed to meet the requirements?",
+                options: [
+                    "Reconfigure the existing Default Storage Policy in the vSphere Client.",
+                    "Apply the storage policy to the target VMs.",
+                    "Set Failures to Tolerate to \"2 failures - RAID-6 (Erasure Coding)\" in the policy configuration.",
+                    "Create a new VM Storage Policy in the vSphere Client.",
+                    "Set Failures to Tolerate to \"2 failures - RAID-1 (Mirroring)\" in the policy configuration.",
+                    "Configure the policy to use thin provisioning."
+                ],
+                answer: ["Apply the storage policy to the target VMs.", "Set Failures to Tolerate to \"2 failures - RAID-6 (Erasure Coding)\" in the policy configuration.", "Create a new VM Storage Policy in the vSphere Client."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An administrator is managing a VMware Cloud Foundation (VCF) environment. To support virtual machine backup using a third-party tool, the administrator has been tasked with assigning a service account (srvbackup01) access to the Production Virtual Machine (VM) folder and all child objects. The company security policy dictates that only the minimum required permissions must be assigned. Which three actions should the administrator take to complete the objective?",
+                options: [
+                    "Select the necessary privileges for the backup_service role.",
+                    "Assign the backup_service role to the srvbackup01 user on the Production VM folder only.",
+                    "Assign the Administrator role to the srvbackup01 user on the Production VM folder and propagate to all child objects.",
+                    "Create a new Role called backup_service.",
+                    "Assign the backup_service role to the srvbackup01 user on the Production VM folder and propagate to all child objects.",
+                    "Clone the Administrator Role to create the backup_service role."
+                ],
+                answer: ["Select the necessary privileges for the backup_service role.", "Create a new Role called backup_service.", "Assign the backup_service role to the srvbackup01 user on the Production VM folder and propagate to all child objects."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "A virtual private cloud administrator is regularly tasked to provision and manage new application workloads with dedicated subnets. Which two capabilities of VMware Cloud Foundation (VCF) can be used to alleviate the workload of the administrator with minimal interaction with the networking team?",
+                options: [
+                    "Configure vSAN storage policies for each application.",
+                    "Deploy Aria Automation to enable self-service provisioning.",
+                    "Use vSphere Resource Pools to allocate networking resources to different applications.",
+                    "Use of NSX overlay networks."
+                ],
+                answer: ["Deploy Aria Automation to enable self-service provisioning.", "Use of NSX overlay networks."],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "While troubleshooting a vSphere HA cluster issue, an administrator observes that a host is in the Network Isolated state. The host is unable to ping the configured isolation address and cannot access any other vSphere HA agents. Which step would resolve this issue while minimizing downtime for running virtual machines (VMs)?",
+                options: [
+                    "Power off all VMs on the isolated host, remove the host from the cluster, and add it back after the network is fixed.",
+                    "Reconfigure the host's HA agent to bypass the isolation check and allow VM operations to continue.",
+                    "Reconfigure the isolation addresses to ensure the host can ping the default gateway or other configured IPs.",
+                    "Restart the vSphere HA services on the isolated host to trigger the election of a new primary agent."
+                ],
+                answer: "Reconfigure the isolation addresses to ensure the host can ping the default gateway or other configured IPs.",
+                multi: false
+            },
+            {
+                question: "Which step must an administrator take to configure Application Virtual Networks (AVNs) from SDDC Manager while preparing to deploy VMware Aria Suite Lifecycle?",
+                options: [
+                    "Deploy NSX Edge Cluster.",
+                    "Ensure that an NSX load balancer is available.",
+                    "Enable AVNs in the vCenter Server.",
+                    "Assign AVNs to specific ESXi hosts."
+                ],
+                answer: "Deploy NSX Edge Cluster.",
+                multi: false
+            },
+            {
+                question: "An administrator needs to scale an NSX Edge cluster by adding additional Edge nodes. Which three steps must be taken before scaling an Edge cluster from SDDC Manager?",
+                options: [
+                    "Assign a unique management IP for each Edge node.",
+                    "Assign two Tunnel Endpoint (TEP) addresses for each Edge node.",
+                    "Add an additional NSX VDS uplink for each Edge node being added.",
+                    "Verify DNS records have been added for each new Edge node.",
+                    "Place the Edge cluster in maintenance mode prior to expanding."
+                ],
+                answer: ["Assign a unique management IP for each Edge node.", "Assign two Tunnel Endpoint (TEP) addresses for each Edge node.", "Verify DNS records have been added for each new Edge node."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An organization is planning to manage a diverse set of databases across multiple VMware Cloud Foundation (VCF) environments using Data Services Manager. Which three capabilities of Data Services Manager would help the organization managing these databases efficiently?",
+                options: [
+                    "Centralized monitoring and alerting for all managed databases",
+                    "Automated database migration between on-premises and cloud environments",
+                    "Policy-based backup and recovery for databases",
+                    "Integration with vSAN for optimized storage management",
+                    "Automated database provisioning and deployment"
+                ],
+                answer: ["Centralized monitoring and alerting for all managed databases", "Policy-based backup and recovery for databases", "Automated database provisioning and deployment"],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An administrator is troubleshooting a high CPU usage issue of the SDDC Manager VM. Access to SDDC Manager UI is exhibiting degraded performance. What two steps should the administrator take to diagnose the issue?",
+                options: [
+                    "Reboot the SDDC Manager VM to clear any temporary issues.",
+                    "Login to SDDC Manager using console with root credentials, run the top command to identify any services that may be consuming high %CPU.",
+                    "Upgrade the vSphere version to the latest release.",
+                    "Review the CPU usage of the ESXi management domain hosts to identify any that are overcommitted.",
+                    "Reconfigure the DRS settings to be more aggressive in load balancing."
+                ],
+                answer: ["Login to SDDC Manager using console with root credentials, run the top command to identify any services that may be consuming high %CPU.", "Review the CPU usage of the ESXi management domain hosts to identify any that are overcommitted."],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "An administrator needs to perform lifecycle management for their VMware Cloud Foundation (VCF) components, including upgrading SDDC Manager. Which three steps should be followed to upgrade VCF?",
+                options: [
+                    "Perform a pre-check to ensure that all components are compatible with the new version.",
+                    "Backup all VMware Cloud Foundation components before starting the upgrade.",
+                    "Use the SDDC Manager UI to initiate the upgrade process.",
+                    "Manually download the update bundles with a secure browser from the VMware website.",
+                    "Disable DRS and HA on all clusters before initiating the upgrade."
+                ],
+                answer: ["Perform a pre-check to ensure that all components are compatible with the new version.", "Backup all VMware Cloud Foundation components before starting the upgrade.", "Use the SDDC Manager UI to initiate the upgrade process."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An administrator is deploying a new VMware Cloud Foundation (VCF) environment. After uploading the completed Deployment Parameter Workbook, the validation task fails and an error message is displayed within the VMware Cloud Builder GUI. Which log file can the administrator use to identify the cause of the validation error?",
+                options: [
+                    "vcf-bringup-debug.log",
+                    "sos.log",
+                    "domainmanager.log",
+                    "jsongenerator-<timestamp>.log"
+                ],
+                answer: "vcf-bringup-debug.log",
+                multi: false
+            },
+            {
+                question: "Which tool is most appropriate for diagnosing and resolving a disk failure when using VMware vSAN with Deduplication enabled?",
+                options: [
+                    "vSphere Client",
+                    "Aria Operations",
+                    "vSphere CLI (esxcli)",
+                    "vSAN Skyline Health"
+                ],
+                answer: "vSphere CLI (esxcli)",
+                multi: false
+            },
+            {
+                question: "An administrator is tasked with ensuring the security of network traffic during the migration of virtual machines (VMs) to prevent any potential interception or tampering of data. What specific feature or configuration should the administrator enable to safeguard the integrity and confidentiality of the network traffic involved in VM migration?",
+                options: [
+                    "Encrypted vSphere vMotion",
+                    "vSphere Virtual Machine Encryption",
+                    "vSphere High Availability (HA)",
+                    "vSphere Distributed Resource Scheduler (DRS)"
+                ],
+                answer: "Encrypted vSphere vMotion",
+                multi: false
+            },
+            {
+                question: "An administrator can set resource limits and container defaults on a vSphere Namespace. Which three resource limits can be set?",
+                options: [
+                    "Storage",
+                    "Memory",
+                    "CPU",
+                    "Number of containers",
+                    "Network"
+                ],
+                answer: ["Storage", "Memory", "CPU"],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "What are two benefits of enabling Workload Management on a vSphere Cluster within a VI Workload Domain using SDDC Manager?",
+                options: [
+                    "It allows the deployment of traditional VMs with enhanced performance.",
+                    "It integrates the vSphere supervisor with NSX Networking.",
+                    "It enhances the security of the vSphere cluster.",
+                    "It integrates vSphere with third-party cloud providers.",
+                    "It enables the use of Kubernetes for container orchestration on the vSphere cluster."
+                ],
+                answer: ["It integrates the vSphere supervisor with NSX Networking.", "It enables the use of Kubernetes for container orchestration on the vSphere cluster."],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "An administrator finds that one of the VMs in the vSphere environment cannot reach its default gateway. The VM is configured with a static IP address, and other VMs on the same port group and VLAN are not experiencing any issues. What should the administrator check to resolve the issue?",
+                options: [
+                    "Check the subnet mask configured on the VM.",
+                    "Ensure that the VM's network adapter is set to DHCP.",
+                    "Check if the VM has the correct DNS server settings.",
+                    "Confirm that the DVS port group is configured correctly."
+                ],
+                answer: "Check the subnet mask configured on the VM.",
+                multi: false
+            },
+            {
+                question: "When setting up a new port group on a Virtual Distributed Switch (VDS), what role does configuring a VLAN ID play in network management and traffic isolation?",
+                options: [
+                    "To improve the performance of virtual machines by distributing network traffic across multiple uplinks",
+                    "To logically segment network traffic by assigning the port group to a specific VLAN, ensuring that traffic is isolated",
+                    "To configure storage replication settings for virtual machines connected to the port group",
+                    "To enable the automatic assignment of IP addresses to virtual machines in the port group"
+                ],
+                answer: "To logically segment network traffic by assigning the port group to a specific VLAN, ensuring that traffic is isolated",
+                multi: false
+            },
+            {
+                question: "An administrator has been tasked with adding a new VI workload Domain to an instance of VMware Cloud Foundation (VCF). The administrator only has two prepared ESXi host servers showing in SDDC Manager. The new VI Workload Domain must use vSphere Lifecycle Images. Which three supported principal storage options are available to the administrator when configuring the new VI Workload Domain?",
+                options: [
+                    "VSAN",
+                    "vVols",
+                    "iSCSI",
+                    "NFS v3",
+                    "VMFS on FC",
+                    "VMFS on local disk"
+                ],
+                answer: ["vVols", "NFS v3", "VMFS on FC"],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "What are the three prerequisites an administrator must meet to deploy VMware Aria Suite Lifecycle using SDDC Manager?",
+                options: [
+                    "Ensure the Management Domain was deployed using vSphere Lifecycle Manager Images.",
+                    "Ensure the VMware Software Install Bundle for VMware Aria Suite Lifecycle is in the local bundle repository.",
+                    "Ensure that a custom SSL certificate specifying the FQDN of the appliance is available.",
+                    "Ensure that the NTP and DNS settings specified in SDDC Manager are valid for all management components.",
+                    "Ensure that the Application Virtual Networks have been configured."
+                ],
+                answer: ["Ensure the VMware Software Install Bundle for VMware Aria Suite Lifecycle is in the local bundle repository.", "Ensure that the NTP and DNS settings specified in SDDC Manager are valid for all management components.", "Ensure that the Application Virtual Networks have been configured."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "A company plans to enhance its DevOps practices by implementing Kubernetes as part of a VMware Cloud Foundation (VCF) environment. Which three steps must an administrator perform to achieve this integration?",
+                options: [
+                    "Configure Aria Automation to automate the deployment of Kubernetes clusters.",
+                    "Enable IaaS control plane on existing vSphere clusters.",
+                    "Deploy HCX to migrate existing VMs to Kubernetes.",
+                    "Configure storage policies for Kubernetes cluster namespace consumption.",
+                    "Deploy NSX to manage the networking for Kubernetes clusters."
+                ],
+                answer: ["Enable IaaS control plane on existing vSphere clusters.", "Configure storage policies for Kubernetes cluster namespace consumption.", "Deploy NSX to manage the networking for Kubernetes clusters."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An administrator has been tasked with updating the version of VMware Tools on virtual machines that have been migrated into a VMware Cloud Foundation (VCF) instance so that they are compliant with the company's security policies. The upgrade must not initiate a reboot of the VMs to avoid downtime. Which three steps should the administrator perform in order to complete this task?",
+                options: [
+                    "Select the VI workload domain so that all VMs across all clusters are automatically selected.",
+                    "Use vSphere Lifecycle Manager in the VI workload domain vCenter to initiate the upgrade.",
+                    "Select the cluster hosting the VMs to upgrade.",
+                    "Select the Upgrade to Match Host option.",
+                    "Use SDDC Manager in the management domain to initiate the upgrade.",
+                    "Select the Set Auto Update option and set its value to On."
+                ],
+                answer: ["Use vSphere Lifecycle Manager in the VI workload domain vCenter to initiate the upgrade.", "Select the Upgrade to Match Host option.", "Select the Set Auto Update option and set its value to On."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An administrator is tasked with deploying a new VMware Cloud Foundation (VCF) instance. The management domain is designed to be created with three virtual distributed switches (VDS). What action would the administrator take to deploy the designed configuration?",
+                options: [
+                    "JSON file must be prepared with the defined configuration and used to run the bring-up process.",
+                    "vSphere Distributed Switch Profile 2 must be selected in the VCF Deployment parameter workbook.",
+                    "The design must be changed to ensure vSAN and NSX overlay traffic are on the same VDS.",
+                    "The ESXi hosts have to be configured with twelve physical NICs to ensure redundancy."
+                ],
+                answer: "JSON file must be prepared with the defined configuration and used to run the bring-up process.",
+                multi: false
+            },
+            {
+                question: "Which two operations can be completed in the SDDC Manager UI on an NSX Edge cluster after it has been deployed into a workload domain?",
+                options: [
+                    "Redeploy",
+                    "Expand",
+                    "Sync",
+                    "Delete",
+                    "Shrink"
+                ],
+                answer: ["Expand", "Shrink"],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "An administrator is unable to log in to the SDDC Manager UI. After confirming the appliance is online and responsive to ping, what two actions could the administrator take via the VM console to help identify the root cause of the UI not loading?",
+                options: [
+                    "Verify that port 80 is open and listening for connections using the command netstat.",
+                    "Perform a restart of the network adapter using the command systemctl restart.",
+                    "Verify the health of the SDDC Manager services using the command sos --get-vcf-services-summary.",
+                    "Perform a restart of the services using the command systemctl restart.",
+                    "Verify that there is free disk space remaining using the command df -h."
+                ],
+                answer: ["Verify the health of the SDDC Manager services using the command sos --get-vcf-services-summary.", "Verify that there is free disk space remaining using the command df -h."],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "A single VM is unable to communicate with other VMs on the same network. An administrator needs to identify and resolve the network connectivity issue. What three steps should the administrator follow?",
+                options: [
+                    "Verify that the networking within the VMs guest OS is correct.",
+                    "Restart the VM to reset its network connections.",
+                    "Verify that the virtual network adapter is present and connected.",
+                    "Ensure that the Port Group name(s) associated with the VMs network adapter(s) exists in the vSwitch or VDS and is spelled correctly.",
+                    "Use the ESXi command line to check the status of the VM Kernel adapter."
+                ],
+                answer: ["Verify that the networking within the VMs guest OS is correct.", "Verify that the virtual network adapter is present and connected.", "Ensure that the Port Group name(s) associated with the VMs network adapter(s) exists in the vSwitch or VDS and is spelled correctly."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "An organization is integrating VMware vCenter with Active Directory (AD) to streamline user authentication. As part of this process, the administrator needs to add AD as an identity source in vCenter. Which three steps must be performed to successfully add AD as an identity source?",
+                options: [
+                    "Enter the Domain Name and the credentials of an AD user with a minimum of read-only access to Base DN for users and groups.",
+                    "Select 'Identity Sources' and choose 'Active Directory Domain'.",
+                    "Configure DNS settings on all ESXi hosts to point to the AD DNS servers.",
+                    "Navigate to the vCenter Single Sign-On configuration in the vSphere Client.",
+                    "Create an Active Directory object for the vCenter Server Appliance.",
+                    "Reboot the vCenter to apply the identity source settings."
+                ],
+                answer: ["Enter the Domain Name and the credentials of an AD user with a minimum of read-only access to Base DN for users and groups.", "Select 'Identity Sources' and choose 'Active Directory Domain'.", "Navigate to the vCenter Single Sign-On configuration in the vSphere Client."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "Which three tools could identify and assist with troubleshooting a misconfigured vSAN network?",
+                options: [
+                    "vCheck",
+                    "Supportability and Serviceability (SoS)",
+                    "Direct Console User Interface (DCUI)",
+                    "esxcli",
+                    "vmkping",
+                    "Ruby vSphere Console (RVC) commands"
+                ],
+                answer: ["Supportability and Serviceability (SoS)", "vmkping", "Ruby vSphere Console (RVC) commands"],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "To help troubleshoot an issue with the vSphere Supervisor, an administrator must log into the Supervisor Control Plane VMs. Which three actions should the administrator take to meet the objective?",
+                options: [
+                    "Log into the vCenter Server Appliance using SSH.",
+                    "Log into the Supervisor Control Plane VM using the admin user and <password>.",
+                    "Log into the SDDC Manager appliance using SSH.",
+                    "Log into the Supervisor Control Plane VM using the root user and <password>.",
+                    "Update the <password> by running /usr/lib/vmware/auth/bin/chpw admin.",
+                    "Obtain the <password> by running /usr/lib/vmware-wcp/decryptK8Pwd.py."
+                ],
+                answer: ["Log into the vCenter Server Appliance using SSH.", "Log into the Supervisor Control Plane VM using the root user and <password>.", "Obtain the <password> by running /usr/lib/vmware-wcp/decryptK8Pwd.py."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "What option should be selected when placing a vSAN host into maintenance mode to ensure that all data remains accessible throughout the maintenance process while also minimizing the duration of the operation?",
+                options: [
+                    "Ensure Data Accessibility",
+                    "Ensure Accessibility",
+                    "Full Data Migration",
+                    "No Data Migration"
+                ],
+                answer: "Ensure Accessibility",
+                multi: false
+            },
+            {
+                question: "Following an update to the Information Security policy, an administrator needs to ensure all SSL certificates are generated from a shared Microsoft Certificate Authority (CA). Which three steps must the administrator take to ensure the VCF solution remains compliant and managed by SDDC Manager?",
+                options: [
+                    "In VMware vCenter, replace the ESXi SSL certificates.",
+                    "Integrate the OpenSSL CA into SDDC Manager.",
+                    "Integrate the Microsoft CA into SDDC Manager.",
+                    "In SDDC Manager, replace the SSL certificates for vCenter, NSX Manager, SDDC Manager and Aria Suite Lifecycle.",
+                    "In Aria Suite Lifecycle, replace the VMware Identity Manager, Aria Automation, Aria Operations and Aria Operations for Logs SSL certificates.",
+                    "In SDDC Manager, replace the SSL certificates for vCenter, ESXi, NSX Manager, SDDC Manager and Aria Suite Lifecycle."
+                ],
+                answer: ["Integrate the Microsoft CA into SDDC Manager.", "In SDDC Manager, replace the SSL certificates for vCenter, NSX Manager, SDDC Manager and Aria Suite Lifecycle.", "In VMware vCenter, replace the ESXi SSL certificates."],
+                multi: true,
+                count: 3
+            },
+            {
+                question: "The administrator of a VMware Cloud Foundation environment notices that log data from multiple components, including vSphere, NSX, and vSAN, is not being collected in Aria Operations for Logs. What two steps should the administrator perform to resolve this issue?",
+                options: [
+                    "Reconfigure the log level settings on all vSphere components to ensure detailed logging.",
+                    "Check the network connectivity between the Aria Operations for Logs server and the VMware Cloud Foundation components.",
+                    "Verify that the Aria Operations for Logs license is still valid and active.",
+                    "Increase the storage capacity of the Aria Operations for Logs server to accommodate more log data.",
+                    "Ensure that the syslog configuration on each component is pointing to the correct Aria Operations for Logs server."
+                ],
+                answer: ["Check the network connectivity between the Aria Operations for Logs server and the VMware Cloud Foundation components.", "Ensure that the syslog configuration on each component is pointing to the correct Aria Operations for Logs server."],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "An organization has 3 data center sites and is implementing a solution to achieve a Recovery Point Objective (RPO) of 0 to ensure continuous availability of storage in the event of a single site failure. The sites are connected via a high bandwidth/low latency link. Which two VMware Cloud Foundation (VCF) components can be used to support this capability?",
+                options: [
+                    "vSphere",
+                    "Aria Operations",
+                    "NSX",
+                    "vSphere Replication",
+                    "vSAN"
+                ],
+                answer: ["vSphere", "vSAN"],
+                multi: true,
+                count: 2
+            },
+            {
+                question: "An administrator has deployed the VMware Cloud Builder appliance in preparation for the deployment of a new VMware Cloud Foundation (VCF) environment. While performing the bring-up of the Management Domain, one of the tasks fails. Which tool should the administrator use to generate the support bundle for the failed bring-up?",
+                options: [
+                    "Generate support Bundle option on the vCenter server Management Interface",
+                    "Generate Support Bundle option on the vSphere Host Client Interface",
+                    "Supportability and Serviceability (SoS) Utility on the VMware Cloud Builder appliance",
+                    "Supportability and Serviceability (SoS) Utility on the SDDC Manager appliance"
+                ],
+                answer: "Supportability and Serviceability (SoS) Utility on the VMware Cloud Builder appliance",
+                multi: false
+            }
+        ];
+
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const retryFailedBtn = document.getElementById('retry-failed-btn');
+
+        const questionNumberEl = document.getElementById('question-number');
+        const totalQuestionsEl = document.getElementById('total-questions');
+        const questionTextEl = document.getElementById('question-text');
+        const questionInstructionEl = document.getElementById('question-instruction');
+        const answersContainer = document.getElementById('answers-container');
+
+        const scoreTextEl = document.getElementById('score-text');
+        const percentageTextEl = document.getElementById('percentage-text');
+        const summaryDetailsEl = document.getElementById('summary-details');
+
+        // Quiz State
+        let questionsForCurrentRound = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+        let selectedAnswers = [];
+        let failedQuestions = [];
+
+        // Utility: Shuffle array
+        const shuffleArray = (array) => {
+            return array.sort(() => Math.random() - 0.5);
+        };
+
+        // Initialize Full Quiz
+        const startQuiz = () => {
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+
+            questionsForCurrentRound = shuffleArray([...quizData]);
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            failedQuestions = [];
+            totalQuestionsEl.textContent = questionsForCurrentRound.length;
+            
+            displayQuestion();
+        };
+        
+        // Initialize Quiz with only failed questions
+        const startFailedQuiz = () => {
+            if (failedQuestions.length === 0) return;
+
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+
+            questionsForCurrentRound = shuffleArray([...failedQuestions]);
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            failedQuestions = [];
+            totalQuestionsEl.textContent = questionsForCurrentRound.length;
+            
+            displayQuestion();
+        };
+
+        // Display current question
+        const displayQuestion = () => {
+            resetState();
+            const currentQuestion = questionsForCurrentRound[currentQuestionIndex];
+            questionNumberEl.textContent = currentQuestionIndex + 1;
+            questionTextEl.innerHTML = currentQuestion.question.replace(/\n/g, '<br>');
+
+            if (currentQuestion.multi) {
+                questionInstructionEl.textContent = `(Choose ${currentQuestion.count})`;
+            } else {
+                questionInstructionEl.textContent = `(Choose one)`;
+            }
+
+            const shuffledOptions = shuffleArray([...currentQuestion.options]);
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('answer-btn', 'w-full', 'text-left', 'p-4', 'rounded-lg', 'border-2', 'border-slate-300', 'bg-slate-50', 'hover:bg-slate-200', 'hover:border-slate-400');
+                button.addEventListener('click', () => selectAnswer(button, option, currentQuestion));
+                answersContainer.appendChild(button);
+            });
+        };
+
+        const resetState = () => {
+            nextBtn.classList.add('hidden');
+            while (answersContainer.firstChild) {
+                answersContainer.removeChild(answersContainer.firstChild);
+            }
+            selectedAnswers = [];
+        };
+
+        // Handle answer selection
+        const selectAnswer = (button, selectedOption, question) => {
+            if (question.multi) {
+                // Multi-choice logic
+                const index = selectedAnswers.indexOf(selectedOption);
+                if (index > -1) {
+                    selectedAnswers.splice(index, 1);
+                    button.classList.remove('selected');
+                } else {
+                    if (selectedAnswers.length < question.count) {
+                        selectedAnswers.push(selectedOption);
+                        button.classList.add('selected');
+                    }
+                }
+                
+                if (selectedAnswers.length === question.count) {
+                    processMultiChoice(question);
+                }
+
+            } else {
+                // Single-choice logic
+                selectedAnswers = [selectedOption];
+                processSingleChoice(question);
+            }
+        };
+        
+        const processSingleChoice = (question) => {
+            const isCorrect = selectedAnswers[0] === question.answer;
+            
+            userAnswers[currentQuestionIndex] = {
+                question: question.question,
+                selected: selectedAnswers,
+                correctAnswer: [question.answer],
+                isCorrect: isCorrect
+            };
+
+            if (isCorrect) {
+                score++;
+            }
+
+            Array.from(answersContainer.children).forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === question.answer) {
+                    btn.classList.add('correct');
+                } else if (selectedAnswers.includes(btn.textContent)) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            nextBtn.classList.remove('hidden');
+        };
+
+        const processMultiChoice = (question) => {
+            const correctAnswers = question.answer.sort();
+            const userSelection = selectedAnswers.sort();
+            const isCorrect = JSON.stringify(correctAnswers) === JSON.stringify(userSelection);
+
+            userAnswers[currentQuestionIndex] = {
+                question: question.question,
+                selected: userSelection,
+                correctAnswer: correctAnswers,
+                isCorrect: isCorrect
+            };
+
+            if (isCorrect) {
+                score++;
+            }
+
+            Array.from(answersContainer.children).forEach(btn => {
+                btn.disabled = true;
+                if (correctAnswers.includes(btn.textContent)) {
+                    btn.classList.add('correct');
+                } else if (userSelection.includes(btn.textContent)) {
+                    btn.classList.add('incorrect');
+                }
+            });
+            
+            nextBtn.classList.remove('hidden');
+        };
+
+        // Go to next question
+        const handleNextQuestion = () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questionsForCurrentRound.length) {
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        // Show final results
+        const showResults = (isEarlyFinish = false) => {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            retryFailedBtn.classList.add('hidden'); // Hide by default
+
+            const questionsAttempted = userAnswers.filter(a => a !== undefined).length;
+            const totalQuestionsForScore = isEarlyFinish ? questionsAttempted : questionsForCurrentRound.length;
+
+            scoreTextEl.textContent = `${score}/${totalQuestionsForScore}`;
+            const percentage = totalQuestionsForScore > 0 ? Math.round((score / totalQuestionsForScore) * 100) : 0;
+            percentageTextEl.textContent = `${percentage}%`;
+            
+            if (isEarlyFinish) {
+                document.querySelector('#result-screen h2').textContent = 'Quiz Finished';
+            } else {
+                document.querySelector('#result-screen h2').textContent = 'Quiz Complete!';
+            }
+
+            displaySummary();
+            
+            if (failedQuestions.length > 0) {
+                retryFailedBtn.classList.remove('hidden');
+            }
+        };
+
+        // Display summary of answers
+        const displaySummary = () => {
+            summaryDetailsEl.innerHTML = '';
+            failedQuestions = []; // Reset and populate the list of failed questions
+            
+            for (let i = 0; i < questionsForCurrentRound.length; i++) {
+                const questionData = questionsForCurrentRound[i];
+                const userAnswerData = userAnswers[i];
+                
+                const summaryItem = document.createElement('div');
+                summaryItem.classList.add('p-4', 'rounded-lg', 'border');
+
+                let statusText, statusColor;
+                const isCorrect = userAnswerData ? userAnswerData.isCorrect : false;
+
+                if (!userAnswerData) {
+                    statusText = 'Not Answered';
+                    statusColor = 'border-slate-300 bg-slate-100';
+                    failedQuestions.push(questionData);
+                } else if (isCorrect) {
+                    statusText = 'Correct';
+                    statusColor = 'border-green-300 bg-green-50';
+                } else {
+                    statusText = 'Incorrect';
+                    statusColor = 'border-red-300 bg-red-50';
+                    failedQuestions.push(questionData);
+                }
+                summaryItem.classList.add(...statusColor.split(' '));
+
+                let userAnswerHtml = 'N/A';
+                if (userAnswerData && userAnswerData.selected) {
+                    userAnswerHtml = `<ul>${userAnswerData.selected.map(a => `<li class="ml-4 list-disc">${a}</li>`).join('')}</ul>`;
+                }
+                
+                const correctAnswersArray = Array.isArray(questionData.answer) ? questionData.answer : [questionData.answer];
+                const correctAnswerHtml = `<ul>${correctAnswersArray.map(a => `<li class="ml-4 list-disc">${a}</li>`).join('')}</ul>`;
+
+                summaryItem.innerHTML = `
+                    <p class="font-bold text-slate-800 mb-2">Q${i + 1}: ${questionData.question}</p>
+                    <div class="text-sm">
+                        <p class="font-semibold text-slate-700">Your Answer: ${userAnswerHtml}</p>
+                        ${!isCorrect ? `<p class="font-semibold text-slate-700 mt-1">Correct Answer: ${correctAnswerHtml}</p>` : ''}
+                    </div>
+                    <p class="text-right font-bold text-xs mt-2 ${userAnswerData ? (isCorrect ? 'text-green-600' : 'text-red-600') : 'text-slate-500'}">${statusText.toUpperCase()}</p>
+                `;
+                summaryDetailsEl.appendChild(summaryItem);
+            }
+        };
+
+        // Event Listeners
+        startBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', handleNextQuestion);
+        finishBtn.addEventListener('click', () => showResults(true));
+        restartBtn.addEventListener('click', startQuiz);
+        retryFailedBtn.addEventListener('click', startFailedQuiz);
+
+    </script>
+
+</body>
+</html>
