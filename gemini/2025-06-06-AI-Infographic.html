@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: Facilities Infrastructure Priorities in the Age of AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #001219;
+            color: #E9D8A6;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #EE9B00, #E9D8A6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-link.active {
+            background-color: #EE9B00;
+            color: #001219;
+        }
+        .card {
+            background-color: rgba(0, 95, 115, 0.2);
+            border: 1px solid rgba(10, 147, 150, 0.3);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-opacity-80 backdrop-blur-md border-b border-gray-800 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-white">WWT Research</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#power" class="nav-link text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Power</a>
+                        <a href="#cooling" class="nav-link text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Cooling</a>
+                        <a href="#cabling" class="nav-link text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Cabling</a>
+                        <a href="#space" class="nav-link text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Space</a>
+                        <a href="#sustainability" class="nav-link text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sustainability</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-16">
+        <section id="hero" class="py-20 md:py-32">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">
+                    <span class="block gradient-text">Facilities Infrastructure Priorities</span>
+                    <span class="block text-white">in the Age of AI</span>
+                </h1>
+                <p class="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-blue-200">
+                    The explosion of generative AI is pushing data center infrastructure to its limits. Adapting is not about future-proofing—it's about survival.
+                </p>
+                <div class="mt-12">
+                    <div class="max-w-4xl mx-auto p-8 rounded-xl shadow-2xl card">
+                        <p class="text-2xl md:text-3xl font-bold text-white italic">"Realistically, almost no corporate data centers are prepared for these kinds of AI workloads at scale."</p>
+                        <p class="mt-4 text-right text-lg text-blue-300">- Don Molaro, WWT Chief Technology Advisor</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="power" class="py-20 bg-opacity-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-base font-semibold text-amber-500 tracking-wider uppercase">Priority 1</h2>
+                    <p class="mt-2 text-3xl font-extrabold text-white tracking-tight sm:text-4xl">The Power Crisis</p>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-blue-200">AI workloads are exceptionally power-intensive, creating an unprecedented hunger for energy that strains grids and budgets.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="card rounded-xl p-6 shadow-lg">
+                        <h3 class="text-xl font-bold text-white text-center">Projected US Data Center Power Demand</h3>
+                        <p class="text-center text-sm text-blue-300 mb-4">(% of Total National Electricity)</p>
+                        <div class="chart-container h-64 sm:h-80">
+                            <canvas id="powerDemandChart"></canvas>
+                        </div>
+                        <p class="mt-4 text-blue-200">Projections show data center electricity consumption could triple by 2028, requiring the construction of 33 to 91 GW of new generation capacity in the US alone.</p>
+                    </div>
+                    <div class="card rounded-xl p-6 shadow-lg">
+                        <h3 class="text-xl font-bold text-white text-center">Key Risks of Neglect</h3>
+                        <div class="mt-6 space-y-6">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-8 w-8 rounded-lg flex items-center justify-center bg-amber-600 text-white font-bold text-2xl">⚡</div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-medium text-white">Grid Instability & Outages</h4>
+                                    <p class="mt-1 text-blue-300">Concentrated loads from AI data centers can strain local grids, leading to power quality issues and potential blackouts.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-8 w-8 rounded-lg flex items-center justify-center bg-amber-600 text-white font-bold text-2xl">⏳</div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-medium text-white">Project Delays & Cost Overruns</h4>
+                                    <p class="mt-1 text-blue-300">Wait times for new grid connections can be 4-7 years in key regions, derailing AI deployment timelines.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                 <div class="flex-shrink-0 h-8 w-8 rounded-lg flex items-center justify-center bg-amber-600 text-white font-bold text-2xl">🔒</div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-medium text-white">Emissions Lock-In</h4>
+                                    <p class="mt-1 text-blue-300">Relying on fossil fuels for a quick fix creates long-term environmental and financial liabilities as climate concerns intensify.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cooling" class="py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-base font-semibold text-amber-500 tracking-wider uppercase">Priority 2</h2>
+                    <p class="mt-2 text-3xl font-extrabold text-white tracking-tight sm:text-4xl">The Heat Problem</p>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-blue-200">Traditional air cooling is buckling under the intense heat generated by high-density AI hardware, making advanced liquid cooling essential.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="card rounded-xl p-6 shadow-lg">
+                         <h3 class="text-xl font-bold text-white text-center">Liquid Cooling Adoption is Rising</h3>
+                         <p class="text-center text-sm text-blue-300 mb-4">(% of Data Centers)</p>
+                        <div class="chart-container h-64 sm:h-80">
+                            <canvas id="coolingAdoptionChart"></canvas>
+                        </div>
+                        <p class="mt-4 text-blue-200">Liquid cooling is gaining significant traction. Without it, AI hardware risks thermal throttling, performance degradation, and premature failure.</p>
+                    </div>
+                    <div class="card rounded-xl p-6 shadow-lg overflow-x-auto">
+                        <h3 class="text-xl font-bold text-white text-center mb-4">Advanced Cooling Technology Comparison</h3>
+                        <table class="w-full text-left border-collapse">
+                            <thead class="border-b border-blue-800">
+                                <tr>
+                                    <th class="p-2 text-sm font-semibold text-white">Technology</th>
+                                    <th class="p-2 text-sm font-semibold text-white">Efficiency</th>
+                                    <th class="p-2 text-sm font-semibold text-white">Water Use</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-blue-900">
+                                    <td class="p-2 text-blue-200">Enhanced Air</td>
+                                    <td class="p-2 text-blue-200">Moderate</td>
+                                    <td class="p-2 text-blue-200">Low to High</td>
+                                </tr>
+                                <tr class="border-b border-blue-900">
+                                    <td class="p-2 text-blue-200">Direct-to-Chip Liquid</td>
+                                    <td class="p-2 font-bold text-teal-300">High</td>
+                                    <td class="p-2 font-bold text-teal-300">Low</td>
+                                </tr>
+                                <tr class="border-b border-blue-900">
+                                    <td class="p-2 text-blue-200">Single-Phase Immersion</td>
+                                    <td class="p-2 font-bold text-teal-300">Very High</td>
+                                    <td class="p-2 font-bold text-teal-300">Very Low</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 text-blue-200">Two-Phase Immersion</td>
+                                    <td class="p-2 font-bold text-teal-300">Extremely High</td>
+                                    <td class="p-2 font-bold text-teal-300">Very Low</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="mt-4 text-sm text-blue-300">The transition to liquid cooling represents a systemic shift in how data centers manage their thermal environment, requiring new skills and infrastructure.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cabling" class="py-20 bg-opacity-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-base font-semibold text-amber-500 tracking-wider uppercase">Priority 3</h2>
+                    <p class="mt-2 text-3xl font-extrabold text-white tracking-tight sm:text-4xl">The Network Backbone</p>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-blue-200">AI performance depends on a high-bandwidth, low-latency network. Disorganized "spaghetti cabling" creates bottlenecks, airflow issues, and maintenance nightmares.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-center items-stretch">
+                    <div class="card rounded-xl p-6 shadow-lg flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-red-400">High Risk: Spaghetti Cabling</h3>
+                            <div class="relative h-48 my-4 bg-gray-900 rounded-lg overflow-hidden p-2">
+                                <div class="absolute w-1 h-3/4 bg-red-500 top-4 left-1/4 transform -rotate-12"></div>
+                                <div class="absolute w-0.5 h-full bg-red-400 top-0 left-1/2 transform rotate-6"></div>
+                                <div class="absolute w-1 h-2/3 bg-red-600 bottom-2 left-1/3 transform rotate-45"></div>
+                                <div class="absolute w-0.5 h-3/4 bg-red-500 top-8 right-1/4 transform -rotate-30"></div>
+                            </div>
+                        </div>
+                        <ul class="text-left space-y-2 text-red-300">
+                            <li>❌ Performance Bottlenecks</li>
+                            <li>❌ Increased Downtime & Costs</li>
+                            <li>❌ Airflow Obstruction & Overheating</li>
+                            <li>❌ Difficult Scalability</li>
+                        </ul>
+                    </div>
+                     <div class="card rounded-xl p-6 shadow-lg flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-teal-300">Low Risk: Structured Cabling</h3>
+                            <div class="relative h-48 my-4 bg-gray-900 rounded-lg overflow-hidden p-2">
+                                <div class="absolute w-0.5 h-full bg-teal-400 top-0 left-1/4"></div>
+                                <div class="absolute w-0.5 h-full bg-teal-400 top-0 left-1/2"></div>
+                                <div class="absolute w-0.5 h-full bg-teal-400 top-0 left-3/4"></div>
+                                <div class="absolute w-full h-0.5 bg-teal-400 left-0 top-1/4"></div>
+                                <div class="absolute w-full h-0.5 bg-teal-400 left-0 top-1/2"></div>
+                            </div>
+                        </div>
+                        <ul class="text-left space-y-2 text-teal-200">
+                            <li>✔️ Optimal Performance</li>
+                            <li>✔️ Reduced MTTR</li>
+                            <li>✔️ Efficient Cooling</li>
+                            <li>✔️ Future-Ready Scalability</li>
+                        </ul>
+                    </div>
+                </div>
+                 <p class="mt-8 text-center text-blue-200 max-w-3xl mx-auto">Adopting structured cabling standards is a fundamental risk mitigation strategy, maximizing uptime and the ROI of expensive AI systems.</p>
+            </div>
+        </section>
+
+        <section id="space" class="py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-base font-semibold text-amber-500 tracking-wider uppercase">Priority 4</h2>
+                    <p class="mt-2 text-3xl font-extrabold text-white tracking-tight sm:text-4xl">The Physical Footprint</p>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-blue-200">AI demands flexible, dense, and scalable space. The future is modular, distributed, and intelligently designed to accommodate rapid hardware evolution.</p>
+                </div>
+                <div class="card rounded-xl p-6 md:p-8 shadow-lg">
+                    <h3 class="text-xl font-bold text-white text-center mb-6">The Evolution of Data Center Design</h3>
+                    <div class="flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-8">
+                        <div class="text-center">
+                            <div class="w-24 h-24 mx-auto rounded-full bg-blue-900 flex items-center justify-center text-3xl border-4 border-blue-700">🏢</div>
+                            <h4 class="mt-4 text-lg font-semibold text-white">Traditional Build</h4>
+                            <p class="text-sm text-blue-300">Rigid, Slow, High-Risk</p>
+                        </div>
+                        <div class="text-5xl text-amber-500 font-thin transform md:-rotate-0 rotate-90">&rarr;</div>
+                        <div class="text-center">
+                             <div class="w-24 h-24 mx-auto rounded-full bg-teal-900 flex items-center justify-center text-3xl border-4 border-teal-700">🧩</div>
+                            <h4 class="mt-4 text-lg font-semibold text-white">Modular Build</h4>
+                            <p class="text-sm text-blue-300">Flexible, Fast, De-Risked</p>
+                        </div>
+                         <div class="text-5xl text-amber-500 font-thin transform md:-rotate-0 rotate-90">&rarr;</div>
+                        <div class="text-center">
+                             <div class="w-24 h-24 mx-auto rounded-full bg-orange-900 flex items-center justify-center text-3xl border-4 border-orange-700">📡</div>
+                            <h4 class="mt-4 text-lg font-semibold text-white">Edge AI Deployment</h4>
+                            <p class="text-sm text-blue-300">Distributed, Low-Latency</p>
+                        </div>
+                    </div>
+                    <p class="mt-8 text-center text-blue-200 max-w-3xl mx-auto">Poor space planning leads to stranded capacity, limits scalability, and can prevent sustainability upgrades due to physical constraints.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="sustainability" class="py-20 bg-opacity-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-base font-semibold text-amber-500 tracking-wider uppercase">Priority 5</h2>
+                    <p class="mt-2 text-3xl font-extrabold text-white tracking-tight sm:text-4xl">The Sustainability Imperative</p>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-blue-200">AI's potential is undermined by its massive energy and water footprint. Proactive sustainability is now a core business imperative, not a choice.</p>
+                </div>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                     <div class="card rounded-xl p-6 shadow-lg">
+                        <h3 class="text-xl font-bold text-white text-center">Data Centers' Projected Share of Global Energy</h3>
+                        <p class="text-center text-sm text-blue-300 mb-4">A surge fueled by AI</p>
+                        <div class="chart-container h-64 sm:h-80">
+                            <canvas id="sustainabilityChart"></canvas>
+                        </div>
+                        <p class="mt-4 text-blue-200">Ignoring sustainability risks a massive carbon footprint, resource depletion, regulatory action, and severe reputational damage.</p>
+                    </div>
+                    <div class="card rounded-xl p-6 shadow-lg">
+                        <h3 class="text-xl font-bold text-white text-center">Key Mitigation Strategies</h3>
+                        <div class="mt-6 flex flex-col items-center">
+                            <div class="relative w-full max-w-xs">
+                                <div class="w-full p-3 text-center bg-teal-800 rounded-t-lg z-10 relative">
+                                    <span class="font-bold">Waste Heat Reuse</span>
+                                </div>
+                                <div class="w-10/12 mx-auto p-3 text-center bg-teal-700 -mt-1 rounded-t-lg z-20 relative">
+                                    <span class="font-bold">Efficient Hardware</span>
+                                </div>
+                                <div class="w-8/12 mx-auto p-3 text-center bg-teal-600 -mt-1 rounded-t-lg z-30 relative">
+                                     <span class="font-bold text-black">Renewable Energy</span>
+                                </div>
+                                 <div class="w-full h-2 bg-teal-900"></div>
+                                 <p class="mt-4 text-center text-blue-300">A holistic approach is needed, from sourcing clean energy to implementing circular economy principles for hardware lifecycle management.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-gray-900">
+            <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-2xl font-extrabold text-white">Building the AI-Ready Data Center</h2>
+                <p class="mt-4 text-lg text-blue-200">The journey to AI-readiness requires a holistic, interconnected strategy. It's an ongoing process of adaptation, optimization, and continuous learning.</p>
+                <div class="mt-8">
+                    <a href="https://www.wwt.com/wwt-research/facilities-infrastructure-priorities" target="_blank" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-black bg-amber-500 hover:bg-amber-600">
+                        Learn More at WWT Research
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const wrapLabel = (label, maxLength = 16) => {
+                if (typeof label !== 'string' || label.length <= maxLength) {
+                    return label;
+                }
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if ((currentLine + ' ' + word).length > maxLength && currentLine.length > 0) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = currentLine ? currentLine + ' ' + word : word;
+                    }
+                }
+                lines.push(currentLine);
+                return lines;
+            };
+            
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                  return label.join(' ');
+                } else {
+                  return label;
+                }
+            };
+            
+            const defaultChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#94D2BD'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(148, 210, 189, 0.2)'
+                        },
+                        ticks: {
+                            color: '#94D2BD'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(148, 210, 189, 0.2)'
+                        },
+                        ticks: {
+                            color: '#94D2BD'
+                        }
+                    }
+                }
+            };
+            
+            const colors = {
+                blue: '#0A9396',
+                teal: '#94D2BD',
+                yellow: '#E9D8A6',
+                orange: '#EE9B00',
+                darkOrange: '#CA6702',
+                red: '#AE2012',
+                darkBlue: '#005F73',
+            };
+
+            const powerDemandCtx = document.getElementById('powerDemandChart')?.getContext('2d');
+            if (powerDemandCtx) {
+                new Chart(powerDemandCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['2023 (Actual)', '2028 (Low Est.)', '2028 (High Est.)'],
+                        datasets: [{
+                            label: '% of US National Electricity',
+                            data: [4, 6.7, 12],
+                            backgroundColor: [colors.blue, colors.orange, colors.darkOrange],
+                            borderColor: [colors.teal, colors.yellow, colors.red],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: defaultChartOptions
+                });
+            }
+
+            const coolingAdoptionCtx = document.getElementById('coolingAdoptionChart')?.getContext('2d');
+            if (coolingAdoptionCtx) {
+                new Chart(coolingAdoptionCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Using Liquid Cooling', 'Using Traditional Air Cooling'],
+                        datasets: [{
+                            data: [22, 78],
+                            backgroundColor: [colors.orange, colors.darkBlue],
+                            borderColor: ['#001219'],
+                            borderWidth: 4
+                        }]
+                    },
+                    options: {
+                       responsive: true,
+                       maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#94D2BD'
+                                }
+                            },
+                             tooltip: {
+                                callbacks: {
+                                    title: tooltipTitleCallback
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const sustainabilityCtx = document.getElementById('sustainabilityChart')?.getContext('2d');
+            if (sustainabilityCtx) {
+                new Chart(sustainabilityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['2022', '2026', '2030 (Projected)'],
+                        datasets: [{
+                            label: 'Share of Global Energy Consumption (%)',
+                            data: [2.5, 5, 12],
+                            fill: true,
+                            backgroundColor: 'rgba(238, 155, 0, 0.2)',
+                            borderColor: colors.orange,
+                            tension: 0.4,
+                            pointBackgroundColor: colors.orange,
+                            pointRadius: 5
+                        }]
+                    },
+                    options: {
+                        ...defaultChartOptions,
+                        scales: {
+                            ...defaultChartOptions.scales,
+                             y: {
+                                ...defaultChartOptions.scales.y,
+                                ticks: {
+                                    ...defaultChartOptions.scales.y.ticks,
+                                    callback: function(value) {
+                                        return value + '%'
+                                    }
+                                }
+                            },
+                        }
+                    }
+                });
+            }
+            
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
