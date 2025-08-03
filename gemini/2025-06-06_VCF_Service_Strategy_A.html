@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WWT VCF Service Strategy | Interactive Roadmap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Corporate Blue Harmony -->
+    <!-- Application Structure Plan: A single-page application with a sticky top navigation for smooth scrolling to thematic sections. The core structure is: 1) Hero introduction. 2) The Market Opportunity. 3) An interactive Service Portfolio Explorer, organized by the report's four themes (Adoption, Innovation, etc.), allowing users to filter and view service offerings as dynamic cards. 4) An interactive timeline chart visualizing the 4-year roadmap. 5) Sections for WWT's ATC advantage and a final call to action. This structure was chosen to create a clear narrative flow, transforming the dense report into a guided journey from the "why" (market shift) to the "what" (services) and the "when" (roadmap), enhancing usability and comprehension over a static document format. -->
+    <!-- Visualization & Content Choices: 1) Report Info: Service offerings from Table 1. Goal: Easy exploration of the service catalog. Viz/Method: Interactive HTML/CSS cards filtered by theme using Vanilla JS. Justification: More engaging and less overwhelming than a large table, allowing users to focus. 2) Report Info: 4-year roadmap from Table 2. Goal: Visualize the phased rollout. Viz/Method: Interactive Gantt-style timeline using Chart.js. Justification: More intuitive for temporal data than a table, with hover/click interactions for detail. 3) Textual content is summarized and placed in contextually introduced sections to guide the user. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        .service-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .theme-button.active {
+            background-color: #1e40af; /* blue-800 */
+            color: white;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            max-height: 500px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-slate-800">WWT VCF Service Strategy</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#opportunity" class="nav-link text-slate-600 hover:text-blue-700">Opportunity</a>
+                    <a href="#portfolio" class="nav-link text-slate-600 hover:text-blue-700">Service Portfolio</a>
+                    <a href="#roadmap" class="nav-link text-slate-600 hover:text-blue-700">Roadmap</a>
+                    <a href="#advantage" class="nav-link text-slate-600 hover:text-blue-700">Advantage</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 lg:px-8 py-8 md:py-12">
+        
+        <!-- Hero Section -->
+        <section id="hero" class="text-center py-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4">Capitalizing on the New VMware by Broadcom Landscape</h1>
+            <p class="max-w-3xl mx-auto text-lg text-slate-600">
+                An interactive overview of WWT's strategic framework to enhance VMware Cloud Foundation (VCF) service capabilities. This plan aligns WWT with Broadcom's new direction, leveraging our Pinnacle Partner status and Advanced Technology Center (ATC) to deliver unparalleled value to clients through a portfolio of targeted services and a flexible Agile SOW model.
+            </p>
+        </section>
+
+        <!-- The Opportunity Section -->
+        <section id="opportunity" class="py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-800">The Evolving Partner Ecosystem: A Generational Opportunity</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-md text-slate-600">Broadcom's strategic changes are not a threat, but a direct signal for partners with deep expertise to lead. By raising the bar and focusing on a select group of highly capable partners, Broadcom is creating a significant opportunity for WWT to solidify its leadership position in the VCF space. This section outlines why this shift creates a prime environment for WWT's growth.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="text-blue-600 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-800 mb-2">Partner Program Consolidation</h3>
+                    <p class="text-slate-600">Broadcom is focusing on a "stronger, more capable" ecosystem of Select, Premier, and Pinnacle partners. This strategic culling of resellers creates a less crowded field where WWT’s proven expertise can shine.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="text-blue-600 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-800 mb-2">Emphasis on VCF Expertise</h3>
+                    <p class="text-slate-600">The new "Expert Advantage" status is mandatory for Pinnacle partners, requiring demonstrated skills in VCF deployment and lifecycle support. WWT already meets this elevated requirement, giving us a significant head start.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="text-blue-600 mb-4">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-800 mb-2">Focus on Lifecycle Services</h3>
+                    <p class="text-slate-600">Broadcom is encouraging long-term, service-oriented relationships. This vision perfectly aligns with WWT's proposed Agile SOW model for continuous optimization, innovation, and support throughout the customer journey.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Service Portfolio -->
+        <section id="portfolio" class="py-16 bg-slate-100 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+            <div class="text-center mb-12 max-w-3xl mx-auto">
+                <h2 class="text-3xl font-bold text-slate-800">Interactive VCF Service Portfolio</h2>
+                <p class="mt-4 text-md text-slate-600">Our proposed service capabilities are designed to meet diverse client needs, from initial planning to long-term innovation and optimization. The portfolio is built on two models: small, fixed-price workshops to deliver rapid value, and flexible "Agile SOWs" for larger, evolving projects. Explore our offerings by selecting a strategic theme below.</p>
+            </div>
+            
+            <div id="theme-filters" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-12">
+                <button class="theme-button active" data-theme="all">All Themes</button>
+                <button class="theme-button" data-theme="Adoption">Adoption</button>
+                <button class="theme-button" data-theme="Innovation">Innovation</button>
+                <button class="theme-button" data-theme="Optimization">Optimization</button>
+                <button class="theme-button" data-theme="Resiliency">Resiliency</button>
+            </div>
+
+            <div id="service-catalog" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service cards will be injected here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Roadmap Section -->
+        <section id="roadmap" class="py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-800">4-Year Strategic Service Roadmap</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-md text-slate-600">The rollout of our VCF service capabilities will follow a phased, multi-year roadmap. This approach allows us to build momentum, manage risk, and align with market demand and evolving VMware technologies. The chart below visualizes the key focus areas and milestones across the entire timeline, from immediate actions to long-term goals.</p>
+            </div>
+            <div class="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+                <div class="chart-container">
+                    <canvas id="roadmapChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- WWT Advantage Section -->
+        <section id="advantage" class="py-16 bg-slate-800 text-white -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+            <div class="text-center mb-12 max-w-3xl mx-auto">
+                <h2 class="text-3xl font-bold">The WWT Advantage: The Advanced Technology Center (ATC)</h2>
+                <p class="mt-4 text-md text-slate-300">The ATC is our critical differentiator for all VCF service offerings. It is an invaluable platform for hands-on demonstrations, proof-of-concept exercises, and de-risking complex technology decisions for clients. This capability moves conversations from theoretical to practical, showcasing the integrated power of VCF, Aria, and Tanzu in a live environment.</p>
+            </div>
+            <div class="max-w-4xl mx-auto grid md:grid-cols-3 gap-8 text-center">
+                 <div>
+                    <div class="bg-blue-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Discover & Evaluate</h3>
+                    <p class="text-slate-300">Clients can experience VCF capabilities firsthand, validating architecture and design choices before making significant investments.</p>
+                 </div>
+                 <div>
+                    <div class="bg-blue-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 6V3m0 18v-3M5.636 5.636l1.414 1.414m10.05 10.05l1.414 1.414M5.636 18.364l1.414-1.414M18.364 5.636l-1.414 1.414" /></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Accelerate Innovation</h3>
+                    <p class="text-slate-300">The ATC provides a sandbox to run proofs-of-concept for application modernization with Tanzu or explore Private AI on VCF.</p>
+                 </div>
+                 <div>
+                     <div class="bg-blue-600 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                     </div>
+                    <h3 class="text-xl font-semibold mb-2">De-Risk Implementation</h3>
+                    <p class="text-slate-300">By testing in a realistic lab environment, we help clients identify potential challenges early, ensuring smoother and more successful deployments.</p>
+                 </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section id="cta" class="py-16 text-center">
+             <h2 class="text-3xl font-bold text-slate-800">Conclusion & Recommended Next Steps</h2>
+             <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">The time to act is now. By embracing this strategic direction, WWT can significantly enhance its market leadership, drive new revenue streams, and deliver transformative outcomes for our clients. We must move forward with purpose and agility to seize this opportunity.</p>
+             <div class="mt-8">
+                 <a href="mailto:contact@wwt.com?subject=VCF Service Strategy Initiative" class="bg-blue-700 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-800 transition-colors">Initiate Engagement</a>
+             </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-slate-300 py-6 text-center">
+        <p>&copy; 2024 World Wide Technology. For internal strategic planning purposes only.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const serviceData = [
+                { name: 'VCF Readiness Assessment & Planning Workshop', theme: 'Adoption', desc: 'Evaluate current state, define VCF suitability, and develop a high-level adoption roadmap.', tech: 'VCF concepts, SDDC Manager, vSphere, vSAN, NSX' },
+                { name: 'VCF Foundation Deployment (Management Domain)', theme: 'Adoption', desc: 'Guided deployment of the VCF Management Domain using Cloud Builder & SDDC Manager, focusing on best practices.', tech: 'Cloud Builder, SDDC Manager, vCenter, NSX' },
+                { name: 'Aria Operations Initial Setup & Dashboarding Workshop', theme: 'Adoption', desc: 'Deploy & configure Aria Operations for VCF, co-developing initial operational dashboards for immediate visibility.', tech: 'Aria Operations, VCF integration' },
+                { name: 'Tanzu Kubernetes Grid (TKG) Kickstart Workshop', theme: 'Adoption', desc: 'An introduction to TKG on VCF, including the planning & deployment of a basic TKG guest cluster to explore containerization.', tech: 'TKG, vSphere with Tanzu, VCF' },
+                { name: 'Tanzu Application Modernization Assessment', theme: 'Innovation', desc: 'Analyze an application portfolio for modernization candidates (rehost, replatform, refactor) using the Tanzu suite.', tech: 'Tanzu Application Platform, TKG, Tanzu Build Service' },
+                { name: 'DevOps Pipeline Planning Workshop with Tanzu & Aria', theme: 'Innovation', desc: 'Design a CI/CD pipeline strategy that leverages Tanzu for container orchestration and Aria Automation for infrastructure.', tech: 'Tanzu Mission Control, TKG, Aria Automation' },
+                { name: 'Aria Automation Blueprinting Workshop (IaaS Focus)', theme: 'Innovation', desc: 'Identify 1-2 key IaaS use cases and design corresponding Aria Automation blueprints for self-service provisioning.', tech: 'Aria Automation' },
+                { name: 'Private AI on VCF Strategy Workshop', theme: 'Innovation', desc: 'Explore the potential of running AI workloads on VCF, discussing data governance, infrastructure requirements, and use cases.', tech: 'VCF 9 concepts, GPU integration' },
+                { name: 'VCF Health Check & Performance Optimization Assessment', theme: 'Optimization', desc: 'Review a VCF deployment against best practices to identify performance bottlenecks and areas for optimization.', tech: 'VCF components, Aria Operations, SDDC Manager' },
+                { name: 'Aria Operations for Networks Visibility Workshop', theme: 'Optimization', desc: 'Initial setup or review of Aria for Networks to gain deep visibility into VCF network traffic and plan micro-segmentation.', tech: 'Aria Operations for Networks, NSX' },
+                { name: 'VCF Capacity Planning & Cost Optimization Workshop', theme: 'Optimization', desc: 'Analyze resource utilization and trends with Aria Operations to forecast future capacity needs and identify cost savings.', tech: 'Aria Operations, VCF' },
+                { name: 'VCF Disaster Recovery Planning Workshop', theme: 'Resiliency', desc: 'Assess DR capabilities and develop a high-level DR strategy for VCF, including component backup best practices.', tech: 'VCF, vSAN, NSX, SRM concepts, HCX' },
+                { name: 'VCF Security Posture Assessment', theme: 'Resiliency', desc: 'Review the VCF deployment against security hardening guides to identify vulnerabilities and provide remediation steps.', tech: 'VCF, NSX, vSphere security, Carbon Black' },
+                { name: 'NSX Micro-segmentation Strategy Workshop', theme: 'Resiliency', desc: 'Identify critical applications and develop a strategy for implementing NSX micro-segmentation to enhance security.', tech: 'NSX Distributed Firewall, NSX ATP' },
+            ];
+
+            const catalog = document.getElementById('service-catalog');
+            const filters = document.querySelectorAll('#theme-filters .theme-button');
+
+            function renderServices(theme = 'all') {
+                catalog.innerHTML = '';
+                const filteredServices = theme === 'all' ? serviceData : serviceData.filter(s => s.theme === theme);
+
+                filteredServices.forEach(service => {
+                    const card = document.createElement('div');
+                    card.className = 'service-card bg-white p-6 rounded-lg shadow-md flex flex-col';
+                    let themeColorClass = '';
+                    switch (service.theme) {
+                        case 'Adoption': themeColorClass = 'border-t-4 border-blue-500'; break;
+                        case 'Innovation': themeColorClass = 'border-t-4 border-purple-500'; break;
+                        case 'Optimization': themeColorClass = 'border-t-4 border-green-500'; break;
+                        case 'Resiliency': themeColorClass = 'border-t-4 border-red-500'; break;
+                    }
+
+                    card.innerHTML = `
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-semibold text-slate-800 mb-2">${service.name}</h3>
+                            <p class="text-slate-600 mb-4">${service.desc}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-500">Key Technologies:</p>
+                            <p class="text-sm text-slate-600">${service.tech}</p>
+                        </div>
+                    `;
+                    card.classList.add(themeColorClass);
+                    catalog.appendChild(card);
+                });
+            }
+
+            filters.forEach(button => {
+                button.classList.add('py-2', 'px-4', 'rounded-full', 'font-semibold', 'text-slate-700', 'bg-white', 'hover:bg-blue-100', 'transition-colors', 'shadow-sm');
+                button.addEventListener('click', function() {
+                    filters.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    renderServices(this.dataset.theme);
+                });
+            });
+
+            // Initial render
+            renderServices();
+
+            // Roadmap Chart
+            const roadmapCtx = document.getElementById('roadmapChart').getContext('2d');
+            const roadmapData = {
+                labels: [
+                    'Immediate (30-90 Days)', 
+                    'Year 1: Q2', 
+                    'Year 1: Q3', 
+                    'Year 1: Q4', 
+                    'Mid-Term (Year 2)', 
+                    'Long-Term (Year 3)', 
+                    'Long-Term (Year 4)'
+                ],
+                datasets: [
+                    {
+                        label: 'Adoption Focus',
+                        data: [[0, 0.9], null, null, null, null, null, null],
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.7,
+                        borderSkipped: false,
+                    },
+                    {
+                        label: 'Innovation Focus',
+                        data: [null, [1, 1.9], [2, 2.9], null, null, null, null],
+                        backgroundColor: 'rgba(168, 85, 247, 0.7)',
+                        borderColor: 'rgba(168, 85, 247, 1)',
+                        borderWidth: 1,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.7,
+                        borderSkipped: false,
+                    },
+                     {
+                        label: 'Optimization Focus',
+                        data: [null, [1, 1.9], null, null, [4, 6.9], null, null],
+                        backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                        borderColor: 'rgba(34, 197, 94, 1)',
+                        borderWidth: 1,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.7,
+                        borderSkipped: false,
+                    },
+                    {
+                        label: 'Resiliency Focus',
+                        data: [null, null, [2, 2.9], [3, 3.9], null, null, null],
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 1,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.7,
+                        borderSkipped: false,
+                    },
+                    {
+                        label: 'Scaling & IP Dev',
+                        data: [null, null, null, null, [4, 4.9], [5, 6.9], null],
+                        backgroundColor: 'rgba(249, 115, 22, 0.7)',
+                        borderColor: 'rgba(249, 115, 22, 1)',
+                        borderWidth: 1,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.7,
+                        borderSkipped: false,
+                    }
+                ]
+            };
+            const roadmapTooltips = {
+                'Immediate (30-90 Days)': 'Launch foundational Adoption services (Readiness Assessment, Foundation Deployment). Train core team, set up ATC labs.',
+                'Year 1: Q2': 'Launch first Innovation (App Modernization) and Optimization (Health Check) services. Pilot Agile SOW.',
+                'Year 1: Q3': 'Expand Innovation (AI Strategy) & launch first Resiliency (DR Planning) services. Refine Agile SOW framework.',
+                'Year 1: Q4': 'Complete initial Resiliency suite (Security Assessment). Publish case studies and plan for Year 2.',
+                'Mid-Term (Year 2)': 'Scale Agile SOWs, introduce advanced workshops (e.g., Advanced Networking), and integrate VCF 9 features.',
+                'Long-Term (Year 3)': 'Launch Managed Services portfolio. Develop reusable IP (tools, templates). Establish thought leadership.',
+                'Long-Term (Year 4)': 'Develop highly specialized niche solutions (Edge, Compliance). Mature Private AI services. Continuous portfolio refinement.',
+            };
+
+            new Chart(roadmapCtx, {
+                type: 'bar',
+                data: roadmapData,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'VCF Service Launch & Focus Areas by Timeframe',
+                            font: { size: 16 },
+                            padding: { bottom: 20 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const details = roadmapTooltips[context.label] || '';
+                                    return `${label}: ${details}`;
+                                }
+                            },
+                            bodyFont: { size: 12 },
+                            displayColors: false,
+                            yAlign: 'bottom',
+                        },
+                         legend: {
+                            position: 'bottom',
+                        }
+                    },
+                    scales: {
+                        x: {
+                            min: 0,
+                            max: 7,
+                            title: {
+                                display: true,
+                                text: 'Project Timeline (Years)'
+                            },
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    if(value === 0) return 'Start';
+                                    if(value === 1) return 'Y1';
+                                    if(value === 2) return 'Y2';
+                                    if(value === 3) return 'Y3';
+                                    if(value === 4) return 'Y4';
+                                    return '';
+                                }
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            ticks: {
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
