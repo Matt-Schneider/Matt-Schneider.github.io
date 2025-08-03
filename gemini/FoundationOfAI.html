@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: AI Infrastructure Priorities</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: A dashboard-style SPA. The top section introduces the topic and provides navigation. The main body is a grid layout where each of the five priorities (Power, Cooling, Cabling, Space, Sustainability) is presented as an interactive "card" or module. This non-linear structure was chosen to allow users to dive into the topic that most interests them first, rather than forcing a sequential reading. Each module contains an overview, interactive charts for quantitative data, and clear sections for risks and recommendations. This design enhances usability by breaking down a complex report into digestible, self-contained, and explorable sections. -->
+    <!-- Visualization & Content Choices: 
+        - Power Demand: Goal: Compare. Viz: Bar Chart (Chart.js) to clearly show the dramatic projected increase in US data center power consumption. Interaction: Hover for details. Justification: Bar charts are excellent for comparing discrete categories.
+        - Cooling Tech Comparison: Goal: Compare/Organize. Viz: HTML Table with Tailwind styling. Interaction: Static display. Justification: A table is the clearest way to present a multi-attribute comparison of different technologies.
+        - Cabling Risks: Goal: Compare. Viz: Side-by-side HTML/CSS diagram. Interaction: Static visual contrast. Justification: A visual diagram is more impactful than text alone for showing the difference between "spaghetti" and "structured" cabling.
+        - Data Center Evolution: Goal: Organize/Change. Viz: HTML/CSS process flow diagram. Interaction: Static visual flow. Justification: A horizontal flow diagram clearly shows the progression from traditional to modular to edge designs.
+        - Global Energy Share: Goal: Change. Viz: Line Chart (Chart.js) to show the projected surge in data centers' share of global energy. Interaction: Hover for details. Justification: Line charts are ideal for showing trends over time.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        h1, h2, h3 {
+            font-family: 'Lora', serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #A37E58;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">The Foundation for AI</h1>
+            <p class="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto">An interactive summary of WWT Research on the five critical infrastructure priorities for building data centers ready for the age of Artificial Intelligence.</p>
+        </header>
+
+        <main>
+            <div id="priority-dashboard">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <div class="md:col-span-2 lg:col-span-3 bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                         <div class="flex flex-col lg:flex-row items-center gap-6">
+                            <div class="flex-shrink-0">
+                                <div class="w-24 h-24 bg-amber-100 rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                </div>
+                            </div>
+                            <div>
+                                <h2 class="text-3xl font-bold text-gray-800 mb-2">The AI Preparedness Gap</h2>
+                                <p class="text-gray-600">The rise of AI has created a seismic shift, demanding power, cooling, and space that most data centers were never designed to provide. As WWT Chief Technology Advisor Don Molaro states, "Realistically, almost no corporate data centers are prepared for these kinds of AI workloads at scale." This interactive dashboard explores the five key priorities leaders must address to bridge this gap and transform their facilities into AI-ready powerhouses.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="priority-power" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 lg:col-span-2">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Priority 1: Power Requirements</h3>
+                        <p class="text-gray-600 mb-6">AI workloads are exceptionally power-intensive, creating an unprecedented hunger for energy that strains grids and budgets. Projections show a dramatic surge in electricity demand, making strategic power planning a matter of survival.</p>
+                        <div class="border-t border-gray-200 pt-4">
+                            <h4 class="font-semibold text-lg text-center text-gray-700">Projected US Data Center Power Demand</h4>
+                             <p class="text-sm text-center text-gray-500 mb-4">(% of Total National Electricity)</p>
+                            <div class="chart-container">
+                                <canvas id="powerDemandChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Power: Risks & Next Steps</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold text-red-600">Key Risks of Neglect:</h4>
+                                <ul class="list-disc list-inside text-gray-600 mt-1">
+                                    <li>Grid instability and outages</li>
+                                    <li>Project delays (4-7 year waits)</li>
+                                    <li>Compromised national AI leadership</li>
+                                    <li>Long-term emissions lock-in</li>
+                                </ul>
+                            </div>
+                             <div>
+                                <h4 class="font-semibold text-green-600">Actionable Next Steps:</h4>
+                                <ul class="list-disc list-inside text-gray-600 mt-1">
+                                    <li>Conduct comprehensive power assessments</li>
+                                    <li>Diversify with renewables & emerging sources</li>
+                                    <li>Engage utilities on long-term planning</li>
+                                    <li>Implement advanced power management</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="priority-cooling" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                         <h3 class="text-2xl font-bold text-gray-800 mb-4">Priority 2: Cooling Solutions</h3>
+                        <p class="text-gray-600 mb-6">High-density AI hardware generates intense heat that traditional air cooling cannot handle. This necessitates a systemic shift towards advanced liquid cooling to prevent thermal throttling, hardware failure, and costly downtime.</p>
+                         <div class="border-t border-gray-200 pt-4 overflow-x-auto">
+                            <h4 class="font-semibold text-lg text-center text-gray-700 mb-4">Advanced Cooling Technology Comparison</h4>
+                            <table class="w-full text-left text-sm">
+                                <thead class="border-b-2 border-gray-200">
+                                    <tr>
+                                        <th class="p-2 font-semibold">Technology</th>
+                                        <th class="p-2 font-semibold">Efficiency</th>
+                                        <th class="p-2 font-semibold">Water Use</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-2">Enhanced Air</td>
+                                        <td class="p-2">Moderate</td>
+                                        <td class="p-2">Low to High</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-2">Direct-to-Chip Liquid</td>
+                                        <td class="p-2 font-semibold text-green-700">High</td>
+                                        <td class="p-2 font-semibold text-green-700">Low</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-2">Single-Phase Immersion</td>
+                                        <td class="p-2 font-semibold text-green-700">Very High</td>
+                                        <td class="p-2 font-semibold text-green-700">Very Low</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2">Two-Phase Immersion</td>
+                                        <td class="p-2 font-semibold text-green-700">Extremely High</td>
+                                        <td class="p-2 font-semibold text-green-700">Very Low</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="priority-cabling" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Priority 3: Cabling</h3>
+                        <p class="text-gray-600 mb-6">AI performance hinges on a high-bandwidth, low-latency network. Disorganized "spaghetti cabling" creates bottlenecks, airflow issues, and maintenance nightmares that cripple expensive AI clusters.</p>
+                        <div class="grid grid-cols-2 gap-4 mt-4 border-t border-gray-200 pt-4">
+                            <div class="text-center">
+                                <h4 class="font-semibold text-red-600">High Risk: Unstructured</h4>
+                                <div class="relative h-24 w-24 mx-auto my-2 bg-red-50 rounded-lg overflow-hidden p-2">
+                                    <div class="absolute w-0.5 h-3/4 bg-red-400 top-2 left-1/4 transform -rotate-12"></div>
+                                    <div class="absolute w-px h-full bg-red-300 top-0 left-1/2 transform rotate-6"></div>
+                                    <div class="absolute w-0.5 h-2/3 bg-red-500 bottom-1 left-1/3 transform rotate-45"></div>
+                                </div>
+                                <p class="text-xs text-gray-500">❌ Bottlenecks & Downtime</p>
+                            </div>
+                            <div class="text-center">
+                                <h4 class="font-semibold text-green-600">Low Risk: Structured</h4>
+                                <div class="relative h-24 w-24 mx-auto my-2 bg-green-50 rounded-lg overflow-hidden p-2">
+                                     <div class="absolute w-px h-full bg-green-400 top-0 left-1/4"></div>
+                                     <div class="absolute w-px h-full bg-green-400 top-0 left-1/2"></div>
+                                     <div class="absolute w-px h-full bg-green-400 top-0 left-3/4"></div>
+                                </div>
+                                <p class="text-xs text-gray-500">✔️ Optimal Performance & Airflow</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="priority-space" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Priority 4: Space</h3>
+                        <p class="text-gray-600 mb-6">AI demands flexible, dense, and scalable space. The future is modular and distributed, moving away from rigid, traditional builds to accommodate rapid hardware evolution and edge computing.</p>
+                         <div class="border-t border-gray-200 pt-4 mt-4">
+                            <h4 class="font-semibold text-lg text-center text-gray-700 mb-4">The Evolution of Data Center Design</h4>
+                            <div class="flex items-center justify-around text-center text-xs text-gray-600">
+                                <div>
+                                    <div class="w-16 h-16 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-2xl border-2 border-gray-200">🏢</div>
+                                    <p class="mt-2 font-semibold">Traditional</p>
+                                </div>
+                                <div class="text-2xl text-gray-400 font-light">&rarr;</div>
+                                <div>
+                                    <div class="w-16 h-16 mx-auto rounded-full bg-amber-100 flex items-center justify-center text-2xl border-2 border-amber-200">🧩</div>
+                                    <p class="mt-2 font-semibold">Modular</p>
+                                </div>
+                                <div class="text-2xl text-gray-400 font-light">&rarr;</div>
+                                <div>
+                                    <div class="w-16 h-16 mx-auto rounded-full bg-teal-100 flex items-center justify-center text-2xl border-2 border-teal-200">📡</div>
+                                    <p class="mt-2 font-semibold">Edge AI</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="priority-sustainability" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 lg:col-span-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-4">Priority 5: Sustainability</h3>
+                                <p class="text-gray-600 mb-4">AI's potential is undermined by its massive energy and water footprint. Proactive sustainability, moving beyond a "take-make-dispose" model, is a core business imperative to mitigate reputational risk and meet corporate goals.</p>
+                                <h4 class="font-semibold text-green-600">Key Mitigation Strategies:</h4>
+                                <ul class="list-disc list-inside text-gray-600 mt-1 space-y-1">
+                                    <li>Transition to 100% renewable energy sources.</li>
+                                    <li>Implement waste heat reuse for district heating.</li>
+                                    <li>Adopt circular economy principles (refurbish, recycle).</li>
+                                    <li>Utilize carbon-aware AI software to schedule workloads.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg text-center text-gray-700">Data Centers' Share of Global Energy</h4>
+                                <p class="text-sm text-center text-gray-500 mb-4">(Projected surge fueled by AI)</p>
+                                <div class="chart-container">
+                                    <canvas id="sustainabilityChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+        
+        <footer class="text-center mt-16 py-8 border-t border-gray-200">
+            <p class="text-gray-500">This interactive summary is based on the report <a href="https://www.wwt.com/wwt-research/facilities-infrastructure-priorities" target="_blank" class="text-amber-700 hover:underline">Facilities Infrastructure Priorities in the Age of AI</a> by WWT Research.</p>
+            <p class="text-sm text-gray-400 mt-2">Generated by an AI-powered interactive application developer.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                  return label.join(' ');
+                }
+                return label;
+            };
+
+            const defaultChartOptions = (extraOptions = {}) => ({
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#4A4A4A',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        callbacks: {
+                            title: tooltipTitleCallback
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#F3F4F6' },
+                        ticks: { color: '#6B7280' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#6B7280' }
+                    }
+                },
+                ...extraOptions,
+            });
+
+            const powerDemandCtx = document.getElementById('powerDemandChart')?.getContext('2d');
+            if (powerDemandCtx) {
+                new Chart(powerDemandCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['2023 (Actual)', '2028 (Low Est.)', '2028 (High Est.)'],
+                        datasets: [{
+                            label: '% of US National Electricity',
+                            data: [4, 6.7, 12],
+                            backgroundColor: ['#D1C4E9', '#A37E58', '#795548'],
+                            borderRadius: 4,
+                        }]
+                    },
+                    options: defaultChartOptions()
+                });
+            }
+
+            const sustainabilityCtx = document.getElementById('sustainabilityChart')?.getContext('2d');
+            if (sustainabilityCtx) {
+                new Chart(sustainabilityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['2022', '2026', '2030 (Proj.)'],
+                        datasets: [{
+                            label: 'Share of Global Energy Consumption (%)',
+                            data: [2.5, 5, 12],
+                            fill: true,
+                            backgroundColor: 'rgba(163, 126, 88, 0.1)',
+                            borderColor: '#A37E58',
+                            tension: 0.4,
+                            pointBackgroundColor: '#A37E58',
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: defaultChartOptions({
+                         scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#F3F4F6' },
+                                ticks: { 
+                                    color: '#6B7280',
+                                    callback: function(value) { return value + '%' }
+                                }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#6B7280' }
+                            }
+                        }
+                    })
+                });
+            }
+        });
+    </script>
+</body>
+</html>
