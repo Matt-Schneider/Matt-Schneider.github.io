@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lego Serious Play: Interactive Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- 
+    Chosen Palette: Lego Neutrals & Brights
+    Application Structure Plan: A task-oriented, tab-based Single Page Application (SPA). The structure mirrors a user's journey: learning foundations, finding practical workshops, building a toolkit, and accessing external resources. This non-linear structure is chosen for maximum usability, allowing users to jump directly to the section that meets their immediate need (e.g., "I need a 10-minute icebreaker for 20 people"). Key interactions include dynamic filtering of workshops and an interactive chart for comparing Lego kits, making data consumption efficient and engaging.
+    Visualization & Content Choices: 
+    - Core Principles: Goal=Inform -> 4-column card grid (HTML/Tailwind) for scannability.
+    - 4-Step Process: Goal=Organize -> Horizontal process flow diagram (HTML/Tailwind) to show sequence. Interaction: Click to expand details.
+    - Workshop Blueprints: Goal=Compare/Organize -> Interactive filterable card library (JS/HTML/Tailwind). Interaction: Radio/button filters dynamically update the displayed workshop cards. This is the core user task.
+    - Kit Comparison: Goal=Compare -> Interactive Bar Chart (Chart.js) for high-level visual comparison (Cost/Versatility), with clickable tabs below for detailed info. This is more engaging than a static table.
+    - DIY Kit Lists: Goal=Inform -> Styled checklist format (HTML/Tailwind) for practical, actionable guidance.
+    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-active { border-color: #3b82f6; color: #3b82f6; background-color: #eff6ff; }
+        .tab-inactive { border-color: transparent; color: #4b5563; }
+        .content-section { display: none; }
+        .content-active { display: block; }
+        .workshop-card { transition: all 0.3s ease; }
+        .filter-btn-active { background-color: #2563eb; color: white; }
+        .filter-btn-inactive { background-color: #e5e7eb; color: #374151; }
+        .chart-container { position: relative; width: 100%; max-width: 700px; margin-left: auto; margin-right: auto; height: 350px; max-height: 40vh; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="app" class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">Lego® Serious Play®</h1>
+            <p class="text-lg text-slate-600">Your Interactive Guide to Facilitation & Learning</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center border-b border-slate-200 mb-8">
+            <button onclick="showContent('home')" id="nav-home" class="nav-tab tab-active text-sm md:text-base font-medium py-3 px-4 md:px-6 border-b-2">🏠 Home</button>
+            <button onclick="showContent('foundations')" id="nav-foundations" class="nav-tab tab-inactive text-sm md:text-base font-medium py-3 px-4 md:px-6 border-b-2">🧠 Foundations</button>
+            <button onclick="showContent('workshops')" id="nav-workshops" class="nav-tab tab-inactive text-sm md:text-base font-medium py-3 px-4 md:px-6 border-b-2">🛠️ Workshops</button>
+            <button onclick="showContent('toolkit')" id="nav-toolkit" class="nav-tab tab-inactive text-sm md:text-base font-medium py-3 px-4 md:px-6 border-b-2">🧱 Toolkit</button>
+            <button onclick="showContent('resources')" id="nav-resources" class="nav-tab tab-inactive text-sm md:text-base font-medium py-3 px-4 md:px-6 border-b-2">📚 Resources</button>
+        </nav>
+
+        <main>
+            <!-- Home Section -->
+            <section id="content-home" class="content-section content-active animate-fade-in">
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold mb-4 text-slate-900">Welcome to Your LSP Companion</h2>
+                    <p class="text-slate-600 mb-4">This guide is designed to help you learn and apply the Lego Serious Play (LSP) methodology without formal certification. Whether you need to run a quick icebreaker, facilitate a deep ideation session, or build the right Lego toolkit, you'll find practical, actionable guidance here.</p>
+                    <p class="text-slate-600">Use the tabs above to navigate between the core theory, a library of workshop blueprints, guides for building your toolkit, and links to further resources. The goal is to provide everything you need to start using LSP to foster creativity, communication, and collaboration in your teams.</p>
+                </div>
+            </section>
+
+            <!-- Foundations Section -->
+            <section id="content-foundations" class="content-section animate-fade-in">
+                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold mb-2 text-slate-900">Core Principles</h2>
+                     <p class="text-slate-600 mb-6 max-w-3xl">LSP is more than just playing with bricks. It's a structured methodology built on a few powerful ideas. Understanding these principles is the first step to becoming an effective facilitator.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                            <h3 class="font-bold text-lg text-blue-800 mb-2">Thinking with Your Hands</h3>
+                            <p class="text-sm text-blue-700">The hand-brain connection unlocks deeper insights than talking alone. Building physical models of abstract ideas externalizes thoughts, leading to new perspectives.</p>
+                        </div>
+                        <div class="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                            <h3 class="font-bold text-lg text-yellow-800 mb-2">The Power of Play</h3>
+                            <p class="text-sm text-yellow-700">A playful, safe environment encourages experimentation and creativity, allowing participants to explore ideas without fear of failure.</p>
+                        </div>
+                        <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                            <h3 class="font-bold text-lg text-green-800 mb-2">Storytelling & Metaphor</h3>
+                            <p class="text-sm text-green-700">Models act as a foundation for stories. Sharing the meaning of a model makes complex ideas tangible, memorable, and easier to discuss.</p>
+                        </div>
+                        <div class="bg-red-50 p-6 rounded-lg border border-red-200">
+                            <h3 class="font-bold text-lg text-red-800 mb-2">100% Participation</h3>
+                            <p class="text-sm text-red-700">Everyone builds, everyone shares. This democratic approach breaks down hierarchies and ensures every voice is heard and valued.</p>
+                        </div>
+                    </div>
+
+                    <h2 class="text-2xl font-bold mb-4 mt-10 text-slate-900">The 4-Step Core Process</h2>
+                    <p class="text-slate-600 mb-6 max-w-3xl">Every LSP activity, from a 5-minute icebreaker to a 4-hour workshop, follows this simple, iterative cycle. Mastering this flow is key to your facilitation.</p>
+                     <div class="flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
+                        <div class="flex-1 text-center bg-white p-4 rounded-lg border">
+                            <div class="text-2xl font-bold text-blue-500 mb-2">1</div>
+                            <h3 class="font-semibold text-slate-700">Pose the Question</h3>
+                            <p class="text-xs text-slate-500">Frame a clear, open-ended challenge related to the workshop goal.</p>
+                        </div>
+                        <div class="flex items-center justify-center text-slate-400 font-mono text-2xl md:rotate-0 rotate-90">&rarr;</div>
+                        <div class="flex-1 text-center bg-white p-4 rounded-lg border">
+                            <div class="text-2xl font-bold text-yellow-500 mb-2">2</div>
+                            <h3 class="font-semibold text-slate-700">Build the Model</h3>
+                            <p class="text-xs text-slate-500">Participants construct their answer using Lego bricks as metaphors.</p>
+                        </div>
+                         <div class="flex items-center justify-center text-slate-400 font-mono text-2xl md:rotate-0 rotate-90">&rarr;</div>
+                        <div class="flex-1 text-center bg-white p-4 rounded-lg border">
+                            <div class="text-2xl font-bold text-green-500 mb-2">3</div>
+                            <h3 class="font-semibold text-slate-700">Share the Story</h3>
+                            <p class="text-xs text-slate-500">Each person explains the meaning behind their model to the group.</p>
+                        </div>
+                         <div class="flex items-center justify-center text-slate-400 font-mono text-2xl md:rotate-0 rotate-90">&rarr;</div>
+                        <div class="flex-1 text-center bg-white p-4 rounded-lg border">
+                            <div class="text-2xl font-bold text-red-500 mb-2">4</div>
+                            <h3 class="font-semibold text-slate-700">Reflect Together</h3>
+                            <p class="text-xs text-slate-500">The group discusses patterns, insights, and key takeaways from the models.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Workshops Section -->
+            <section id="content-workshops" class="content-section animate-fade-in">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold mb-2 text-slate-900">Workshop Blueprints</h2>
+                    <p class="text-slate-600 mb-6 max-w-3xl">Find the perfect workshop for your needs. Use the filters below to narrow down the blueprints. Click on any card to see the full, step-by-step facilitation guide.</p>
+                    
+                    <div id="workshop-filters" class="mb-8 space-y-4">
+                        <div>
+                            <h4 class="font-semibold mb-2 text-slate-700">Objective</h4>
+                            <div class="flex flex-wrap gap-2" data-filter-group="objective">
+                                <button data-filter-value="all" class="filter-btn filter-btn-active px-4 py-2 text-sm rounded-full">All</button>
+                                <button data-filter-value="icebreaker" class="filter-btn filter-btn-inactive px-4 py-2 text-sm rounded-full">Icebreaker</button>
+                                <button data-filter-value="ideation" class="filter-btn filter-btn-inactive px-4 py-2 text-sm rounded-full">Ideation</button>
+                                <button data-filter-value="trust" class="filter-btn filter-btn-inactive px-4 py-2 text-sm rounded-full">Trust Building</button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-slate-700">Group Size</h4>
+                            <div class="flex flex-wrap gap-2" data-filter-group="size">
+                                <button data-filter-value="all" class="filter-btn filter-btn-active px-4 py-2 text-sm rounded-full">All</button>
+                                <button data-filter-value="small" class="filter-btn filter-btn-inactive px-4 py-2 text-sm rounded-full">Small (4-20)</button>
+                                <button data-filter-value="large" class="filter-btn filter-btn-inactive px-4 py-2 text-sm rounded-full">Large (100+)</button>
+                            </div>
+                        </div>
+                         <div>
+                            <h4 class="font-semibold mb-2 text-slate-700">Duration</h4>
+                            <div class="flex flex-wrap gap-2" data-filter-group="duration">
+                                <button data-filter-value="all" class="filter-btn filter-btn-active px-4 py-2 text-sm rounded-full">All</button>
+                                <button data-filter-value="short" class="filter-btn filter-btn-inactive px-4 py-2 text-sm rounded-full">Short (5-30m)</button>
+                                <button data-filter-value="long" class="filter-btn filter-btn-inactive px-4 py-2 text-sm rounded-full">Long (2-4h)</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="workshop-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    </div>
+                </div>
+
+                <!-- Workshop Modal -->
+                <div id="workshop-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style="display: none;">
+                    <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div class="p-6 md:p-8">
+                            <div class="flex justify-between items-start">
+                                <div id="modal-header">
+                                    <h3 id="modal-title" class="text-2xl font-bold text-slate-900"></h3>
+                                    <div id="modal-tags" class="flex flex-wrap gap-2 mt-2"></div>
+                                </div>
+                                <button onclick="closeModal()" class="text-slate-500 hover:text-slate-800 font-bold text-2xl">&times;</button>
+                            </div>
+                            <div id="modal-body" class="prose prose-slate mt-4 max-w-none"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Toolkit Section -->
+            <section id="content-toolkit" class="content-section animate-fade-in">
+                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold mb-2 text-slate-900">Building Your Toolkit</h2>
+                    <p class="text-slate-600 mb-6 max-w-3xl">The right collection of bricks is crucial for a successful workshop. It's the "vocabulary" your participants will use to express their ideas. You can buy official kits or build your own more cost-effectively.</p>
+                    
+                    <h3 class="text-xl font-bold mb-4 mt-8 text-slate-800">Kit Comparison: Official vs. DIY</h3>
+                    <p class="text-slate-600 mb-4 max-w-3xl">This chart provides a quick comparison of different kit options based on relative cost and versatility for various workshop types. Hover over the bars for details.</p>
+                    <div class="chart-container">
+                        <canvas id="kitChart"></canvas>
+                    </div>
+
+                    <h3 class="text-xl font-bold mb-4 mt-12 text-slate-800">DIY Kit Building Guide</h3>
+                    <p class="text-slate-600 mb-6 max-w-3xl">Creating your own kit is often the most flexible and cost-effective approach. The goal is to create a "brick soup" with a wide variety of shapes, sizes, colors, and special pieces to spark metaphorical thinking. Here's a recommended shopping list to get started.</p>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-semibold text-lg mb-3 text-slate-700">Core Components</h4>
+                            <ul class="space-y-3">
+                                <li class="flex items-start"><span class="bg-blue-500 rounded-full w-5 h-5 text-white text-xs flex items-center justify-center mr-3 mt-1 flex-shrink-0">✓</span><span><span class="font-semibold">Basic Bricks:</span> Multiple Lego Classic boxes (e.g., 10698) for a wide color and size variety.</span></li>
+                                <li class="flex items-start"><span class="bg-blue-500 rounded-full w-5 h-5 text-white text-xs flex items-center justify-center mr-3 mt-1 flex-shrink-0">✓</span><span><span class="font-semibold">Minifigures:</span> Crucial for representing people. Aim for 4-5 per participant. Buy People Packs or find bulk lots on eBay.</span></li>
+                                <li class="flex items-start"><span class="bg-blue-500 rounded-full w-5 h-5 text-white text-xs flex items-center justify-center mr-3 mt-1 flex-shrink-0">✓</span><span><span class="font-semibold">DUPLO Bricks:</span> Include a selection. Their larger size is great for building foundations and representing big-picture concepts.</span></li>
+                                <li class="flex items-start"><span class="bg-blue-500 rounded-full w-5 h-5 text-white text-xs flex items-center justify-center mr-3 mt-1 flex-shrink-0">✓</span><span><span class="font-semibold">Base Plates:</span> Small plates for individual models and a few large ones for shared "landscape" builds.</span></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-lg mb-3 text-slate-700">Specialty Components</h4>
+                             <ul class="space-y-3">
+                                <li class="flex items-start"><span class="bg-green-500 rounded-full w-5 h-5 text-white text-xs flex items-center justify-center mr-3 mt-1 flex-shrink-0">✓</span><span><span class="font-semibold">Connectors:</span> Technic pieces, hinges, and joints for creating dynamic models and connections.</span></li>
+                                <li class="flex items-start"><span class="bg-green-500 rounded-full w-5 h-5 text-white text-xs flex items-center justify-center mr-3 mt-1 flex-shrink-0">✓</span><span><span class="font-semibold">Figurative Elements:</span> Wheels, windows, fences, ladders, trees, and animals. These are metaphor gold.</span></li>
+                                <li class="flex items-start"><span class="bg-green-500 rounded-full w-5 h-5 text-white text-xs flex items-center justify-center mr-3 mt-1 flex-shrink-0">✓</span><span><span class="font-semibold">Themed Sets (Your Own!):</span> Integrate your Star Wars & Harry Potter bricks! A lightsaber can represent a powerful tool; a magic wand, a special skill. These add fun and rich, pre-understood metaphors.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resources Section -->
+            <section id="content-resources" class="content-section animate-fade-in">
+                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold mb-2 text-slate-900">Learning Resources</h2>
+                    <p class="text-slate-600 mb-6 max-w-3xl">Your learning journey doesn't stop here. The LSP community is active and generous. Below are some key books, communities, and documents to help you deepen your practice.</p>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                         <div>
+                            <h3 class="text-xl font-bold mb-4 text-slate-800">Key Books</h3>
+                            <div class="space-y-4">
+                                <div class="p-4 border rounded-lg">
+                                    <h4 class="font-semibold">Serious Work</h4>
+                                    <p class="text-sm text-slate-600">By Sean Blair and Marko Rillo. A great practical guide for facilitators.</p>
+                                </div>
+                                <div class="p-4 border rounded-lg">
+                                    <h4 class="font-semibold">Mastering the LEGO® Serious Play® Method</h4>
+                                    <p class="text-sm text-slate-600">By Sean Blair. Dives into 44 advanced facilitation techniques.</p>
+                                </div>
+                            </div>
+                        </div>
+                         <div>
+                            <h3 class="text-xl font-bold mb-4 text-slate-800">Online Communities</h3>
+                             <div class="space-y-4">
+                                <div class="p-4 border rounded-lg hover:bg-slate-50">
+                                    <a href="https://seriouswork.com/join-our-community/" target="_blank" class="font-semibold text-blue-600 hover:underline">SERIOUSWORK Inner Circle →</a>
+                                    <p class="text-sm text-slate-600">A free, large, and welcoming community with free resources, Q&A, and webinars.</p>
+                                </div>
+                                <div class="p-4 border rounded-lg hover:bg-slate-50">
+                                    <a href="https://seriousplaypro.com/" target="_blank" class="font-semibold text-blue-600 hover:underline">SeriousPlayPro.com →</a>
+                                    <p class="text-sm text-slate-600">Forums founded by Marko Rillo with great discussions on specific applications and DIY kits.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+    const workshopData = [
+        {
+            id: 'icebreaker-portrait',
+            title: 'Build Your Self-Portrait',
+            objective: 'icebreaker',
+            size: 'small',
+            duration: 'short',
+            tags: ['Icebreaker', '4-20 People', '15-30 min', 'Getting to Know Each Other'],
+            details: `
+                <h4>Objective:</h4><p>A simple and effective way for participants to introduce themselves beyond their job titles.</p>
+                <h4>Process:</h4>
+                <ol>
+                    <li><strong>Pose the Question (1 min):</strong> "Using the Lego bricks, build a model that represents you. It doesn't have to be literal. Think about your personality, your hobbies, or a key strength you bring to the team." Add a themed twist: "Build your Star Wars alter-ego" or "Build a symbol of your Hogwarts house."</li>
+                    <li><strong>Build (5-10 min):</strong> Participants build their individual models. Encourage creativity and metaphorical thinking.</li>
+                    <li><strong>Share (1-2 min per person):</strong> Each person shares their model with the group (or in smaller breakouts of 3-4 people), explaining the meaning behind their build.</li>
+                    <li><strong>Reflect:</strong> Not required for a simple icebreaker, but you can ask "What did you learn about your colleagues that you didn't know before?"</li>
+                </ol>
+                <h4>Facilitator Tips:</h4>
+                <p>Emphasize that there is no right or wrong way to build. The goal is expression, not artistic skill. Using your own kids' Star Wars or Harry Potter minifigures and accessories here can be a huge engagement boost.</p>
+            `
+        },
+        {
+            id: 'icebreaker-duck',
+            title: 'The "Duck" Challenge',
+            objective: 'icebreaker',
+            size: 'small',
+            duration: 'short',
+            tags: ['Icebreaker', '4-20 People', '5-10 min', 'Loosening Up'],
+            details: `
+                <h4>Objective:</h4><p>A classic LSP warm-up that quickly introduces the core process (build, share, reflect) and demonstrates creative thinking under constraints.</p>
+                <h4>Process:</h4>
+                <ol>
+                    <li><strong>Round 1 - Question (1 min):</strong> "Using exactly six of these 2x4 bricks, build a duck."</li>
+                    <li><strong>Round 1 - Build (1 min):</strong> Participants quickly build their 6-brick duck.</li>
+                    <li><strong>Round 1 - Share (2 min):</strong> In pairs, participants explain why their duck is the "world's best duck".</li>
+                    <li><strong>Round 2 - Question (1 min):</strong> "Now, take two bricks away. Using only the remaining four bricks, build an even better duck."</li>
+                    <li><strong>Round 2 - Build (1 min):</strong> Participants rebuild their ducks with the new constraint.</li>
+                    <li><strong>Round 2 - Share (2 min):</strong> Share the new models and stories. Notice how creativity often increases with constraints.</li>
+                </ol>
+                <h4>Facilitator Tips:</h4>
+                <p>This exercise is about speed and fun. It perfectly illustrates that even with identical, limited resources, everyone's perspective and creation is unique.</p>
+            `
+        },
+        {
+            id: 'ideation-bridge',
+            title: 'Problem to Solution Bridge',
+            objective: 'ideation',
+            size: 'small',
+            duration: 'long',
+            tags: ['Ideation', '4-20 People', '2-3 hours', 'Problem Solving'],
+            details: `
+                <h4>Objective:</h4><p>To move a group from analyzing a current problem to collaboratively designing actionable solutions.</p>
+                <h4>Process:</h4>
+                <ol>
+                    <li><strong>Warm-up (15 min):</strong> Start with a quick icebreaker like the Duck Challenge to get everyone comfortable.</li>
+                    <li><strong>Build the Problem (30-40 min):</strong>
+                        <ul><li><strong>Question:</strong> "Build a model of the current challenge/problem as you experience it. What are its key parts?"</li><li><strong>Share:</strong> Everyone shares their problem model.</li></ul>
+                    </li>
+                    <li><strong>Build the Ideal Future (30-40 min):</strong>
+                        <ul><li><strong>Question:</strong> "Now build a model of the ideal future state if this problem were solved. What does success look like?"</li><li><strong>Share:</strong> Everyone shares their vision model.</li></ul>
+                    </li>
+                    <li><strong>Build the Bridge (45-60 min):</strong>
+                        <ul><li><strong>Group up:</strong> Form small teams of 3-4 people.</li><li><strong>Question:</strong> "As a team, build a single, shared model that represents the key actions, resources, or changes needed to get from the 'problem' models to the 'ideal future' models."</li><li><strong>Share:</strong> Each team presents their "bridge" model.</li></ul>
+                    </li>
+                    <li><strong>Reflection & Action Planning (20 min):</strong> As a whole group, discuss the common themes from the "bridge" models. Identify the most critical actions and assign next steps.</li>
+                </ol>
+                <h4>Facilitator Tips:</h4>
+                <p>This is a powerful, multi-step workshop. Keep a close eye on time. The "shared build" of the bridge is where the most intense collaboration and negotiation happens; be prepared to guide teams through it.</p>
+            `
+        },
+        {
+            id: 'trust-charter',
+            title: 'Team Trust Charter',
+            objective: 'trust',
+            size: 'small',
+            duration: 'long',
+            tags: ['Trust Building', '4-20 People', '2-4 hours', 'Team Alignment'],
+            details: `
+                <h4>Objective:</h4><p>To surface individual perspectives on trust and co-create a shared understanding and commitment to trust-building behaviors within the team.</p>
+                <h4>Process:</h4>
+                <ol>
+                    <li><strong>Build Personal Meaning of Trust (30 min):</strong>
+                        <ul><li><strong>Question:</strong> "Build a model of what 'trust' in a team means to you personally. What does it look and feel like?"</li><li><strong>Share:</strong> Everyone shares their personal trust model. This creates a safe foundation.</li></ul>
+                    </li>
+                    <li><strong>Build Trust Experience (30 min):</strong>
+                        <ul><li><strong>Question:</strong> "Now build a model of a time you felt trust was either strongly built or badly broken in a team. What were the key behaviors involved?"</li><li><strong>Share:</strong> Sharing these stories helps make the concept of trust concrete and real.</li></ul>
+                    </li>
+                    <li><strong>Build Our Team's Trust Charter (60-90 min):</strong>
+                        <ul><li><strong>Group up:</strong> Form small teams of 3-4 people.</li><li><strong>Question:</strong> "Based on everything we've shared, build a single, shared model representing our team's 'Trust Charter'. What are the core principles and behaviors we commit to, to build and maintain trust with each other?"</li><li><strong>Share:</strong> Each team presents their charter model.</li></ul>
+                    </li>
+                    <li><strong>Reflection and Commitment (20 min):</strong> The whole group discusses how to bring these models to life. How will you hold each other accountable? The final models can be photographed and displayed as a reminder of the team's commitment.</li>
+                </ol>
+                <h4>Facilitator Tips:</h4>
+                <p>Psychological safety is paramount. As the facilitator, you must create a non-judgmental space. The Lego models act as a helpful "third object," allowing people to talk about the model's story rather than pointing fingers directly.</p>
+            `
+        },
+        {
+            id: 'large-icebreaker',
+            title: 'One-Brick Metaphor',
+            objective: 'icebreaker',
+            size: 'large',
+            duration: 'short',
+            tags: ['Icebreaker', '100+ People', '5-10 min', 'Large Group Engagement'],
+            details: `
+                <h4>Objective:</h4><p>To quickly engage a very large audience, foster connection at a local table level, and set a creative tone for a meeting or conference.</p>
+                <h4>Logistics are Key:</h4>
+                <ul>
+                    <li>Distribute a small bag of 15-20 varied bricks to each table before the session begins.</li>
+                    <li>Instructions must be extremely simple and delivered clearly over a microphone.</li>
+                </ul>
+                <h4>Process:</h4>
+                <ol>
+                    <li><strong>Pose the Question (2 min):</strong> "Everyone, please pick just ONE Lego brick from the bag on your table. Think about a quality you bring to this organization. In a moment, you will share with a neighbor how that single brick represents your quality." or "What is one hope you have for today's event? How does your brick represent that hope?"</li>
+                    <li><strong>Individual Reflection (1 min):</strong> Give everyone a quiet moment to make the connection between their brick and their idea.</li>
+                    <li><strong>Share in Pairs (3-4 min):</strong> "Now, please turn to one person next to you and take turns sharing your brick and its meaning. You have 90 seconds each."</li>
+                    <li><strong>Large Group Wrap-up (1 min):</strong> "Thank you. I hope that sparked some new connections. Notice how even with simple tools, we can share meaningful ideas." (Optionally, ask 2-3 volunteers to share with the whole room if time allows).</li>
+                </ol>
+                <h4>Facilitator Tips:</h4>
+                <p>For large groups, success is about energy and participation, not deep insight. The goal is to get everyone doing and talking. The simplicity of the "one brick" constraint makes it work on a mass scale.</p>
+            `
+        },
+    ];
+
+    let currentFilters = {
+        objective: 'all',
+        size: 'all',
+        duration: 'all'
+    };
+    
+    function showContent(contentId) {
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('content-active');
+        });
+        document.getElementById(`content-${contentId}`).classList.add('content-active');
+
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.classList.remove('tab-active');
+            tab.classList.add('tab-inactive');
+        });
+        document.getElementById(`nav-${contentId}`).classList.add('tab-active');
+    }
+
+    function setupFilters() {
+        const filterGroups = document.querySelectorAll('#workshop-filters [data-filter-group]');
+        filterGroups.forEach(group => {
+            const buttons = group.querySelectorAll('.filter-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filterGroup = group.dataset.filterGroup;
+                    const filterValue = button.dataset.filterValue;
+
+                    buttons.forEach(btn => {
+                        btn.classList.remove('filter-btn-active');
+                        btn.classList.add('filter-btn-inactive');
+                    });
+                    button.classList.add('filter-btn-active');
+                    
+                    currentFilters[filterGroup] = filterValue;
+                    renderWorkshops();
+                });
+            });
+        });
+    }
+
+    function renderWorkshops() {
+        const grid = document.getElementById('workshop-grid');
+        grid.innerHTML = '';
+        
+        const filteredWorkshops = workshopData.filter(workshop => {
+            const objectiveMatch = currentFilters.objective === 'all' || workshop.objective === currentFilters.objective;
+            const sizeMatch = currentFilters.size === 'all' || workshop.size === currentFilters.size;
+            const durationMatch = currentFilters.duration === 'all' || workshop.duration === currentFilters.duration;
+            return objectiveMatch && sizeMatch && durationMatch;
+        });
+
+        if (filteredWorkshops.length === 0) {
+            grid.innerHTML = `<div class="col-span-1 md:col-span-2 lg:col-span-3 text-center text-slate-500 py-8">
+                <p class="text-lg">No workshops match your selected filters.</p>
+                <p>Try adjusting your criteria.</p>
+            </div>`;
+            return;
+        }
+
+        filteredWorkshops.forEach(workshop => {
+            const card = document.createElement('div');
+            card.className = 'workshop-card bg-slate-50 border border-slate-200 rounded-lg p-5 cursor-pointer hover:border-blue-500 hover:shadow-lg';
+            card.onclick = () => openModal(workshop.id);
+            
+            let tagsHTML = '';
+            workshop.tags.forEach(tag => {
+                let colorClass = 'bg-slate-200 text-slate-700';
+                if (tag.toLowerCase().includes('icebreaker')) colorClass = 'bg-blue-100 text-blue-800';
+                if (tag.toLowerCase().includes('ideation')) colorClass = 'bg-yellow-100 text-yellow-800';
+                if (tag.toLowerCase().includes('trust')) colorClass = 'bg-green-100 text-green-800';
+
+                tagsHTML += `<span class="inline-block px-2 py-1 text-xs font-medium rounded-full ${colorClass}">${tag}</span>`;
+            });
+
+            card.innerHTML = `
+                <h3 class="font-bold text-lg text-slate-800 mb-2">${workshop.title}</h3>
+                <div class="flex flex-wrap gap-2">${tagsHTML}</div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+    
+    function openModal(workshopId) {
+        const workshop = workshopData.find(w => w.id === workshopId);
+        if (!workshop) return;
+
+        document.getElementById('modal-title').innerText = workshop.title;
+        
+        let tagsHTML = '';
+        workshop.tags.forEach(tag => {
+            let colorClass = 'bg-slate-200 text-slate-700';
+            if (tag.toLowerCase().includes('icebreaker')) colorClass = 'bg-blue-100 text-blue-800';
+            if (tag.toLowerCase().includes('ideation')) colorClass = 'bg-yellow-100 text-yellow-800';
+            if (tag.toLowerCase().includes('trust')) colorClass = 'bg-green-100 text-green-800';
+            tagsHTML += `<span class="inline-block px-2 py-1 text-xs font-medium rounded-full ${colorClass}">${tag}</span>`;
+        });
+        document.getElementById('modal-tags').innerHTML = tagsHTML;
+        
+        document.getElementById('modal-body').innerHTML = workshop.details;
+        document.getElementById('workshop-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('workshop-modal').style.display = 'none';
+    }
+
+    function renderKitChart() {
+        const ctx = document.getElementById('kitChart').getContext('2d');
+        const data = {
+            labels: ['Official Starter Kit', 'Official Landscape Kit', 'DIY Custom Kit'],
+            datasets: [
+                {
+                    label: 'Relative Cost',
+                    data: [2, 10, 6],
+                    backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Versatility',
+                    data: [4, 9, 10],
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1
+                }
+            ]
+        };
+        const kitChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Relative Score (out of 10)' }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'LSP Kit Options: Cost vs. Versatility'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            footer: (tooltipItems) => {
+                                let summary = '';
+                                switch(tooltipItems[0].label) {
+                                    case 'Official Starter Kit': summary = 'Good for 1 person or learning basics.'; break;
+                                    case 'Official Landscape Kit': summary = 'Excellent for full workshops (10-12 people).'; break;
+                                    case 'DIY Custom Kit': summary = 'Most flexible and cost-effective. Adaptable to any group size.'; break;
+                                }
+                                return summary;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    window.onload = () => {
+        showContent('home');
+        renderWorkshops();
+        setupFilters();
+        renderKitChart();
+        window.onclick = function(event) {
+            const modal = document.getElementById('workshop-modal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    };
+</script>
+
+</body>
+</html>
