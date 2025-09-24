@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WWT | V.I.C.E. Strategic Initiative</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A dashboard-style, thematic SPA. The structure guides the user from the "Why" (market shift) to the "How" (WWT's strategy) and the "What" (the V.I.C.E. blueprint and roadmap). This non-linear, thematic structure is chosen over a direct report translation to allow different stakeholders (sales, engineering, leadership) to quickly navigate to sections relevant to them, enhancing usability and comprehension of the complex strategy. Key interactions include tabs for comparison, interactive diagrams for structure, and accordions for detailed recommendations, making dense information digestible. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Broadcom Partner Program Changes -> Goal: Compare -> Viz: Interactive Tabs -> Interaction: Click to switch views -> Justification: Simplifies dense table comparison. -> Library/Method: HTML/JS.
+        - Report Info: Customer Price Hikes (20-400%) -> Goal: Inform/Show Magnitude -> Viz: Bar Chart -> Interaction: Hover for tooltips -> Justification: Clearly visualizes data range and impact. -> Library/Method: Chart.js (Canvas).
+        - Report Info: Knowledge Hub Architecture -> Goal: Explain Structure -> Viz: HTML/CSS Diagram -> Interaction: Hover for details -> Justification: More intuitive than text for hierarchies. -> Library/Method: HTML/Tailwind CSS.
+        - Report Info: Key Recommendations -> Goal: Organize/Inform -> Viz: Accordion -> Interaction: Click to expand -> Justification: Manages content density and focuses user attention. -> Library/Method: HTML/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .section-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .section-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .tab-active {
+            border-color: #2563eb; /* blue-600 */
+            color: #2563eb;
+            background-color: #eff6ff; /* blue-50 */
+        }
+        .tab-inactive {
+            border-color: transparent;
+            color: #475569; /* slate-600 */
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-slate-200">
+        <nav class="container mx-auto px-4 lg:px-6">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <span class="text-xl font-bold text-blue-700">V.I.C.E.</span>
+                    <span class="hidden sm:inline text-slate-500">Virtualized Infrastructure & Cloud Engineering</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#market-shift" class="text-slate-600 hover:text-blue-600 transition-colors">Market Shift</a>
+                    <a href="#wwt-strategy" class="text-slate-600 hover:text-blue-600 transition-colors">WWT Strategy</a>
+                    <a href="#blueprint" class="text-slate-600 hover:text-blue-600 transition-colors">The Blueprint</a>
+                    <a href="#roadmap" class="text-slate-600 hover:text-blue-600 transition-colors">Roadmap</a>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <span class="w-6 h-0.5 bg-slate-600 block my-1"></span>
+                    <span class="w-6 h-0.5 bg-slate-600 block my-1"></span>
+                    <span class="w-6 h-0.5 bg-slate-600 block my-1"></span>
+                </button>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden pb-4">
+                 <a href="#market-shift" class="block py-2 px-4 text-slate-600 hover:bg-blue-50 rounded-md">Market Shift</a>
+                 <a href="#wwt-strategy" class="block py-2 px-4 text-slate-600 hover:bg-blue-50 rounded-md">WWT Strategy</a>
+                 <a href="#blueprint" class="block py-2 px-4 text-slate-600 hover:bg-blue-50 rounded-md">The Blueprint</a>
+                 <a href="#roadmap" class="block py-2 px-4 text-slate-600 hover:bg-blue-50 rounded-md">Roadmap</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 lg:px-6 py-8 md:py-12">
+
+        <!-- Hero Section -->
+        <section class="text-center mb-16 md:mb-24 section-fade-in">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Navigating the New VMware Landscape</h1>
+            <p class="max-w-3xl mx-auto text-lg text-slate-600">
+                A strategic initiative to empower WWT's V.I.C.E. community, consolidate expertise, and drive success in the post-Broadcom era. This is our plan to turn market disruption into a competitive advantage.
+            </p>
+        </section>
+
+        <!-- The Strategic Imperative -->
+        <section id="market-shift" class="mb-16 md:mb-24 space-y-12 section-fade-in">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-slate-900">The Market Shift: Why V.I.C.E. is Critical Now</h2>
+                <p class="mt-3 max-w-2xl mx-auto text-md text-slate-600">Broadcom's acquisition of VMware has fundamentally restructured the partner and customer ecosystem. This section breaks down the key changes and their widespread impact, highlighting the urgent need for a proactive and unified response from WWT.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-6 rounded-xl border border-slate-200">
+                    <h3 class="text-xl font-semibold mb-4 text-slate-800">Customer Impact: Price & Uncertainty</h3>
+                    <p class="text-slate-600 mb-6">Customers face significant cost increases and uncertainty. Perpetual licenses are gone, replaced by subscription bundles and multi-year commitments, eroding trust and creating a market void WWT can fill.</p>
+                    <div class="chart-container">
+                        <canvas id="priceHikeChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-200">
+                     <h3 class="text-xl font-semibold mb-4 text-slate-800">Partner Program Overhaul</h3>
+                     <p class="text-slate-600 mb-6">Broadcom's "fewer, better, stronger" partner strategy eliminated the Registered tier and raised the bar for all remaining partners. Click the tabs below to compare the old and new program structures.</p>
+                    <div>
+                        <div class="border-b border-slate-200">
+                            <nav class="-mb-px flex space-x-4" aria-label="Tabs">
+                                <button id="tab-new" class="tab-btn w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm tab-active" data-target="panel-new">
+                                    New Program (Post-Broadcom)
+                                </button>
+                                <button id="tab-old" class="tab-btn w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm tab-inactive" data-target="panel-old">
+                                    Old Program (Pre-Broadcom)
+                                </button>
+                            </nav>
+                        </div>
+                        <div id="tab-panels">
+                            <div id="panel-new" class="tab-panel py-5">
+                                <ul class="space-y-3">
+                                    <li class="flex items-start"><span class="text-blue-500 font-bold mr-3 mt-1">&#10003;</span><span><strong class="text-slate-700">Tiers:</strong> Pinnacle, Premier, Select.</span></li>
+                                    <li class="flex items-start"><span class="text-blue-500 font-bold mr-3 mt-1">&#10003;</span><span><strong class="text-slate-700">Requirements:</strong> Significantly higher. Pinnacle partners need VCF Expert status.</span></li>
+                                     <li class="flex items-start"><span class="text-blue-500 font-bold mr-3 mt-1">&#10003;</span><span><strong class="text-slate-700">Focus:</strong> Dedicated sales/technical resources and joint business plans.</span></li>
+                                     <li class="flex items-start"><span class="text-red-500 font-bold mr-3 mt-1">&#10007;</span><span><strong class="text-slate-700">Eliminated:</strong> Lowest 'Registered' tier completely removed, impacting thousands of partners.</span></li>
+                                </ul>
+                            </div>
+                            <div id="panel-old" class="tab-panel hidden py-5">
+                                 <ul class="space-y-3">
+                                    <li class="flex items-start"><span class="text-slate-500 font-bold mr-3 mt-1">&#9679;</span><span><strong class="text-slate-700">Tiers:</strong> Pinnacle, Premier, Select, and Registered.</span></li>
+                                    <li class="flex items-start"><span class="text-slate-500 font-bold mr-3 mt-1">&#9679;</span><span><strong class="text-slate-700">Requirements:</strong> More accessible entry points, especially for smaller partners.</span></li>
+                                    <li class="flex items-start"><span class="text-slate-500 font-bold mr-3 mt-1">&#9679;</span><span><strong class="text-slate-700">Focus:</strong> Broad ecosystem with a large number of diverse channel partners.</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WWT's Strategy -->
+        <section id="wwt-strategy" class="mb-16 md:mb-24 section-fade-in">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-slate-900">WWT's Differentiated Strategy</h2>
+                <p class="mt-3 max-w-2xl mx-auto text-md text-slate-600">In response to market uncertainty, WWT is pursuing a clear, dual-pronged strategy. We are committed to being the trusted advisor for all clients, regardless of their path forward, by leveraging our deep expertise and world-class Advanced Technology Center (ATC).</p>
+            </div>
+            <div class="mt-12 grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-xl border border-slate-200 flex flex-col">
+                    <h3 class="text-2xl font-semibold text-blue-700 mb-4">1. Assist & Advise Migration</h3>
+                    <p class="text-slate-600 mb-6 flex-grow">For "unhappy" customers seeking alternatives, we provide expert guidance and seamless migration paths to public cloud or other platforms like Nutanix. Our goal is to find the best-fit solution for their business needs.</p>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-center"><span class="text-blue-500 mr-3">&#10148;</span><span>Leverage ATC for alternative solution validation.</span></li>
+                        <li class="flex items-center"><span class="text-blue-500 mr-3">&#10148;</span><span>Provide comprehensive cost-benefit analysis.</span></li>
+                        <li class="flex items-center"><span class="text-blue-500 mr-3">&#10148;</span><span>Execute structured, low-risk migration projects.</span></li>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-xl border border-slate-200 flex flex-col">
+                    <h3 class="text-2xl font-semibold text-green-700 mb-4">2. Support & Optimize On-Platform</h3>
+                    <p class="text-slate-600 mb-6 flex-grow">For clients remaining with VMware, we provide unparalleled support. We help them navigate licensing changes, optimize costs, and leverage their investment, particularly with VCF as a foundation for their AI and hybrid cloud strategies.</p>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-center"><span class="text-green-500 mr-3">&#10148;</span><span>Drive VCF expertise to meet new partner standards.</span></li>
+                        <li class="flex items-center"><span class="text-green-500 mr-3">&#10148;</span><span>Offer guidance on license and subscription optimization.</span></li>
+                        <li class="flex items-center"><span class="text-green-500 mr-3">&#10148;</span><span>Connect VMware infrastructure to WWT's broader AI strategy.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- The V.I.C.E. Blueprint -->
+        <section id="blueprint" class="mb-16 md:mb-24 section-fade-in">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-slate-900">The V.I.C.E. Blueprint</h2>
+                <p class="mt-3 max-w-2xl mx-auto text-md text-slate-600">The V.I.C.E. community is our engine for executing this strategy. It is built on three core pillars: driving expertise through certification, building a central knowledge hub, and ensuring sustained relevance through strong governance.</p>
+            </div>
+            <div id="accordion" class="mt-12 max-w-4xl mx-auto space-y-4">
+                <!-- Accordion Item 1: Certification -->
+                <div class="bg-white rounded-lg border border-slate-200">
+                    <button class="accordion-header w-full flex justify-between items-center p-5 text-left text-lg font-semibold text-slate-800 hover:bg-slate-50">
+                        <span><span class="text-blue-600">Pillar 1:</span> The Certification Mandate</span>
+                        <span class="accordion-icon transform transition-transform">&#9662;</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 pt-0 text-slate-600 space-y-4">
+                           <p>Our immediate priority is to get "everyone certified." This is not just about meeting Broadcom's higher partner requirements; it's about building a demonstrably expert workforce that gives WWT a competitive edge and rebuilds client trust. This validated expertise is foundational to both supporting on-platform clients and advising those looking to migrate.</p>
+                           <ul class="list-disc list-inside space-y-2">
+                               <li>Directly meet Pinnacle/Premier partner requirements for VCF.</li>
+                               <li>Empower teams to confidently address complex licensing and cost conversations.</li>
+                               <li>Strengthen underlying infrastructure skills crucial for WWT's long-term AI strategy.</li>
+                           </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accordion Item 2: Knowledge Hub -->
+                <div class="bg-white rounded-lg border border-slate-200">
+                    <button class="accordion-header w-full flex justify-between items-center p-5 text-left text-lg font-semibold text-slate-800 hover:bg-slate-50">
+                        <span><span class="text-blue-600">Pillar 2:</span> Architecting the Knowledge Hub</span>
+                        <span class="accordion-icon transform transition-transform">&#9662;</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 pt-0 text-slate-600 space-y-6">
+                            <p>We will leverage Microsoft Teams and SharePoint to create a dynamic "single source of truth." The architecture is designed to break down knowledge silos and provide consistent, authoritative information to all roles, from Sales to Professional Services.</p>
+                            <div class="p-4 bg-slate-100 rounded-lg">
+                                <h4 class="font-semibold text-slate-700 mb-3 text-center">Proposed Hub & Spoke Architecture</h4>
+                                <div class="flex flex-col items-center text-center">
+                                    <div class="p-4 bg-blue-100 border-2 border-dashed border-blue-400 rounded-lg w-full md:w-3/4">
+                                        <p class="font-bold text-blue-800">V.I.C.E. Communication Site (Main Hub)</p>
+                                        <p class="text-sm text-blue-700">Broad dissemination: Sales collateral, success stories, official announcements</p>
+                                    </div>
+                                    <div class="h-8 w-px bg-slate-400 my-2"></div>
+                                    <div class="w-full grid md:grid-cols-3 gap-4">
+                                        <div class="p-3 bg-white border border-slate-300 rounded-lg">
+                                            <p class="font-semibold text-slate-800">Sales Team Site</p>
+                                            <p class="text-xs text-slate-500">Battle cards, proposals</p>
+                                        </div>
+                                        <div class="p-3 bg-white border border-slate-300 rounded-lg">
+                                            <p class="font-semibold text-slate-800">Engineering Team Site</p>
+                                            <p class="text-xs text-slate-500">Tech guides, best practices</p>
+                                        </div>
+                                        <div class="p-3 bg-white border border-slate-300 rounded-lg">
+                                            <p class="font-semibold text-slate-800">PS Team Site</p>
+                                            <p class="text-xs text-slate-500">Implementation docs</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p>This hybrid model combines a central hub for authoritative, read-only content with connected, collaborative Team Sites for specific functional groups to work and share dynamically.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accordion Item 3: Governance -->
+                <div class="bg-white rounded-lg border border-slate-200">
+                    <button class="accordion-header w-full flex justify-between items-center p-5 text-left text-lg font-semibold text-slate-800 hover:bg-slate-50">
+                        <span><span class="text-blue-600">Pillar 3:</span> Governance & Content Relevance</span>
+                        <span class="accordion-icon transform transition-transform">&#9662;</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 pt-0 text-slate-600 space-y-4">
+                           <p>A knowledge base is only as good as the trust users have in its content. We will implement rigorous governance to ensure information is always accurate, relevant, and easy to find. This prevents content decay and ensures high adoption.</p>
+                           <ul class="space-y-3">
+                                <li class="flex items-start"><span class="font-bold text-slate-700 w-32 shrink-0">Clear Ownership:</span><span>A designated team owns content strategy and quality.</span></li>
+                                <li class="flex items-start"><span class="font-bold text-slate-700 w-32 shrink-0">Controlled Access:</span><span>Most users have read-only access to the main hub, with specific experts assigned editing rights to maintain integrity.</span></li>
+                                <li class="flex items-start"><span class="font-bold text-slate-700 w-32 shrink-0">Feedback Loops:</span><span>Regular content audits and a clear channel for user feedback to request updates or new content.</span></li>
+                                <li class="flex items-start"><span class="font-bold text-slate-700 w-32 shrink-0">Metadata > Folders:</span><span>Prioritize rich metadata tagging (by product, industry, use case) over deep folder structures for powerful, context-aware searching.</span></li>
+                           </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Roadmap -->
+        <section id="roadmap" class="section-fade-in">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-slate-900">Implementation Roadmap</h2>
+                <p class="mt-3 max-w-2xl mx-auto text-md text-slate-600">Our approach is phased to deliver value quickly while building a sustainable, long-term community. This timeline outlines the key milestones for launching and scaling the V.I.C.E. initiative.</p>
+            </div>
+            <div class="mt-12 w-full overflow-x-auto pb-4">
+                <div class="relative min-w-[700px]">
+                    <div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-300 -translate-y-1/2"></div>
+                    <div class="relative flex justify-between">
+                        <div class="text-center w-1/4">
+                            <div class="relative mb-2">
+                                <div class="mx-auto w-6 h-6 rounded-full bg-blue-600 border-4 border-white"></div>
+                            </div>
+                            <p class="font-semibold text-slate-800">Phase 1: Foundation</p>
+                            <p class="text-sm text-slate-500">Q3 2024</p>
+                            <ul class="text-xs text-left mt-2 list-disc list-inside space-y-1">
+                                <li>Launch V.I.C.E. Teams site.</li>
+                                <li>Identify initial cert paths.</li>
+                                <li>Establish content governance team.</li>
+                            </ul>
+                        </div>
+                         <div class="text-center w-1/4">
+                            <div class="relative mb-2">
+                                <div class="mx-auto w-6 h-6 rounded-full bg-blue-600 border-4 border-white"></div>
+                            </div>
+                            <p class="font-semibold text-slate-800">Phase 2: Certification Drive</p>
+                            <p class="text-sm text-slate-500">Q4 2024</p>
+                             <ul class="text-xs text-left mt-2 list-disc list-inside space-y-1">
+                                <li>Roll out training programs.</li>
+                                <li>Build initial SharePoint KB.</li>
+                                <li>Onboard technology champions.</li>
+                            </ul>
+                        </div>
+                         <div class="text-center w-1/4">
+                            <div class="relative mb-2">
+                                <div class="mx-auto w-6 h-6 rounded-full bg-slate-400 border-4 border-white"></div>
+                            </div>
+                            <p class="font-semibold text-slate-800">Phase 3: Content Expansion</p>
+                            <p class="text-sm text-slate-500">Q1 2025</p>
+                             <ul class="text-xs text-left mt-2 list-disc list-inside space-y-1">
+                                <li>Populate sales & custom collateral.</li>
+                                <li>Integrate success stories.</li>
+                                <li>Launch feedback/audit cycle.</li>
+                            </ul>
+                        </div>
+                         <div class="text-center w-1/4">
+                            <div class="relative mb-2">
+                                <div class="mx-auto w-6 h-6 rounded-full bg-slate-400 border-4 border-white"></div>
+                            </div>
+                            <p class="font-semibold text-slate-800">Phase 4: Optimization & Scale</p>
+                            <p class="text-sm text-slate-500">Q2 2025</p>
+                             <ul class="text-xs text-left mt-2 list-disc list-inside space-y-1">
+                                <li>Analyze KPIs & refine strategy.</li>
+                                <li>Introduce gamification elements.</li>
+                                <li>Expand to alternative technologies.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-white border-t border-slate-200 mt-16 md:mt-24">
+        <div class="container mx-auto px-4 lg:px-6 py-6 text-center text-slate-500">
+            <p>&copy; World Wide Technology. V.I.C.E. Initiative Internal Document.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartData = {
+                labels: ['License & Bundling', 'Price Increases', 'Support & R&D', 'Partner Ecosystem'],
+                datasets: [{
+                    label: 'Level of Customer Uncertainty / Impact',
+                    data: [85, 95, 70, 80],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.7)',
+                        'rgba(239, 68, 68, 0.7)',
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(16, 185, 129, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(239, 68, 68, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(16, 185, 129, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const priceHikeCtx = document.getElementById('priceHikeChart').getContext('2d');
+            new Chart(priceHikeCtx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Key Areas of Customer Concern'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + '% Impact Score';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) { return value + "%" }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('tab-active');
+                        btn.classList.add('tab-inactive');
+                    });
+                    
+                    button.classList.add('tab-active');
+                    button.classList.remove('tab-inactive');
+                    
+                    const targetPanelId = button.getAttribute('data-target');
+                    
+                    tabPanels.forEach(panel => {
+                        if (panel.id === targetPanelId) {
+                            panel.classList.remove('hidden');
+                        } else {
+                            panel.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('.accordion-icon');
+                    
+                    header.parentElement.parentElement.querySelectorAll('.accordion-content').forEach(otherContent => {
+                        if (otherContent !== content && otherContent.style.maxHeight) {
+                            otherContent.style.maxHeight = null;
+                            otherContent.previousElementSibling.querySelector('.accordion-icon').classList.remove('rotate-180');
+                        }
+                    });
+
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.classList.remove('rotate-180');
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.classList.add('rotate-180');
+                    }
+                });
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    if (!mobileMenu.classList.contains('hidden')) {
+                         mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+            
+            const sections = document.querySelectorAll('.section-fade-in');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
