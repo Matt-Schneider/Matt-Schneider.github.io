@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina | Photography Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom scrollbar for a polished look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        /* Hide scrollbar for gallery filters but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        /* Image hover overlay transition */
+        .group:hover .overlay {
+            opacity: 1;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            black: '#0a0a0a',
+                            dark: '#121212',
+                            gray: '#2a2a2a',
+                            accent: '#ffffff'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+</head>
+<body class="bg-brand-black text-white font-sans antialiased selection:bg-white selection:text-black">
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-6 px-6 md:px-12 bg-gradient-to-b from-brand-black/90 to-transparent">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="#" class="text-2xl font-serif font-semibold tracking-wider z-50 mix-blend-difference">LUMINA</a>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-8 text-sm tracking-widest uppercase font-light">
+                <a href="#gallery" class="hover:text-gray-400 transition-colors">Work</a>
+                <a href="#about" class="hover:text-gray-400 transition-colors">About</a>
+                <a href="#contact" class="hover:text-gray-400 transition-colors">Contact</a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden z-50 text-white">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-brand-black z-40 flex flex-col justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <a href="#gallery" class="mobile-link text-3xl font-serif mb-8 hover:text-gray-400">Work</a>
+        <a href="#about" class="mobile-link text-3xl font-serif mb-8 hover:text-gray-400">About</a>
+        <a href="#contact" class="mobile-link text-3xl font-serif hover:text-gray-400">Contact</a>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="relative h-screen w-full overflow-hidden flex items-center justify-center">
+        <!-- Background Image with Parallax Effect -->
+        <div class="absolute inset-0 z-0">
+            <img 
+                src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2942&auto=format&fit=crop" 
+                alt="Hero Background" 
+                class="w-full h-full object-cover opacity-60 scale-105"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/20 to-transparent"></div>
+        </div>
+
+        <div class="relative z-10 text-center px-4 animate-fade-in">
+            <h1 class="text-5xl md:text-7xl lg:text-9xl font-serif font-bold mb-4 tracking-tight">
+                Captured<span class="text-gray-500">.</span>
+            </h1>
+            <p class="text-sm md:text-base tracking-[0.3em] uppercase text-gray-300 mb-12">
+                Visual storytelling by Alex Vance
+            </p>
+            <a href="#gallery" class="inline-block border border-white/30 px-8 py-3 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300">
+                View Gallery
+            </a>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+            <i data-lucide="arrow-down" class="w-5 h-5 text-gray-400"></i>
+        </div>
+    </header>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-24 px-4 md:px-8 max-w-[1600px] mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-16 px-4">
+            <div>
+                <h2 class="text-3xl md:text-4xl font-serif mb-2">Selected Works</h2>
+                <div class="h-1 w-12 bg-white/20"></div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="flex space-x-6 mt-8 md:mt-0 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
+                <button class="filter-btn active text-sm uppercase tracking-widest border-b border-white pb-1" data-filter="all">All</button>
+                <button class="filter-btn text-sm uppercase tracking-widest text-gray-500 hover:text-white transition-colors pb-1 border-b border-transparent hover:border-white/50" data-filter="nature">Nature</button>
+                <button class="filter-btn text-sm uppercase tracking-widest text-gray-500 hover:text-white transition-colors pb-1 border-b border-transparent hover:border-white/50" data-filter="urban">Urban</button>
+                <button class="filter-btn text-sm uppercase tracking-widest text-gray-500 hover:text-white transition-colors pb-1 border-b border-transparent hover:border-white/50" data-filter="portrait">Portrait</button>
+            </div>
+        </div>
+
+        <!-- Masonry Grid -->
+        <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8 px-4" id="gallery-grid">
+            <!-- Items injected by JS -->
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-brand-dark">
+        <div class="max-w-6xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center gap-16">
+            <div class="w-full md:w-1/2 relative">
+                <div class="absolute -top-4 -left-4 w-full h-full border border-white/10 z-0"></div>
+                <img 
+                    src="https://images.unsplash.com/photo-1554048612-387768052bf7?q=80&w=2000&auto=format&fit=crop" 
+                    alt="Photographer" 
+                    class="w-full h-auto grayscale relative z-10 shadow-2xl"
+                >
+            </div>
+            <div class="w-full md:w-1/2">
+                <span class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 block">The Photographer</span>
+                <h2 class="text-4xl md:text-5xl font-serif mb-8">Chasing light &<br>shadow.</h2>
+                <p class="text-gray-400 mb-6 leading-relaxed font-light">
+                    I am a photographer based in the Pacific Northwest, obsessed with the interplay between natural landscapes and human emotion. Photography, for me, isn't just about capturing a moment; it's about preserving a feeling.
+                </p>
+                <p class="text-gray-400 mb-8 leading-relaxed font-light">
+                    With over 10 years of experience behind the lens, I've worked with global brands and local artisans alike. My kit is minimal, but my vision is expansive.
+                </p>
+                
+                <div class="grid grid-cols-3 gap-8 border-t border-white/10 pt-8">
+                    <div>
+                        <span class="block text-2xl font-serif">10+</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider">Years</span>
+                    </div>
+                    <div>
+                        <span class="block text-2xl font-serif">500+</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider">Shoots</span>
+                    </div>
+                    <div>
+                        <span class="block text-2xl font-serif">12</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider">Awards</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services / Pricing Preview -->
+    <section class="py-24 px-6 max-w-7xl mx-auto">
+        <h2 class="text-3xl font-serif text-center mb-16">Services</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Card 1 -->
+            <div class="bg-brand-dark p-8 border border-white/5 hover:border-white/20 transition-all duration-300 group">
+                <i data-lucide="camera" class="w-8 h-8 mb-6 text-gray-400 group-hover:text-white transition-colors"></i>
+                <h3 class="text-xl font-serif mb-4">Portraiture</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                    Editorial style portraits for individuals, couples, and creative professionals looking to stand out.
+                </p>
+                <ul class="text-sm text-gray-500 space-y-2">
+                    <li>• 2 Hour Session</li>
+                    <li>• 20 Retouched Images</li>
+                    <li>• Studio or Location</li>
+                </ul>
+            </div>
+            
+            <!-- Card 2 -->
+            <div class="bg-brand-dark p-8 border border-white/5 hover:border-white/20 transition-all duration-300 group">
+                <i data-lucide="building-2" class="w-8 h-8 mb-6 text-gray-400 group-hover:text-white transition-colors"></i>
+                <h3 class="text-xl font-serif mb-4">Commercial</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                    High-impact visual content for brands, real estate, and architectural projects.
+                </p>
+                <ul class="text-sm text-gray-500 space-y-2">
+                    <li>• Half or Full Day</li>
+                    <li>• Full Commercial Rights</li>
+                    <li>• High-Res Digital Delivery</li>
+                </ul>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-brand-dark p-8 border border-white/5 hover:border-white/20 transition-all duration-300 group">
+                <i data-lucide="film" class="w-8 h-8 mb-6 text-gray-400 group-hover:text-white transition-colors"></i>
+                <h3 class="text-xl font-serif mb-4">Events</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                    Documentary style coverage for corporate events, weddings, and private gatherings.
+                </p>
+                <ul class="text-sm text-gray-500 space-y-2">
+                    <li>• Hourly Rates</li>
+                    <li>• Online Gallery</li>
+                    <li>• 48hr Turnaround Available</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-brand-dark border-t border-white/5">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <span class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4 block">Get In Touch</span>
+            <h2 class="text-4xl md:text-6xl font-serif mb-8">Let's create something<br>beautiful together.</h2>
+            <a href="mailto:hello@lumina.com" class="inline-flex items-center space-x-2 text-xl md:text-2xl border-b border-white/30 pb-2 hover:border-white hover:text-gray-300 transition-all">
+                <span>hello@lumina.com</span>
+                <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+            </a>
+
+            <div class="flex justify-center space-x-8 mt-16">
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="instagram"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="twitter"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="linkedin"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 text-center text-gray-600 text-xs uppercase tracking-widest">
+        <p>&copy; 2024 Lumina Photography. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="fixed inset-0 z-[60] bg-black/95 hidden flex justify-center items-center opacity-0 transition-opacity duration-300">
+        <button id="lightbox-close" class="absolute top-6 right-6 text-white hover:text-gray-300 z-[70]">
+            <i data-lucide="x" class="w-10 h-10"></i>
+        </button>
+        <button id="lightbox-prev" class="absolute left-4 md:left-8 text-white hover:text-gray-300 z-[70] hidden md:block">
+            <i data-lucide="chevron-left" class="w-10 h-10"></i>
+        </button>
+        <button id="lightbox-next" class="absolute right-4 md:right-8 text-white hover:text-gray-300 z-[70] hidden md:block">
+            <i data-lucide="chevron-right" class="w-10 h-10"></i>
+        </button>
+        
+        <div class="relative w-full h-full p-4 md:p-12 flex items-center justify-center">
+            <img id="lightbox-img" src="" alt="Full screen view" class="max-h-full max-w-full object-contain shadow-2xl">
+            <div class="absolute bottom-6 left-0 w-full text-center">
+                <p id="lightbox-caption" class="text-white font-serif text-lg tracking-wide"></p>
+                <p id="lightbox-category" class="text-gray-400 text-xs uppercase tracking-widest mt-1"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Data: Portfolio Images
+        const portfolioItems = [
+            {
+                id: 1,
+                src: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2000&auto=format&fit=crop',
+                category: 'nature',
+                title: 'Misty Peaks',
+                height: 'h-96'
+            },
+            {
+                id: 2,
+                src: 'https://images.unsplash.com/photo-1496551699307-5a0256860086?q=80&w=2000&auto=format&fit=crop',
+                category: 'urban',
+                title: 'Neon Nights',
+                height: 'h-64'
+            },
+            {
+                id: 3,
+                src: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=2000&auto=format&fit=crop',
+                category: 'portrait',
+                title: 'Sarah in Studio',
+                height: 'h-[30rem]'
+            },
+            {
+                id: 4,
+                src: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=2000&auto=format&fit=crop',
+                category: 'nature',
+                title: 'Silent Forest',
+                height: 'h-72'
+            },
+            {
+                id: 5,
+                src: 'https://images.unsplash.com/photo-1519011985187-444d62641929?q=80&w=2000&auto=format&fit=crop',
+                category: 'portrait',
+                title: 'The Artist',
+                height: 'h-80'
+            },
+            {
+                id: 6,
+                src: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2000&auto=format&fit=crop',
+                category: 'urban',
+                title: 'Chicago Loop',
+                height: 'h-96'
+            },
+            {
+                id: 7,
+                src: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&w=2000&auto=format&fit=crop',
+                category: 'nature',
+                title: 'Deep Blue',
+                height: 'h-64'
+            },
+            {
+                id: 8,
+                src: 'https://images.unsplash.com/photo-1481437156560-3205f6a55735?q=80&w=2000&auto=format&fit=crop',
+                category: 'portrait',
+                title: 'Golden Hour',
+                height: 'h-[26rem]'
+            },
+            {
+                id: 9,
+                src: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=2000&auto=format&fit=crop',
+                category: 'urban',
+                title: 'Architecture',
+                height: 'h-80'
+            }
+        ];
+
+        // Elements
+        const galleryGrid = document.getElementById('gallery-grid');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        const lightboxCategory = document.getElementById('lightbox-category');
+        const lightboxClose = document.getElementById('lightbox-close');
+        const lightboxPrev = document.getElementById('lightbox-prev');
+        const lightboxNext = document.getElementById('lightbox-next');
+
+        let currentImageIndex = 0;
+        let filteredItems = [...portfolioItems];
+
+        // Render Gallery
+        function renderGallery(filter = 'all') {
+            galleryGrid.innerHTML = '';
+            
+            filteredItems = filter === 'all' 
+                ? portfolioItems 
+                : portfolioItems.filter(item => item.category === filter);
+
+            filteredItems.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = `break-inside-avoid mb-8 relative group cursor-pointer overflow-hidden`;
+                div.onclick = () => openLightbox(index);
+                
+                div.innerHTML = `
+                    <img 
+                        src="${item.src}" 
+                        alt="${item.title}" 
+                        class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                    >
+                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                        <span class="text-xs font-bold uppercase tracking-widest text-white/80 mb-1 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">${item.category}</span>
+                        <h3 class="text-xl font-serif text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-100">${item.title}</h3>
+                    </div>
+                `;
+                galleryGrid.appendChild(div);
+            });
+        }
+
+        // Initial Render
+        renderGallery();
+
+        // Filter Logic
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all
+                filterBtns.forEach(b => {
+                    b.classList.remove('border-b', 'border-white', 'text-white');
+                    b.classList.add('text-gray-500', 'border-transparent');
+                });
+                // Add active class to clicked
+                btn.classList.remove('text-gray-500', 'border-transparent');
+                btn.classList.add('border-b', 'border-white', 'text-white');
+                
+                renderGallery(btn.dataset.filter);
+            });
+        });
+
+        // Lightbox Logic
+        function openLightbox(index) {
+            currentImageIndex = index;
+            updateLightboxContent();
+            lightbox.classList.remove('hidden');
+            // Small timeout to allow display:block to apply before opacity transition
+            setTimeout(() => {
+                lightbox.classList.remove('opacity-0');
+            }, 10);
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeLightbox() {
+            lightbox.classList.add('opacity-0');
+            setTimeout(() => {
+                lightbox.classList.add('hidden');
+            }, 300);
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateLightboxContent() {
+            const item = filteredItems[currentImageIndex];
+            lightboxImg.src = item.src;
+            lightboxCaption.textContent = item.title;
+            lightboxCategory.textContent = item.category;
+        }
+
+        function nextImage(e) {
+            e.stopPropagation();
+            currentImageIndex = (currentImageIndex + 1) % filteredItems.length;
+            updateLightboxContent();
+        }
+
+        function prevImage(e) {
+            e.stopPropagation();
+            currentImageIndex = (currentImageIndex - 1 + filteredItems.length) % filteredItems.length;
+            updateLightboxContent();
+        }
+
+        // Event Listeners for Lightbox
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+        lightboxNext.addEventListener('click', nextImage);
+        lightboxPrev.addEventListener('click', prevImage);
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.classList.contains('hidden')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') nextImage(e);
+            if (e.key === 'ArrowLeft') prevImage(e);
+        });
+
+        // Mobile Menu
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        let isMenuOpen = false;
+
+        mobileBtn.addEventListener('click', () => {
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                mobileMenu.classList.remove('pointer-events-none', 'opacity-0');
+                document.body.style.overflow = 'hidden';
+                mobileBtn.innerHTML = '<i data-lucide="x" class="w-6 h-6"></i>';
+            } else {
+                mobileMenu.classList.add('pointer-events-none', 'opacity-0');
+                document.body.style.overflow = 'auto';
+                mobileBtn.innerHTML = '<i data-lucide="menu" class="w-6 h-6"></i>';
+            }
+            lucide.createIcons();
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                isMenuOpen = false;
+                mobileMenu.classList.add('pointer-events-none', 'opacity-0');
+                document.body.style.overflow = 'auto';
+                mobileBtn.innerHTML = '<i data-lucide="menu" class="w-6 h-6"></i>';
+                lucide.createIcons();
+            });
+        });
+
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-brand-black/95', 'backdrop-blur-sm', 'shadow-lg');
+                navbar.classList.remove('bg-gradient-to-b');
+            } else {
+                navbar.classList.remove('bg-brand-black/95', 'backdrop-blur-sm', 'shadow-lg');
+                navbar.classList.add('bg-gradient-to-b');
+            }
+        });
+
+    </script>
+</body>
+</html>
