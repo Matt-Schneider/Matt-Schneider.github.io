@@ -1,0 +1,341 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { Book, Calendar, MapPin, Smile, Frown, Meh, Sun, Cloud, Moon, Search, Filter, ChevronRight, X } from 'lucide-react';
+
+// --- Fake Data Generation ---
+const generateData = () => {
+  const years = Array.from({ length: 10 }, (_, i) => 2015 + i);
+  const moods = [
+    { label: 'Happy', icon: Smile, color: 'text-green-500', bg: 'bg-green-100' },
+    { label: 'Sad', icon: Frown, color: 'text-blue-500', bg: 'bg-blue-100' },
+    { label: 'Neutral', icon: Meh, color: 'text-gray-500', bg: 'bg-gray-100' },
+    { label: 'Inspired', icon: Sun, color: 'text-yellow-500', bg: 'bg-yellow-100' },
+    { label: 'Reflective', icon: Moon, color: 'text-purple-500', bg: 'bg-purple-100' },
+  ];
+
+  const entries = [
+    { year: 2015, date: '2015-03-12', title: 'The Big Move', content: "Packed the last box today. Leaving the city feels surreal. The cat is not amused, but I think this quiet town will be good for my writing.", location: 'Portland, OR', mood: 'Reflective' },
+    { year: 2015, date: '2015-08-22', title: 'First Garden Harvest', content: "Actually grew a tomato that didn't die immediately. It tasted like victory and sunshine.", location: 'Portland, OR', mood: 'Happy' },
+    { year: 2016, date: '2016-01-15', title: 'Winter Blues', content: "Rain has been non-stop for weeks. Struggling to find motivation for the new project.", location: 'Portland, OR', mood: 'Sad' },
+    { year: 2016, date: '2016-06-10', title: 'Road Trip Begins', content: "Heading down the coast. The ocean looks angry today, but beautiful.", location: 'Highway 101', mood: 'Inspired' },
+    { year: 2017, date: '2017-04-02', title: 'Career Pivot', content: "Quit the agency job. Scary? Yes. Necessary? Absolutely. Going freelance starting Monday.", location: 'Home Office', mood: 'Inspired' },
+    { year: 2017, date: '2017-11-23', title: 'Quiet Thanksgiving', content: "Just me and a turkey sandwich. Surprisingly peaceful.", location: 'Portland, OR', mood: 'Neutral' },
+    { year: 2018, date: '2018-02-14', title: 'Unexpected Guest', content: "A stray dog followed me home. I guess I have a dog now? Named him Barnaby.", location: 'Neighborhood Park', mood: 'Happy' },
+    { year: 2018, date: '2018-09-30', title: 'Barnaby is Sick', content: "Vet visit didn't go well. Hoping the meds work.", location: 'Vet Clinic', mood: 'Sad' },
+    { year: 2019, date: '2019-05-12', title: 'Paris!', content: "Finally made it. The croissants are not a myth. They are life-changing.", location: 'Paris, France', mood: 'Happy' },
+    { year: 2019, date: '2019-12-31', title: 'Decade End', content: "Reflecting on the last ten years. So much has changed. Optimistic for the 20s.", location: 'Portland, OR', mood: 'Reflective' },
+    { year: 2020, date: '2020-03-20', title: 'Lockdown', content: "World went quiet. Learning to bake bread like everyone else.", location: 'Home', mood: 'Neutral' },
+    { year: 2020, date: '2020-10-05', title: 'Remote Work Fatigue', content: "Zoom fatigue is real. Miss actual human faces.", location: 'Home Office', mood: 'Sad' },
+    { year: 2021, date: '2021-07-04', title: 'Reunion', content: "Saw the family for the first time in forever. Tears were shed.", location: 'Chicago, IL', mood: 'Happy' },
+    { year: 2021, date: '2021-11-15', title: 'New Hobby', content: "Started woodworking. Made a very crooked shelf.", location: 'Garage', mood: 'Inspired' },
+    { year: 2022, date: '2022-04-01', title: 'Promotion', content: "Landed the lead architect role. Imposter syndrome is kicking in, but I'll manage.", location: 'Work', mood: 'Inspired' },
+    { year: 2022, date: '2022-08-19', title: 'Heatwave', content: "Too hot to think. Hiding in the basement.", location: 'Home', mood: 'Neutral' },
+    { year: 2023, date: '2023-02-28', title: 'Barnaby turned 10', content: "Old man dog is still kicking. Made him a steak.", location: 'Home', mood: 'Happy' },
+    { year: 2023, date: '2023-10-31', title: 'Spooky Season', content: "Best Halloween party in years. Dressed as a giant traffic cone.", location: 'Downtown', mood: 'Happy' },
+    { year: 2024, date: '2024-01-01', title: 'New Year, Same Me', content: "Not making resolutions this year. Just going to exist.", location: 'Home', mood: 'Neutral' },
+    { year: 2024, date: '2024-06-15', title: 'Planning the Wedding', content: "Venue booked! It's actually happening.", location: 'Winery', mood: 'Excited' }, // Added 'Excited' dynamically mapped to happy for simplicity or create new
+    { year: 2024, date: '2024-11-29', title: 'Current Day', content: "Reviewing the old journals. What a ride.", location: 'Desk', mood: 'Reflective' },
+  ];
+  
+  // Normalize extra moods to standard set for simplicity in filter
+  const moodMap = { 'Excited': 'Happy' }; 
+
+  return { years, entries, moods, moodMap };
+};
+
+const { years, entries: initialEntries, moods, moodMap } = generateData();
+
+// --- Components ---
+
+const MoodBadge = ({ mood }) => {
+  // Handle mapped moods or default
+  const effectiveMoodName = moodMap[mood] || mood;
+  const moodConfig = moods.find(m => m.label === effectiveMoodName) || moods[2];
+  const Icon = moodConfig.icon;
+
+  return (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${moodConfig.bg} ${moodConfig.color}`}>
+      <Icon className="w-3 h-3 mr-1" />
+      {mood}
+    </span>
+  );
+};
+
+const EntryModal = ({ entry, onClose }) => {
+  if (!entry) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200" onClick={e => e.stopPropagation()}>
+        <div className="p-6 border-b border-gray-100 flex justify-between items-start">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800">{entry.title}</h2>
+            <div className="flex items-center text-sm text-gray-500 mt-1">
+              <Calendar className="w-4 h-4 mr-1" />
+              {new Date(entry.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </div>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        
+        <div className="p-6 space-y-4">
+          <div className="flex items-center justify-between">
+             <MoodBadge mood={entry.mood} />
+             <div className="flex items-center text-sm text-gray-500">
+                <MapPin className="w-4 h-4 mr-1" />
+                {entry.location}
+             </div>
+          </div>
+          <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-wrap font-serif">
+            {entry.content}
+          </p>
+        </div>
+
+        <div className="bg-gray-50 px-6 py-4 flex justify-end">
+          <button 
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium"
+          >
+            Close Entry
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default function JournalTimeline() {
+  const [selectedYear, setSelectedYear] = useState('All');
+  const [selectedMood, setSelectedMood] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeEntry, setActiveEntry] = useState(null);
+
+  // Filter Logic
+  const filteredEntries = useMemo(() => {
+    return initialEntries.filter(entry => {
+      const matchYear = selectedYear === 'All' || entry.year === selectedYear;
+      
+      const effectiveMood = moodMap[entry.mood] || entry.mood;
+      const matchMood = selectedMood === 'All' || effectiveMood === selectedMood;
+      
+      const searchLower = searchQuery.toLowerCase();
+      const matchSearch = entry.title.toLowerCase().includes(searchLower) || 
+                          entry.content.toLowerCase().includes(searchLower) ||
+                          entry.location.toLowerCase().includes(searchLower);
+
+      return matchYear && matchMood && matchSearch;
+    }).sort((a, b) => new Date(b.date) - new Date(a.date)); // Newest first
+  }, [selectedYear, selectedMood, searchQuery]);
+
+  // Group by year for display if showing 'All'
+  const groupedEntries = useMemo(() => {
+    const groups = {};
+    filteredEntries.forEach(entry => {
+      if (!groups[entry.year]) groups[entry.year] = [];
+      groups[entry.year].push(entry);
+    });
+    return groups;
+  }, [filteredEntries]);
+
+  // Get list of years actually present in filtered data
+  const activeYears = Object.keys(groupedEntries).sort((a, b) => b - a);
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="bg-indigo-600 p-2 rounded-lg">
+              <Book className="w-5 h-5 text-white" />
+            </div>
+            <h1 className="text-xl font-bold text-gray-900 tracking-tight">LifeLog <span className="text-gray-400 font-normal hidden sm:inline">| 10 Years</span></h1>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+             {/* Simple Search */}
+            <div className="relative hidden md:block">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input 
+                type="text"
+                placeholder="Search memories..."
+                className="pl-10 pr-4 py-1.5 bg-gray-100 border-none rounded-full text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all w-64"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+        
+        {/* Mobile Search Bar (only visible on small screens) */}
+        <div className="md:hidden px-4 pb-3">
+           <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input 
+                type="text"
+                placeholder="Search memories..."
+                className="pl-10 pr-4 py-2 w-full bg-gray-100 border-none rounded-lg text-sm"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row gap-8">
+        
+        {/* Sidebar Navigation */}
+        <aside className="md:w-64 flex-shrink-0 space-y-8">
+          {/* Year Filter */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-24">
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <Calendar className="w-3 h-3" /> Time Travel
+            </h3>
+            <div className="space-y-1 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+              <button
+                onClick={() => setSelectedYear('All')}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                  selectedYear === 'All' 
+                    ? 'bg-indigo-50 text-indigo-700 shadow-sm' 
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                All Time
+              </button>
+              {years.slice().reverse().map(year => (
+                <button
+                  key={year}
+                  onClick={() => setSelectedYear(year)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all flex justify-between group ${
+                    selectedYear === year 
+                      ? 'bg-indigo-50 text-indigo-700 shadow-sm' 
+                      : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {year}
+                  {selectedYear !== year && (
+                    <ChevronRight className="w-4 h-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Mood Filter */}
+            <div className="mt-8">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <Filter className="w-3 h-3" /> Filter by Mood
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                 <button
+                    onClick={() => setSelectedMood('All')}
+                    className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                      selectedMood === 'All'
+                        ? 'bg-gray-800 text-white border-gray-800'
+                        : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    All
+                  </button>
+                {moods.map(mood => (
+                  <button
+                    key={mood.label}
+                    onClick={() => setSelectedMood(mood.label)}
+                    className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors flex items-center gap-1 ${
+                      selectedMood === mood.label
+                        ? `${mood.bg} ${mood.color} border-${mood.color.split('-')[1]}-200 ring-1 ring-${mood.color.split('-')[1]}-400`
+                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    {/* Only show icon if selected to keep it clean, or always? Let's hide icon when inactive for cleaner look */}
+                    {selectedMood === mood.label && <mood.icon className="w-3 h-3" />}
+                    {mood.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Timeline Content */}
+        <section className="flex-1 min-h-[50vh]">
+          {activeYears.length === 0 ? (
+            <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm">
+              <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="w-8 h-8 text-gray-300" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900">No entries found</h3>
+              <p className="text-gray-500 mt-2">Try adjusting your filters or search query.</p>
+              <button 
+                onClick={() => {setSelectedYear('All'); setSelectedMood('All'); setSearchQuery('');}}
+                className="mt-4 text-indigo-600 font-medium hover:text-indigo-800"
+              >
+                Clear all filters
+              </button>
+            </div>
+          ) : (
+            <div className="relative">
+              {/* Vertical Line for Timeline (Desktop only) */}
+              <div className="absolute left-8 top-4 bottom-4 w-px bg-gray-200 hidden md:block"></div>
+
+              {activeYears.map(year => (
+                <div key={year} className="mb-12 relative">
+                  {/* Year Marker */}
+                  <div className="flex items-center mb-6 sticky top-20 z-10 bg-slate-50/95 backdrop-blur py-2">
+                     <div className="w-16 flex-shrink-0 text-right pr-4 hidden md:block">
+                        <span className="text-sm font-bold text-gray-400">{year}</span>
+                     </div>
+                     <div className="w-4 h-4 rounded-full bg-indigo-600 border-4 border-white shadow-sm relative z-20 hidden md:block"></div>
+                     <h2 className="md:hidden text-2xl font-bold text-gray-800 mb-2 border-b border-gray-200 w-full pb-2">{year}</h2>
+                  </div>
+
+                  <div className="space-y-6 md:pl-20">
+                    {groupedEntries[year].map((entry, idx) => (
+                      <div 
+                        key={`${entry.year}-${idx}`}
+                        onClick={() => setActiveEntry(entry)}
+                        className="group bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-indigo-100 transition-all cursor-pointer relative overflow-hidden"
+                      >
+                         {/* Hover accent bar */}
+                         <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                        <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-2 mb-3">
+                          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-700 transition-colors">
+                            {entry.title}
+                          </h3>
+                          <span className="text-xs font-medium text-gray-400 whitespace-nowrap">
+                            {new Date(entry.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                          </span>
+                        </div>
+                        
+                        <p className="text-gray-600 text-sm line-clamp-2 mb-4 font-serif leading-relaxed">
+                          {entry.content}
+                        </p>
+
+                        <div className="flex items-center justify-between pt-3 border-t border-gray-50">
+                          <div className="flex items-center gap-3">
+                             <MoodBadge mood={entry.mood} />
+                             <span className="flex items-center text-xs text-gray-400">
+                                <MapPin className="w-3 h-3 mr-1" />
+                                {entry.location}
+                             </span>
+                          </div>
+                          <span className="text-xs font-medium text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity flex items-center">
+                            Read more <ChevronRight className="w-3 h-3 ml-1" />
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </main>
+
+      {/* Detail Modal */}
+      {activeEntry && <EntryModal entry={activeEntry} onClose={() => setActiveEntry(null)} />}
+    </div>
+  );
+}
