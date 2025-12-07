@@ -1,0 +1,564 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  BookOpen, 
+  Briefcase, 
+  Calendar, 
+  CheckCircle, 
+  ChevronDown, 
+  ChevronRight, 
+  ExternalLink, 
+  GraduationCap, 
+  Layout, 
+  Map, 
+  Palette, 
+  Percent, 
+  Scissors, 
+  Search,
+  TrendingUp,
+  User
+} from 'lucide-react';
+
+// --- Data Structures ---
+
+const UNIVERSITIES = {
+  TWU: {
+    name: "Texas Woman's University",
+    color: "text-red-800",
+    bgColor: "bg-red-50",
+    borderColor: "border-red-200",
+    btnColor: "bg-red-800 hover:bg-red-900",
+    pathName: "Dual Degree (BA Design + BS Merch)",
+    description: "Integrated dual-degree pathway with a built-in Marketing minor. Smaller classes, liberal arts focus."
+  },
+  UNT: {
+    name: "University of North Texas",
+    color: "text-green-800",
+    bgColor: "bg-green-50",
+    borderColor: "border-green-200",
+    btnColor: "bg-green-800 hover:bg-green-900",
+    pathName: "Concurrent Degrees (BFA Design + BS Merch)",
+    description: "Two separate degrees pursued simultaneously. Larger campus, rigorous portfolio reviews, large-scale fashion shows."
+  }
+};
+
+const RESOURCES = [
+  { category: "Collin College", items: [
+    { name: "Associate of Arts Gen Studies", url: "https://www.collin.edu/academics/programs/GeneralStudies.html" },
+    { name: "Communication Design Certificate", url: "https://www.collin.edu/academics/programs/COMD_1Overview.html" },
+    { name: "BOSS (Office Skills) Program", url: "https://www.collin.edu/department/boss/" }
+  ]},
+  { category: "Universities", items: [
+    { name: "TWU Fashion Design & Merchandising", url: "https://twu.edu/fashion/" },
+    { name: "UNT College of Visual Arts & Design", url: "https://cvad.unt.edu/" },
+    { name: "UNT Merchandising & Digital Retailing", url: "https://cmht.unt.edu/" }
+  ]},
+  { category: "Tools & Software", items: [
+    { name: "Adobe Creative Cloud", url: "https://www.adobe.com/creativecloud.html" },
+    { name: "CLO 3D Fashion Design", url: "https://www.clo3d.com/" },
+    { name: "Microsoft Excel Training", url: "https://support.microsoft.com/en-us/excel" }
+  ]}
+];
+
+const TIMELINE_DATA = [
+  {
+    id: 'year1',
+    year: 'Year 1 (Collin)',
+    period: '2026 - 2027',
+    phase: 'Foundation',
+    summary: "Building the academic core and adjusting to college life.",
+    details: [
+      { term: "Summer 2026", focus: "Ease In", items: ["ENGL 1301", "EDUC 1300 (College Success)", "Part-time retail job (15hrs/wk)"] },
+      { term: "Fall 2026", focus: "Study Routine", items: ["ENGL 1302", "HIST 1301", "ARTS 1316 (Drawing I)", "MATH 1342 (Stats)"] },
+      { term: "Spring 2027", focus: "GPA & Core", items: ["HIST 1302", "GOVT 2305", "PSYC 2301 (Psych)", "ARTS 1311 (2D Design)", "SPCH 1311"] }
+    ]
+  },
+  {
+    id: 'year2',
+    year: 'Year 2 (Collin)',
+    period: '2027 - 2028',
+    phase: 'Skills & Certs',
+    summary: "Technical certification and completing the Associate Degree.",
+    details: [
+      { term: "Summer 2027", focus: "Tech Skills", items: ["Adobe Certs: ARTC 1302, IMED 1316", "BOSS/Excel Course", "Creative Summer Job"] },
+      { term: "Fall 2027", focus: "Visuals", items: ["GOVT 2306", "Science Core + Lab", "PHIL 1301", "ARTS 2313 (Design Comm)", "Visual Merchandising work"] },
+      { term: "Spring 2028", focus: "Graduation", items: ["ARTS 2323 (Figure Drawing)", "ACCT 2301 (Accounting)", "Graduate with AA/AS", "Apply for Transfer"] }
+    ]
+  },
+  {
+    id: 'year2.5',
+    year: 'Year 2.5 (Transition)',
+    period: 'Fall 2028',
+    phase: 'Gap/Experience',
+    summary: "Transition period. Finishing certificates or gaining intensive work experience.",
+    details: [
+      { term: "Fall 2028", focus: "Real World", items: ["Full-time Internship/Apprenticeship", "Save money for University", "Portfolio Prep"] }
+    ]
+  },
+  {
+    id: 'year3',
+    year: 'Year 3 (University)',
+    period: '2028 - 2029',
+    phase: 'Major Entry',
+    summary: "Entering the major. High intensity design and merch basics.",
+    universitySpecific: true,
+    details: {
+      TWU: [
+        { term: "Fall", focus: "Foundations", items: ["FT 1013 Construction", "FT 2013 Sketching", "FT 2113 Flat Pattern", "FT 1083 Aesthetics"] },
+        { term: "Spring", focus: "Production", items: ["FT 2403 Mass Production", "FT 2033 Marketing", "FT 3043 Global Trade", "ACCT 2043 or MKT 3113"] }
+      ],
+      UNT: [
+        { term: "Fall", focus: "Pre-Major", items: ["DESF 2120 Construction I", "DESF 2130 Flat Pattern I", "MDSE 2490 Retail Merch", "MDSE 2350 Product Dev"] },
+        { term: "Spring", focus: "Portfolio Jury", items: ["DESF 2560 Fashion Drawing", "DESF 2510 Construction II", "DESF 2530 Draping", "MDSE 3370 Consumer Behavior"] }
+      ]
+    }
+  },
+  {
+    id: 'year4',
+    year: 'Year 4 (University)',
+    period: '2029 - 2030',
+    phase: 'Advanced Studio',
+    summary: "Advanced techniques, collections, and strategic planning.",
+    universitySpecific: true,
+    details: {
+      TWU: [
+        { term: "Fall", focus: "Advanced Design", items: ["FT 3113 Adv Pattern", "FT 3403 Draping/Couture", "FT 3103 Merch Planning", "FT 3063 Promotion"] },
+        { term: "Spring", focus: "Capstone Collection", items: ["FT 4213 Collection Design", "FT 4113 Retail Buying", "FT 4033 Portfolio Dev", "MKT 4213 Consumer Behavior"] }
+      ],
+      UNT: [
+        { term: "Fall", focus: "Specialization", items: ["DESF 3620 Tailoring/Knitwear", "DESF 3530 Patternmaking II", "MDSE 3510 Sourcing", "MDSE 4660 Branding"] },
+        { term: "Spring", focus: "Senior Show", items: ["DESF 4530 Senior Collection", "DESF 4520 Promotion", "MDSE 4010 Brand Promo", "MDSE 4710 Merch Strategies"] }
+      ]
+    }
+  },
+  {
+    id: 'year5',
+    year: 'Year 5 (University)',
+    period: '2030 - 2031',
+    phase: 'Internships & Launch',
+    summary: "Completing dual internships and transitioning to professional life.",
+    universitySpecific: true,
+    details: {
+      TWU: [
+        { term: "Summer", focus: "Design Intern", items: ["FT 4966 Internship in Fashion Design (6 Credits)"] },
+        { term: "Fall", focus: "Global/Events", items: ["FT 4083 Global Dress", "FT 4603 Event Planning", "Electives"] },
+        { term: "Spring", focus: "Merch Intern", items: ["FT 4976 Internship in Merchandising (6 Credits)", "Final Graduation"] }
+      ],
+      UNT: [
+        { term: "Summer", focus: "Design Intern", items: ["Design Internship (Dallas/NY/LA)"] },
+        { term: "Fall", focus: "Wrap Up", items: ["HIST 4023 Costume History", "Business Minor Electives", "MDSE 4000 Internship (Optional)"] },
+        { term: "Spring", focus: "Launch", items: ["Final Merchandising Internship", "Job Hunt", "Graduation"] }
+      ]
+    }
+  },
+  {
+    id: 'year6',
+    year: 'Year 6 (Career)',
+    period: '2031 - 2032',
+    phase: 'Professional',
+    summary: "First full-time role. The '360° Professional'.",
+    details: [
+      { term: "Post-Grad", focus: "Early Career", items: ["Entry Level Role (Asst Designer / Allocator)", "Join Fashion Group Int'l", "Financial Planning"] }
+    ]
+  }
+];
+
+const CHECKLIST_DATA = [
+  {
+    category: "Academics",
+    icon: <BookOpen className="w-5 h-5" />,
+    items: [
+      { id: "a1", text: "Complete Texas Core (42 credits) at Collin" },
+      { id: "a2", text: "Pass ARTS 1316 Drawing I" },
+      { id: "a3", text: "Pass MATH 1342 Statistics" },
+      { id: "a4", text: "Complete ACCT 2301 Accounting" },
+      { id: "a5", text: "Graduate Collin (AA/AS)" },
+      { id: "a6", text: "Transfer Admission to TWU/UNT" },
+      { id: "a7", text: "Pass Junior Portfolio Review" },
+      { id: "a8", text: "Complete Senior Capstone Collection" },
+      { id: "a9", text: "Graduate with Double Major/Degree" }
+    ]
+  },
+  {
+    category: "Skills & Tech",
+    icon: <Scissors className="w-5 h-5" />,
+    items: [
+      { id: "s1", text: "Adobe Creative Suite (Photoshop/Illustrator) Proficiency" },
+      { id: "s2", text: "Microsoft Office Specialist (Excel/PPT)" },
+      { id: "s3", text: "Industrial Sewing Machine Mastery" },
+      { id: "s4", text: "Pattern Drafting & Draping" },
+      { id: "s5", text: "Retail Math (Markup, OTB, Turnover)" },
+      { id: "s6", text: "CAD for Fashion (CLO 3D or similar)" },
+      { id: "s7", text: "Data Analytics (Google Analytics/Excel Dashboards)" }
+    ]
+  },
+  {
+    category: "Experience",
+    icon: <Briefcase className="w-5 h-5" />,
+    items: [
+      { id: "e1", text: "Part-time Retail Job (Year 1)" },
+      { id: "e2", text: "Visual Merchandising / Social Media Role (Year 2)" },
+      { id: "e3", text: "Leadership Role in Student Org (FTA/FDSO)" },
+      { id: "e4", text: "Volunteer at Fashion Show/Event" },
+      { id: "e5", text: "Design Internship (Year 3/4)" },
+      { id: "e6", text: "Merchandising Internship (Year 4/5)" },
+      { id: "e7", text: "Create Professional Portfolio (Design + Business)" }
+    ]
+  }
+];
+
+// --- Components ---
+
+const ProgressBar = ({ progress }) => (
+  <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden border border-gray-300">
+    <div 
+      className="bg-indigo-600 h-4 transition-all duration-500 ease-in-out flex items-center justify-center text-[10px] text-white font-bold" 
+      style={{ width: `${progress}%` }}
+    >
+      {Math.round(progress)}%
+    </div>
+  </div>
+);
+
+const LinkSearch = ({ term }) => (
+  <a 
+    href={`https://www.google.com/search?q=${encodeURIComponent(term)}`} 
+    target="_blank" 
+    rel="noopener noreferrer"
+    className="text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1 text-sm"
+    title={`Search for ${term}`}
+  >
+    {term} <Search className="w-3 h-3" />
+  </a>
+);
+
+// --- Main App ---
+
+export default function FashionRoadmapApp() {
+  const [activeTab, setActiveTab] = useState('summary');
+  const [uniChoice, setUniChoice] = useState('TWU'); // 'TWU' or 'UNT'
+  const [expandedYear, setExpandedYear] = useState(null);
+  const [checklistState, setChecklistState] = useState({});
+
+  // Load checklist from local storage
+  useEffect(() => {
+    const saved = localStorage.getItem('fashionRoadmapChecklist');
+    if (saved) setChecklistState(JSON.parse(saved));
+  }, []);
+
+  // Save checklist to local storage
+  useEffect(() => {
+    localStorage.setItem('fashionRoadmapChecklist', JSON.stringify(checklistState));
+  }, [checklistState]);
+
+  const toggleCheck = (id) => {
+    setChecklistState(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const calculateProgress = () => {
+    const total = CHECKLIST_DATA.reduce((acc, cat) => acc + cat.items.length, 0);
+    const checked = Object.values(checklistState).filter(Boolean).length;
+    return (checked / total) * 100;
+  };
+
+  const UniToggle = () => (
+    <div className="flex bg-gray-100 p-1 rounded-lg w-fit mx-auto mb-6">
+      {['TWU', 'UNT'].map((uni) => (
+        <button
+          key={uni}
+          onClick={() => setUniChoice(uni)}
+          className={`px-6 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+            uniChoice === uni 
+              ? 'bg-white text-gray-900 shadow-sm border border-gray-200' 
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          {UNIVERSITIES[uni].name}
+        </button>
+      ))}
+    </div>
+  );
+
+  // --- Views ---
+
+  const renderSummary = () => (
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="grid md:grid-cols-3 gap-4">
+        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+          <h3 className="font-bold text-blue-900 flex items-center gap-2">
+            <Map className="w-5 h-5" /> Phase 1: Collin
+          </h3>
+          <p className="text-sm text-blue-800 mt-2">Years 1-2.5</p>
+          <p className="text-sm text-gray-600 mt-1">Foundation, Core Curriculum, Associate Degree, Basic Art & Psych.</p>
+        </div>
+        <div className={`bg-gray-50 border-l-4 p-4 rounded-r-lg ${uniChoice === 'TWU' ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}>
+          <h3 className={`font-bold flex items-center gap-2 ${uniChoice === 'TWU' ? 'text-red-900' : 'text-gray-500'}`}>
+            <TrendingUp className="w-5 h-5" /> Phase 2: TWU
+          </h3>
+          <p className="text-sm mt-2 font-medium">Dual BA/BS Integrated</p>
+          <p className="text-sm text-gray-600 mt-1">Seamless blend of Design & Merchandising with Marketing Minor.</p>
+        </div>
+        <div className={`bg-gray-50 border-l-4 p-4 rounded-r-lg ${uniChoice === 'UNT' ? 'border-green-500 bg-green-50' : 'border-gray-300'}`}>
+          <h3 className={`font-bold flex items-center gap-2 ${uniChoice === 'UNT' ? 'text-green-900' : 'text-gray-500'}`}>
+            <Palette className="w-5 h-5" /> Phase 2: UNT
+          </h3>
+          <p className="text-sm mt-2 font-medium">Concurrent BFA + BS</p>
+          <p className="text-sm text-gray-600 mt-1">Two distinct degrees. Heavy art focus (BFA) + Analytic focus (BS).</p>
+        </div>
+      </div>
+
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-gray-100">
+          <h2 className="text-xl font-bold text-gray-900">University Comparison</h2>
+          <p className="text-gray-500 text-sm mt-1">Select your preferred path above to update the timeline.</p>
+        </div>
+        <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+          <div className={`p-6 ${uniChoice === 'TWU' ? 'bg-red-50/30' : ''}`}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-lg text-red-900">TWU</h3>
+              {uniChoice === 'TWU' && <CheckCircle className="w-5 h-5 text-red-600" />}
+            </div>
+            <ul className="space-y-3 text-sm text-gray-700">
+              <li className="flex gap-2"><span className="text-red-500 font-bold">•</span> Dual Degree (BA + BS) in one plan</li>
+              <li className="flex gap-2"><span className="text-red-500 font-bold">•</span> Built-in Marketing Minor</li>
+              <li className="flex gap-2"><span className="text-red-500 font-bold">•</span> Requirement: 2 Internships (1 Design, 1 Merch)</li>
+              <li className="flex gap-2"><span className="text-red-500 font-bold">•</span> Capstone: Collection Development</li>
+            </ul>
+          </div>
+          <div className={`p-6 ${uniChoice === 'UNT' ? 'bg-green-50/30' : ''}`}>
+             <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-lg text-green-900">UNT</h3>
+              {uniChoice === 'UNT' && <CheckCircle className="w-5 h-5 text-green-600" />}
+            </div>
+            <ul className="space-y-3 text-sm text-gray-700">
+              <li className="flex gap-2"><span className="text-green-500 font-bold">•</span> Concurrent Degrees (BFA + BS)</li>
+              <li className="flex gap-2"><span className="text-green-500 font-bold">•</span> Portfolio Entry Review Required</li>
+              <li className="flex gap-2"><span className="text-green-500 font-bold">•</span> Large Senior Fashion Show</li>
+              <li className="flex gap-2"><span className="text-green-500 font-bold">•</span> Strong emphasis on Excel & Analytics</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+       <div className="bg-slate-900 text-white p-6 rounded-xl shadow-lg">
+        <h2 className="text-lg font-bold mb-2 flex items-center gap-2">
+          <User className="w-5 h-5" /> The Outcome: "That Rare Creature"
+        </h2>
+        <p className="text-slate-300 text-sm leading-relaxed">
+          By the end of Year 6, you will possess a 360° skill set:
+          <br />
+          1. <strong>Creative:</strong> Sketch, pattern, drape, and sew a collection.
+          <br />
+          2. <strong>Visual:</strong> Art direct shoots, create lookbooks, and design graphics.
+          <br />
+          3. <strong>Analytical:</strong> Forecast trends, calculate retail metrics, and analyze data.
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderTimeline = () => (
+    <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+      <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-6 flex items-start gap-3">
+        <div className="mt-1"><Layout className="w-5 h-5 text-yellow-600" /></div>
+        <div>
+          <p className="text-sm text-yellow-800 font-medium">Viewing Timeline for: <span className="font-bold">{UNIVERSITIES[uniChoice].name}</span></p>
+          <p className="text-xs text-yellow-700 mt-1">Years 1-2 are identical. Years 3-6 reflect the specific curriculum of your choice.</p>
+        </div>
+      </div>
+
+      <div className="relative border-l-4 border-gray-200 ml-4 space-y-8">
+        {TIMELINE_DATA.map((item, index) => {
+          const isExpanded = expandedYear === item.id;
+          const uniColor = uniChoice === 'TWU' ? 'bg-red-600' : 'bg-green-600';
+          const dotColor = item.universitySpecific ? uniColor : 'bg-blue-600';
+          
+          return (
+            <div key={item.id} className="relative pl-8">
+              {/* Timeline Dot */}
+              <div 
+                className={`absolute -left-[10px] top-1 w-5 h-5 rounded-full border-4 border-white shadow-sm cursor-pointer transition-colors ${dotColor}`}
+                onClick={() => setExpandedYear(isExpanded ? null : item.id)}
+              />
+              
+              <div 
+                className={`bg-white rounded-lg border transition-all duration-200 ${isExpanded ? 'shadow-md border-gray-300' : 'shadow-sm border-gray-100 hover:border-gray-300'}`}
+              >
+                <button 
+                  onClick={() => setExpandedYear(isExpanded ? null : item.id)}
+                  className="w-full flex items-center justify-between p-4 text-left"
+                >
+                  <div>
+                    <span className="text-xs font-bold tracking-wider text-gray-400 uppercase">{item.period}</span>
+                    <h3 className="text-lg font-bold text-gray-900">{item.year}</h3>
+                    <p className="text-sm text-gray-600">{item.summary}</p>
+                  </div>
+                  {isExpanded ? <ChevronDown className="text-gray-400" /> : <ChevronRight className="text-gray-400" />}
+                </button>
+
+                {isExpanded && (
+                  <div className="p-4 pt-0 border-t border-gray-100 bg-gray-50 rounded-b-lg">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                      {(item.universitySpecific ? item.details[uniChoice] : item.details).map((detail, idx) => (
+                        <div key={idx} className="bg-white p-3 rounded border border-gray-200 shadow-sm">
+                          <h4 className="font-bold text-gray-800 text-sm mb-2 border-b pb-1">{detail.term} <span className="text-xs font-normal text-gray-500">({detail.focus})</span></h4>
+                          <ul className="space-y-1">
+                            {detail.items.map((subItem, sIdx) => (
+                              <li key={sIdx} className="text-xs text-gray-600 flex items-start gap-1.5">
+                                <span className="mt-1 w-1 h-1 rounded-full bg-gray-400 shrink-0" />
+                                {/* Attempt to detect course codes and make them searchable */}
+                                {subItem.match(/[A-Z]{4}\s\d{4}/) ? (
+                                  <LinkSearch term={subItem} />
+                                ) : (
+                                  subItem
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const renderProgress = () => (
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-100 text-center">
+        <h2 className="text-2xl font-bold text-indigo-900 mb-2">{Math.round(calculateProgress())}% Complete</h2>
+        <ProgressBar progress={calculateProgress()} />
+        <p className="text-sm text-indigo-700 mt-2">Keep tracking your milestones to become an industry leader.</p>
+      </div>
+
+      <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-6">
+        {CHECKLIST_DATA.map((category) => (
+          <div key={category.category} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-4 bg-gray-50 border-b border-gray-100 flex items-center gap-2 font-bold text-gray-800">
+              {category.icon}
+              {category.category}
+            </div>
+            <div className="p-4 space-y-3">
+              {category.items.map((item) => (
+                <label key={item.id} className="flex items-start gap-3 cursor-pointer group">
+                  <div className="relative flex items-center">
+                    <input 
+                      type="checkbox" 
+                      className="peer sr-only"
+                      checked={!!checklistState[item.id]}
+                      onChange={() => toggleCheck(item.id)}
+                    />
+                    <div className="w-5 h-5 border-2 border-gray-300 rounded peer-checked:bg-indigo-600 peer-checked:border-indigo-600 transition-all"></div>
+                    <CheckCircle className="w-3.5 h-3.5 text-white absolute top-[3px] left-[3px] opacity-0 peer-checked:opacity-100 transition-opacity" />
+                  </div>
+                  <span className={`text-sm transition-colors duration-200 ${checklistState[item.id] ? 'text-gray-400 line-through' : 'text-gray-700 group-hover:text-gray-900'}`}>
+                    {item.text}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderResources = () => (
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-500">
+      {RESOURCES.map((section, idx) => (
+        <div key={idx} className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h3 className="font-bold text-gray-800 mb-4 border-b pb-2">{section.category}</h3>
+          <ul className="space-y-3">
+            {section.items.map((link, lIdx) => (
+              <li key={lIdx}>
+                <a 
+                  href={link.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between text-sm text-blue-600 hover:text-blue-800 group hover:bg-blue-50 p-2 rounded transition-colors"
+                >
+                  {link.name}
+                  <ExternalLink className="w-4 h-4 opacity-50 group-hover:opacity-100" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+      {/* Quick Search Card */}
+      <div className="bg-slate-800 text-white border border-slate-700 rounded-xl shadow-sm p-6">
+        <h3 className="font-bold mb-4 border-b border-slate-600 pb-2 flex items-center gap-2">
+          <Search className="w-4 h-4" /> Quick Course Search
+        </h3>
+        <p className="text-xs text-slate-400 mb-4">Click to search Google for specific degree requirements.</p>
+        <div className="flex flex-wrap gap-2">
+          {['ARTS 1316', 'MATH 1342', 'TWU Fashion Design Plan', 'UNT Merchandising Degree', 'Collin College AA'].map(tag => (
+            <a 
+              key={tag}
+              href={`https://www.google.com/search?q=${encodeURIComponent(tag)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded-full transition-colors border border-slate-600"
+            >
+              {tag}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-12">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Fashion Career Roadmap</h1>
+              <p className="text-sm text-gray-500">Collin College <span className="mx-1">→</span> TWU/UNT</p>
+            </div>
+            
+            {/* Navigation */}
+            <nav className="flex gap-1 bg-gray-100 p-1 rounded-lg overflow-x-auto">
+              {[
+                { id: 'summary', label: 'Summary', icon: <Layout className="w-4 h-4" /> },
+                { id: 'timeline', label: 'Timeline', icon: <Calendar className="w-4 h-4" /> },
+                { id: 'progress', label: 'Progress', icon: <CheckCircle className="w-4 h-4" /> },
+                { id: 'resources', label: 'Links & Resources', icon: <ExternalLink className="w-4 h-4" /> },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-all ${
+                    activeTab === tab.id 
+                      ? 'bg-white text-indigo-600 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                  }`}
+                >
+                  {tab.icon}
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        {/* University Toggle for Relevant Views */}
+        {(activeTab === 'timeline' || activeTab === 'summary') && <UniToggle />}
+
+        {activeTab === 'summary' && renderSummary()}
+        {activeTab === 'timeline' && renderTimeline()}
+        {activeTab === 'progress' && renderProgress()}
+        {activeTab === 'resources' && renderResources()}
+      </div>
+    </div>
+  );
+}
