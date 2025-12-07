@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Scale Visualization</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap');
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            color: white;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+
+        #ui-layer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            box-sizing: border-box;
+            text-align: center;
+            pointer-events: none; /* Let clicks pass through to canvas scale control */
+        }
+
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            max-width: 350px;
+            pointer-events: auto;
+            background: rgba(0, 10, 20, 0.7);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            margin: 0 0 5px 0;
+            color: #00ffff;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #ccc;
+        }
+
+        .metric {
+            font-family: 'Orbitron', sans-serif;
+            color: #ffaa00;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Slider Styling */
+        #slider-container {
+            pointer-events: auto;
+            width: 80%;
+            margin: 0 auto 30px auto;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #00ffff;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -10px;
+            box-shadow: 0 0 15px #00ffff;
+            transition: transform 0.1s;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: #00ffff;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        
+        .hidden {
+            opacity: 0;
+        }
+    </style>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+    <div id="loading">GENERATING UNIVERSE...</div>
+
+    <div id="info-panel">
+        <h1 id="obj-title">Loading...</h1>
+        <span id="obj-metric" class="metric">10^0 meters</span>
+        <p id="obj-desc">Initializing visualization engine...</p>
+    </div>
+
+    <div id="ui-layer">
+        <div id="slider-container">
+            <input type="range" min="0" max="800" value="400" id="scaleSlider">
+        </div>
+        <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem;">DRAG SLIDER TO TRAVEL</div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+<script>
+    // --- CONFIGURATION & STATE ---
+    const CONFIG = {
+        zoomSpeed: 0.05,
+        starCount: 2000,
+        cameraZ: 5
+    };
+
+    const state = {
+        sliderValue: 400, // 0 to 800
+        targetIndex: 4,
+        localProgress: 0,
+        time: 0
+    };
+
+    // --- DATA: THE SCALES ---
+    const SCALES = [
+        {
+            id: 'quark',
+            title: 'Sub-Atomic (Quarks)',
+            metric: '10⁻¹⁶ meters',
+            power: -16,
+            desc: 'The fundamental constituents of matter. Here, three quarks (Up, Up, Down) vibrate intensely to form a Proton.',
+            color: 0xff0055
+        },
+        {
+            id: 'atom',
+            title: 'Hydrogen Atom',
+            metric: '10⁻¹⁰ meters',
+            power: -10,
+            desc: 'The simplest atom. A single electron creates a probability cloud around the nucleus. Mostly empty space.',
+            color: 0x00aaff
+        },
+        {
+            id: 'dna',
+            title: 'DNA Strand',
+            metric: '10⁻⁸ meters',
+            power: -8,
+            desc: 'The molecule of life. A double helix structure carrying genetic instructions for development and functioning.',
+            color: 0x88ff00
+        },
+        {
+            id: 'virus',
+            title: 'Virus',
+            metric: '10⁻⁷ meters',
+            power: -7,
+            desc: 'A biological agent that reproduces inside the cells of living hosts. Distinctive protein spikes.',
+            color: 0x9900ff
+        },
+        {
+            id: 'beachball',
+            title: 'Beach Ball',
+            metric: '10⁻¹ meters',
+            power: -1,
+            desc: 'Human scale. An object relatable to our everyday experience.',
+            color: 0xffaa00
+        },
+        {
+            id: 'earth',
+            title: 'The Earth',
+            metric: '10⁷ meters',
+            power: 7,
+            desc: 'Our home. A rocky planet with a liquid water surface and an oxygen-rich atmosphere.',
+            color: 0x0044ff
+        },
+        {
+            id: 'sun',
+            title: 'The Sun',
+            metric: '10⁹ meters',
+            power: 9,
+            desc: 'A G-type main-sequence star. A sphere of hot plasma that drives the weather and climate of Earth.',
+            color: 0xffdd00
+        },
+        {
+            id: 'solar_system',
+            title: 'Solar System',
+            metric: '10¹³ meters',
+            power: 13,
+            desc: 'The planetary system bound by the Sun\'s gravity. Orbits are vast ellipses.',
+            color: 0xffffff
+        },
+        {
+            id: 'galaxy',
+            title: 'Milky Way Galaxy',
+            metric: '10²¹ meters',
+            power: 21,
+            desc: 'A barred spiral galaxy containing 100-400 billion stars. We are located in the Orion Arm.',
+            color: 0xaa88ff
+        }
+    ];
+
+    // --- TEXTURE GENERATORS (Procedural) ---
+    // We create textures in memory to avoid external asset dependencies
+    
+    function createGlowTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 128; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        const gradient = ctx.createRadialGradient(64,64, 0, 64,64, 64);
+        gradient.addColorStop(0, 'rgba(255,255,255,1)');
+        gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)');
+        gradient.addColorStop(0.5, 'rgba(255,255,255,0.2)');
+        gradient.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0,0,128,128);
+        const tex = new THREE.CanvasTexture(canvas);
+        return tex;
+    }
+
+    function createStripeTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0,0,512,512);
+        const colors = ['#ff0000', '#ffff00', '#0000ff', '#00ff00', '#ffffff', '#ff0000'];
+        const seg = 512 / colors.length;
+        colors.forEach((c, i) => {
+            ctx.fillStyle = c;
+            ctx.fillRect(i*seg, 0, seg, 512);
+        });
+        return new THREE.CanvasTexture(canvas);
+    }
+
+    function createEarthTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 256;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#001133'; // Deep ocean
+        ctx.fillRect(0,0,512,256);
+        
+        // Simple noise for continents
+        for(let i=0; i<300; i++) {
+            const x = Math.random() * 512;
+            const y = Math.random() * 256;
+            const size = Math.random() * 60 + 20;
+            ctx.fillStyle = `rgba(34, 139, 34, ${Math.random() * 0.8})`; // Green land
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI*2);
+            ctx.fill();
+        }
+        
+        // Clouds
+        for(let i=0; i<200; i++) {
+            const x = Math.random() * 512;
+            const y = Math.random() * 256;
+            const size = Math.random() * 40 + 10;
+            ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.4})`;
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI*2);
+            ctx.fill();
+        }
+        
+        return new THREE.CanvasTexture(canvas);
+    }
+
+    function createNoiseTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 128; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0,0,128,128);
+        for(let i=0; i<1000; i++) {
+            ctx.fillStyle = `rgba(255,255,255,${Math.random()})`;
+            ctx.fillRect(Math.random()*128, Math.random()*128, 2, 2);
+        }
+        return new THREE.CanvasTexture(canvas);
+    }
+
+    // --- THREE.JS SETUP ---
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.02);
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = CONFIG.cameraZ;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0x404040, 2);
+    scene.add(ambientLight);
+    
+    const pointLight = new THREE.PointLight(0xffffff, 2, 100);
+    pointLight.position.set(10, 10, 10);
+    scene.add(pointLight);
+
+    // --- OBJECT GENERATION ---
+    const objects = [];
+    const glowTex = createGlowTexture();
+
+    // 1. Quarks (Proton)
+    const quarkGroup = new THREE.Group();
+    const quarkGeo = new THREE.SphereGeometry(0.3, 16, 16);
+    const quarkMat = new THREE.MeshBasicMaterial({ color: 0xff0055, transparent: true, opacity: 0.9 });
+    const q1 = new THREE.Mesh(quarkGeo, quarkMat); q1.position.set(0.4, 0, 0);
+    const q2 = new THREE.Mesh(quarkGeo, quarkMat); q2.position.set(-0.4, 0, 0);
+    const q3 = new THREE.Mesh(quarkGeo, new THREE.MeshBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.9 })); q3.position.set(0, 0.6, 0); // Down quark
+    
+    // Gluons (lines)
+    const gluonMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
+    const pts = [new THREE.Vector3(0.4,0,0), new THREE.Vector3(-0.4,0,0), new THREE.Vector3(0,0.6,0), new THREE.Vector3(0.4,0,0)];
+    const gluonGeo = new THREE.BufferGeometry().setFromPoints(pts);
+    const gluonLine = new THREE.Line(gluonGeo, gluonMat);
+    
+    // Glow sprite
+    const spriteMat = new THREE.SpriteMaterial({ map: glowTex, color: 0xff0055, transparent: true, blending: THREE.AdditiveBlending });
+    const qGlow = new THREE.Sprite(spriteMat);
+    qGlow.scale.set(4, 4, 1);
+
+    quarkGroup.add(q1, q2, q3, gluonLine, qGlow);
+    objects.push({ mesh: quarkGroup, update: (t) => {
+        q1.position.y = Math.sin(t * 10) * 0.1;
+        q2.position.y = Math.cos(t * 10) * 0.1;
+        quarkGroup.rotation.z += 0.05;
+        quarkGroup.rotation.x += 0.02;
+    }});
+
+    // 2. Atom
+    const atomGroup = new THREE.Group();
+    const nucleus = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), new THREE.MeshBasicMaterial({color: 0xff0055}));
+    const electronPath = new THREE.RingGeometry(2, 2.05, 64);
+    const electronPathMesh = new THREE.Mesh(electronPath, new THREE.MeshBasicMaterial({color: 0x00aaff, side: THREE.DoubleSide, transparent: true, opacity: 0.3}));
+    electronPathMesh.rotation.x = Math.PI / 2;
+    const electron = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), new THREE.MeshBasicMaterial({color: 0x00ffff}));
+    const electronPivot = new THREE.Group();
+    electronPivot.add(electron);
+    electron.position.set(2, 0, 0);
+    
+    atomGroup.add(nucleus, electronPathMesh, electronPivot);
+    // Add fuzzy cloud shell
+    const cloudGeo = new THREE.SphereGeometry(2.5, 32, 32);
+    const cloudMat = new THREE.MeshBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.1, wireframe: true });
+    atomGroup.add(new THREE.Mesh(cloudGeo, cloudMat));
+
+    objects.push({ mesh: atomGroup, update: (t) => {
+        electronPivot.rotation.y = t * 5;
+        electronPivot.rotation.z = Math.sin(t) * 0.5;
+        atomGroup.rotation.y = t * 0.2;
+    }});
+
+    // 3. DNA
+    const dnaGroup = new THREE.Group();
+    const dnaCount = 20;
+    for(let i = -10; i < 10; i++) {
+        const y = i * 0.3;
+        const rot = i * 0.5;
+        
+        const b1 = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), new THREE.MeshStandardMaterial({color: 0xff0000}));
+        const b2 = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), new THREE.MeshStandardMaterial({color: 0x0000ff}));
+        
+        b1.position.set(Math.cos(rot), y, Math.sin(rot));
+        b2.position.set(Math.cos(rot + Math.PI), y, Math.sin(rot + Math.PI));
+        
+        // Connector
+        const lineGeo = new THREE.BufferGeometry().setFromPoints([b1.position, b2.position]);
+        const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({color: 0xffffff}));
+        
+        dnaGroup.add(b1, b2, line);
+    }
+    dnaGroup.rotation.z = Math.PI / 4;
+    objects.push({ mesh: dnaGroup, update: (t) => {
+        dnaGroup.rotation.y = t * 0.5;
+    }});
+
+    // 4. Virus
+    const virusGroup = new THREE.Group();
+    const vBody = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5, 1), new THREE.MeshStandardMaterial({color: 0x8800ff, roughness: 0.4}));
+    virusGroup.add(vBody);
+    // Spikes
+    const spikeGeo = new THREE.CylinderGeometry(0.05, 0.2, 0.8);
+    const spikeMat = new THREE.MeshStandardMaterial({color: 0xff00aa});
+    const posAttribute = vBody.geometry.attributes.position;
+    for (let i = 0; i < posAttribute.count; i += 3) { // Reduced count for cleaner look
+        const v = new THREE.Vector3();
+        v.fromBufferAttribute(posAttribute, i);
+        v.normalize().multiplyScalar(1.5); // Surface
+        
+        const spike = new THREE.Mesh(spikeGeo, spikeMat);
+        spike.position.copy(v);
+        spike.lookAt(new THREE.Vector3(0,0,0));
+        spike.rotateX(-Math.PI/2);
+        spike.translateY(-0.4); 
+        virusGroup.add(spike);
+    }
+    objects.push({ mesh: virusGroup, update: (t) => {
+        virusGroup.rotation.x = t * 0.2;
+        virusGroup.rotation.y = t * 0.3;
+    }});
+
+    // 5. Beach Ball
+    const ballGeo = new THREE.SphereGeometry(1.5, 32, 32);
+    const ballMat = new THREE.MeshStandardMaterial({ map: createStripeTexture(), roughness: 0.2 });
+    const beachBall = new THREE.Mesh(ballGeo, ballMat);
+    objects.push({ mesh: beachBall, update: (t) => {
+        beachBall.rotation.y = t * 0.5;
+        beachBall.rotation.x = Math.sin(t)*0.2;
+    }});
+
+    // 6. Earth
+    const earthGroup = new THREE.Group();
+    const earthMesh = new THREE.Mesh(new THREE.SphereGeometry(1.8, 64, 64), new THREE.MeshStandardMaterial({ map: createEarthTexture(), roughness: 0.8 }));
+    const atmosMesh = new THREE.Mesh(new THREE.SphereGeometry(2.0, 64, 64), new THREE.MeshBasicMaterial({ color: 0x44aaff, transparent: true, opacity: 0.2, side: THREE.BackSide }));
+    earthGroup.add(earthMesh, atmosMesh);
+    objects.push({ mesh: earthGroup, update: (t) => {
+        earthMesh.rotation.y = t * 0.1;
+        atmosMesh.rotation.y = t * 0.12;
+    }});
+
+    // 7. Sun
+    const sunGroup = new THREE.Group();
+    const sunMesh = new THREE.Mesh(new THREE.SphereGeometry(2.5, 64, 64), new THREE.MeshBasicMaterial({ color: 0xffaa00 }));
+    // Corona (glow sprites)
+    const coronaMat = new THREE.SpriteMaterial({ map: glowTex, color: 0xff5500, transparent: true, blending: THREE.AdditiveBlending });
+    const corona = new THREE.Sprite(coronaMat);
+    corona.scale.set(8, 8, 1);
+    sunGroup.add(sunMesh, corona);
+    objects.push({ mesh: sunGroup, update: (t) => {
+        sunMesh.rotation.y = t * 0.05;
+        const s = 8 + Math.sin(t * 2) * 0.5;
+        corona.scale.set(s, s, 1);
+    }});
+
+    // 8. Solar System
+    const sysGroup = new THREE.Group();
+    // Sun center
+    sysGroup.add(new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 16), new THREE.MeshBasicMaterial({color: 0xffaa00})));
+    // Orbits
+    const orbits = [1.5, 2.5, 3.5, 5.0];
+    orbits.forEach(radius => {
+        const ring = new THREE.Mesh(new THREE.RingGeometry(radius, radius+0.05, 64), new THREE.MeshBasicMaterial({color: 0xffffff, side: THREE.DoubleSide, opacity: 0.2, transparent: true}));
+        ring.rotation.x = Math.PI/2;
+        sysGroup.add(ring);
+    });
+    // Planets (simple)
+    const p1 = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), new THREE.MeshStandardMaterial({color: 0x888888}));
+    const p2 = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 8), new THREE.MeshStandardMaterial({color: 0xffaa00}));
+    const p3 = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 8), new THREE.MeshStandardMaterial({color: 0x0000ff})); // Earth
+    sysGroup.add(p1, p2, p3);
+    
+    objects.push({ mesh: sysGroup, update: (t) => {
+        p1.position.set(Math.cos(t*2)*1.5, 0, Math.sin(t*2)*1.5);
+        p2.position.set(Math.cos(t*1.5)*2.5, 0, Math.sin(t*1.5)*2.5);
+        p3.position.set(Math.cos(t)*3.5, 0, Math.sin(t)*3.5);
+        sysGroup.rotation.x = 0.2;
+    }});
+
+    // 9. Galaxy
+    const galaxyGroup = new THREE.Group();
+    const particleCount = 2000;
+    const galaxyGeo = new THREE.BufferGeometry();
+    const galaxyPos = [];
+    const galaxyColors = [];
+    
+    for(let i=0; i<particleCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() * 5;
+        // Spiral formula approximation
+        const spiralAngle = angle + radius * 2;
+        const x = Math.cos(spiralAngle) * radius;
+        const z = Math.sin(spiralAngle) * radius;
+        const y = (Math.random() - 0.5) * (0.5 - radius/10); // Thicker in center
+        
+        galaxyPos.push(x, y, z);
+        
+        // Color gradient center to edge
+        const color = new THREE.Color();
+        color.setHSL(0.6 + radius/10, 0.8, 0.5);
+        galaxyColors.push(color.r, color.g, color.b);
+    }
+    
+    galaxyGeo.setAttribute('position', new THREE.Float32BufferAttribute(galaxyPos, 3));
+    galaxyGeo.setAttribute('color', new THREE.Float32BufferAttribute(galaxyColors, 3));
+    
+    const galaxyMat = new THREE.PointsMaterial({ size: 0.05, vertexColors: true, transparent: true, opacity: 0.8 });
+    const galaxyPoints = new THREE.Points(galaxyGeo, galaxyMat);
+    galaxyGroup.add(galaxyPoints);
+    
+    objects.push({ mesh: galaxyGroup, update: (t) => {
+        galaxyGroup.rotation.y = t * 0.1;
+        galaxyGroup.rotation.x = 0.4;
+    }});
+
+    // --- BACKGROUND STARS ---
+    const starGeo = new THREE.BufferGeometry();
+    const starPos = [];
+    for(let i=0; i<CONFIG.starCount; i++) {
+        starPos.push((Math.random()-0.5)*100, (Math.random()-0.5)*100, (Math.random()-0.5)*100);
+    }
+    starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
+    const starMat = new THREE.PointsMaterial({color: 0xffffff, size: 0.1});
+    const starField = new THREE.Points(starGeo, starMat);
+    scene.add(starField);
+
+    // --- SCENE LOGIC ---
+    // Add all object groups to scene but hide them initially
+    objects.forEach(obj => {
+        obj.mesh.visible = false;
+        scene.add(obj.mesh);
+    });
+
+    // --- UI LOGIC ---
+    const slider = document.getElementById('scaleSlider');
+    const titleEl = document.getElementById('obj-title');
+    const metricEl = document.getElementById('obj-metric');
+    const descEl = document.getElementById('obj-desc');
+    const loadingEl = document.getElementById('loading');
+
+    // UI Update loop
+    function updateUI(index) {
+        const data = SCALES[index];
+        if(!data) return;
+        
+        titleEl.innerText = data.title;
+        titleEl.style.color = '#' + data.color.toString(16).padStart(6, '0');
+        metricEl.innerText = data.metric;
+        descEl.innerText = data.desc;
+    }
+
+    slider.addEventListener('input', (e) => {
+        state.sliderValue = parseInt(e.target.value);
+    });
+
+    // Hide loading
+    setTimeout(() => {
+        loadingEl.classList.add('hidden');
+    }, 1000);
+
+    // --- MAIN LOOP ---
+    function animate() {
+        requestAnimationFrame(animate);
+
+        state.time += 0.01;
+
+        // 1. Calculate which object to show based on slider
+        // Map 0-800 to 0-(SCALES.length-1)
+        const maxIndex = SCALES.length - 1;
+        const rawPos = (state.sliderValue / 800) * maxIndex;
+        const currentIndex = Math.floor(rawPos);
+        const nextIndex = Math.min(currentIndex + 1, maxIndex);
+        const progress = rawPos - currentIndex; // 0.0 to 1.0 transition
+
+        // 2. Update Text
+        if(progress < 0.5) updateUI(currentIndex);
+        else updateUI(nextIndex);
+
+        // 3. Object Transitions
+        // We handle transitions by hiding everything, then showing current and next
+        // and manipulating their Scale and Opacity
+        
+        objects.forEach(o => o.mesh.visible = false);
+
+        // Object A (Current) -> shrinking, fading out
+        const objA = objects[currentIndex];
+        if (objA) {
+            objA.mesh.visible = true;
+            objA.update(state.time);
+            
+            // Visual logic: As we move from A to B
+            // A should scale DOWN (appear to move away) or fade out
+            // Let's keep camera static and scale world
+            const scaleA = 1 - (progress * 0.9); // 1.0 -> 0.1
+            objA.mesh.scale.set(scaleA, scaleA, scaleA);
+            
+            // Fade out
+            // (Traverse mainly for opacity, complex materials might need helper)
+            // Ideally we just push it back, but scaling works for "Powers of Ten" feel
+        }
+
+        // Object B (Next) -> growing, fading in
+        const objB = objects[nextIndex];
+        if (objB && nextIndex !== currentIndex) {
+            objB.mesh.visible = true;
+            objB.update(state.time);
+            
+            // B starts massive (or invisible) and shrinks to normal size
+            // Wait, standard Power of 10 zoom: 
+            // We are zooming OUT. Current object gets small. Next object (which encompasses it) comes into view.
+            // So Next Object should start huge and scale down to 1.
+            
+            // Actually, let's reverse that for a smoother morph
+            // If we are at 0 (Quark), scaling to 1 (Atom)
+            // The Quark shrinks. The Atom (which is huge relative to quark) fades in?
+            // Let's cheat for visual flair:
+            // Current Object shrinks to 0.
+            // Next Object starts at scale 5 and shrinks to 1.
+            
+            const scaleB = 5 - (progress * 4); // 5.0 -> 1.0
+            objB.mesh.scale.set(scaleB, scaleB, scaleB);
+            
+            // Fade in logic (simple opacity hack on group opacity won't work easily on all mats)
+            // We rely on the scale 'pop' to simulate the zoom out.
+            // To make it smoother, we adjust Z position
+            
+            objA.mesh.position.z = -progress * 2; // Move A away slightly
+            objB.mesh.position.z = (1-progress) * 5; // Move B from behind camera to center
+        }
+
+        // 4. Background Star movement (Parallax)
+        starField.rotation.y = state.time * 0.02;
+        
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Handle Window Resize
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+</script>
+</body>
+</html>
