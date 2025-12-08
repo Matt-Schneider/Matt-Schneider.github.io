@@ -258,81 +258,29 @@
       <section class="panel" id="status">
         <h2 data-label="Status">Node Status</h2>
         <div class="status-grid">
-          <div class="status-card">HTML Index: <strong>24</strong> entries</div>
-          <div class="status-card">Markdown Index: <strong>0</strong> entries</div>
-          <div class="status-card">Gemini Index: <strong>24</strong> entries</div>
-          <div class="status-card">Last Sync: <strong>2025-12-08</strong></div>
+          <div class="status-card">HTML Index: <strong id="html-count">24</strong> entries</div>
+          <div class="status-card">Markdown Index: <strong id="markdown-count">0</strong> entries</div>
+          <div class="status-card">Gemini Index: <strong id="gemini-count">24</strong> entries</div>
+          <div class="status-card">Last Sync: <strong id="last-sync">2025-12-08</strong></div>
         </div>
       </section>
 
       <section class="panel" id="html-content">
         <h2 data-label="Catalog">HTML Pages</h2>
         <div class="divider"></div>
-        <ul>
-          <li><a href="gemini/2025-06-02_Four_Faces_Of_Change.html">&gt; gemini/2025-06-02_Four_Faces_Of_Change.html</a></li>
-          <li><a href="gemini/2025-06-02_VCF_Study_Guide.html">&gt; gemini/2025-06-02_VCF_Study_Guide.html</a></li>
-          <li><a href="gemini/2025-06-06-AI-Infographic.html">&gt; gemini/2025-06-06-AI-Infographic.html</a></li>
-          <li><a href="gemini/2025-06-06-FoundationOfAI.html">&gt; gemini/2025-06-06-FoundationOfAI.html</a></li>
-          <li><a href="gemini/2025-06-06_Prompt_Enginering_Guide.html">&gt; gemini/2025-06-06_Prompt_Enginering_Guide.html</a></li>
-          <li><a href="gemini/2025-06-06_VCF_Service_Strategy.html">&gt; gemini/2025-06-06_VCF_Service_Strategy.html</a></li>
-          <li><a href="gemini/2025-06-06_VCF_Service_Strategy_A.html">&gt; gemini/2025-06-06_VCF_Service_Strategy_A.html</a></li>
-          <li><a href="gemini/2025-06-09_WWT_VCF_Service_Catalog.html">&gt; gemini/2025-06-09_WWT_VCF_Service_Catalog.html</a></li>
-          <li><a href="gemini/2025-06-16_The_New_IandO.html">&gt; gemini/2025-06-16_The_New_IandO.html</a></li>
-          <li><a href="gemini/2025-07-04_Five_Dysfunctions_Pecha_Kucha.html">&gt; gemini/2025-07-04_Five_Dysfunctions_Pecha_Kucha.html</a></li>
-          <li><a href="gemini/2025-07-27_VCF_52_Admin_Quiz.html">&gt; gemini/2025-07-27_VCF_52_Admin_Quiz.html</a></li>
-          <li><a href="gemini/2025-07-28_VCF_52_Admin_Quiz.html">&gt; gemini/2025-07-28_VCF_52_Admin_Quiz.html</a></li>
-          <li><a href="gemini/2025-09-24-Lego_Serious_Play">&gt; gemini/2025-09-24-Lego_Serious_Play</a></li>
-          <li><a href="gemini/2025-09-24-VICE_Strategic_Inititives">&gt; gemini/2025-09-24-VICE_Strategic_Inititives</a></li>
-          <li><a href="gemini/2025-12-07-Cosmic-Scale.html">&gt; gemini/2025-12-07-Cosmic-Scale.html</a></li>
-          <li><a href="gemini/2025-12-07-Fashion-Roadmap">&gt; gemini/2025-12-07-Fashion-Roadmap</a></li>
-          <li><a href="gemini/2025-12-07-Interactive-Journal-Timeline.html">&gt; gemini/2025-12-07-Interactive-Journal-Timeline.html</a></li>
-          <li><a href="gemini/2025-12-07-Photo-Portfolio.html">&gt; gemini/2025-12-07-Photo-Portfolio.html</a></li>
-          <li><a href="gemini/2025-12-07-Plano-Fashion-Stores.html">&gt; gemini/2025-12-07-Plano-Fashion-Stores.html</a></li>
-          <li><a href="gemini/2025-12-07-Retro-Asteroids-Game.html">&gt; gemini/2025-12-07-Retro-Asteroids-Game.html</a></li>
-          <li><a href="gemini/2025-12-07-Societal-Value-of-Parades.html">&gt; gemini/2025-12-07-Societal-Value-of-Parades.html</a></li>
-          <li><a href="gemini/2025-12-08-CoPilot-Research">&gt; gemini/2025-12-08-CoPilot-Research</a></li>
-          <li><a href="gemini/2025-12-08-PPL_Info">&gt; gemini/2025-12-08-PPL_Info</a></li>
-          <li><a href="gemini/VCF52AdminQuiz.html">&gt; gemini/VCF52AdminQuiz.html</a></li>
-        </ul>
+        <ul id="html-list"></ul>
       </section>
 
       <section class="panel" id="markdown-content">
         <h2 data-label="Catalog">Markdown Documents</h2>
         <div class="divider"></div>
-        <ul>
-          <li>No markdown documents found.</li>
-        </ul>
+        <ul id="markdown-list"></ul>
       </section>
 
       <section class="panel" id="gemini-content">
         <h2 data-label="Catalog">Gemini Files</h2>
         <div class="divider"></div>
-        <ul>
-          <li><a href="gemini/2025-06-02_Four_Faces_Of_Change.html">&gt; gemini/2025-06-02_Four_Faces_Of_Change.html</a></li>
-          <li><a href="gemini/2025-06-02_VCF_Study_Guide.html">&gt; gemini/2025-06-02_VCF_Study_Guide.html</a></li>
-          <li><a href="gemini/2025-06-06-AI-Infographic.html">&gt; gemini/2025-06-06-AI-Infographic.html</a></li>
-          <li><a href="gemini/2025-06-06-FoundationOfAI.html">&gt; gemini/2025-06-06-FoundationOfAI.html</a></li>
-          <li><a href="gemini/2025-06-06_Prompt_Enginering_Guide.html">&gt; gemini/2025-06-06_Prompt_Enginering_Guide.html</a></li>
-          <li><a href="gemini/2025-06-06_VCF_Service_Strategy.html">&gt; gemini/2025-06-06_VCF_Service_Strategy.html</a></li>
-          <li><a href="gemini/2025-06-06_VCF_Service_Strategy_A.html">&gt; gemini/2025-06-06_VCF_Service_Strategy_A.html</a></li>
-          <li><a href="gemini/2025-06-09_WWT_VCF_Service_Catalog.html">&gt; gemini/2025-06-09_WWT_VCF_Service_Catalog.html</a></li>
-          <li><a href="gemini/2025-06-16_The_New_IandO.html">&gt; gemini/2025-06-16_The_New_IandO.html</a></li>
-          <li><a href="gemini/2025-07-04_Five_Dysfunctions_Pecha_Kucha.html">&gt; gemini/2025-07-04_Five_Dysfunctions_Pecha_Kucha.html</a></li>
-          <li><a href="gemini/2025-07-27_VCF_52_Admin_Quiz.html">&gt; gemini/2025-07-27_VCF_52_Admin_Quiz.html</a></li>
-          <li><a href="gemini/2025-07-28_VCF_52_Admin_Quiz.html">&gt; gemini/2025-07-28_VCF_52_Admin_Quiz.html</a></li>
-          <li><a href="gemini/2025-09-24-Lego_Serious_Play">&gt; gemini/2025-09-24-Lego_Serious_Play</a></li>
-          <li><a href="gemini/2025-09-24-VICE_Strategic_Inititives">&gt; gemini/2025-09-24-VICE_Strategic_Inititives</a></li>
-          <li><a href="gemini/2025-12-07-Cosmic-Scale.html">&gt; gemini/2025-12-07-Cosmic-Scale.html</a></li>
-          <li><a href="gemini/2025-12-07-Fashion-Roadmap">&gt; gemini/2025-12-07-Fashion-Roadmap</a></li>
-          <li><a href="gemini/2025-12-07-Interactive-Journal-Timeline.html">&gt; gemini/2025-12-07-Interactive-Journal-Timeline.html</a></li>
-          <li><a href="gemini/2025-12-07-Photo-Portfolio.html">&gt; gemini/2025-12-07-Photo-Portfolio.html</a></li>
-          <li><a href="gemini/2025-12-07-Plano-Fashion-Stores.html">&gt; gemini/2025-12-07-Plano-Fashion-Stores.html</a></li>
-          <li><a href="gemini/2025-12-07-Retro-Asteroids-Game.html">&gt; gemini/2025-12-07-Retro-Asteroids-Game.html</a></li>
-          <li><a href="gemini/2025-12-07-Societal-Value-of-Parades.html">&gt; gemini/2025-12-07-Societal-Value-of-Parades.html</a></li>
-          <li><a href="gemini/2025-12-08-CoPilot-Research">&gt; gemini/2025-12-08-CoPilot-Research</a></li>
-          <li><a href="gemini/2025-12-08-PPL_Info">&gt; gemini/2025-12-08-PPL_Info</a></li>
-          <li><a href="gemini/VCF52AdminQuiz.html">&gt; gemini/VCF52AdminQuiz.html</a></li>
-        </ul>
+        <ul id="gemini-list"></ul>
       </section>
 
       <section class="panel" id="history">
@@ -342,13 +290,14 @@
           <li>2025-08-03: Added homepage with links to other pages and created this history section.</li>
           <li>2025-08-03: Updated homepage to list all HTML and Markdown files automatically.</li>
           <li>2025-12-08: Converted homepage to a fully static index with manually curated Gemini links.</li>
+          <li>2025-12-08: Switched homepage to generate link lists from a single manifest.</li>
         </ul>
       </section>
 
       <section class="panel" aria-live="polite">
         <h2 data-label="Console">Terminal Feed</h2>
         <div class="divider"></div>
-        <div class="log">[BOOT] Static manifest loaded. Manual link inventory complete.</div>
+        <div class="log">[BOOT] Manifest loaded. Link inventory generated automatically.</div>
       </section>
     </main>
 
@@ -356,5 +305,66 @@
       <p>&copy; <span>2025</span> Matt Schneider // Designed with <span>retro-futurism</span> in mind.</p>
     </footer>
   </div>
+
+  <script>
+    const htmlLinks = [
+      'gemini/2025-06-02_Four_Faces_Of_Change.html',
+      'gemini/2025-06-02_VCF_Study_Guide.html',
+      'gemini/2025-06-06-AI-Infographic.html',
+      'gemini/2025-06-06-FoundationOfAI.html',
+      'gemini/2025-06-06_Prompt_Enginering_Guide.html',
+      'gemini/2025-06-06_VCF_Service_Strategy.html',
+      'gemini/2025-06-06_VCF_Service_Strategy_A.html',
+      'gemini/2025-06-09_WWT_VCF_Service_Catalog.html',
+      'gemini/2025-06-16_The_New_IandO.html',
+      'gemini/2025-07-04_Five_Dysfunctions_Pecha_Kucha.html',
+      'gemini/2025-07-27_VCF_52_Admin_Quiz.html',
+      'gemini/2025-07-28_VCF_52_Admin_Quiz.html',
+      'gemini/2025-09-24-Lego_Serious_Play',
+      'gemini/2025-09-24-VICE_Strategic_Inititives',
+      'gemini/2025-12-07-Cosmic-Scale.html',
+      'gemini/2025-12-07-Fashion-Roadmap',
+      'gemini/2025-12-07-Interactive-Journal-Timeline.html',
+      'gemini/2025-12-07-Photo-Portfolio.html',
+      'gemini/2025-12-07-Plano-Fashion-Stores.html',
+      'gemini/2025-12-07-Retro-Asteroids-Game.html',
+      'gemini/2025-12-07-Societal-Value-of-Parades.html',
+      'gemini/2025-12-08-CoPilot-Research.html',
+      'gemini/2025-12-08-PPL_Info.html',
+      'gemini/VCF52AdminQuiz.html'
+    ];
+
+    const markdownLinks = [];
+
+    const renderLinks = (listId, links, emptyMessage = 'No documents found.') => {
+      const listEl = document.getElementById(listId);
+      listEl.innerHTML = '';
+
+      if (!links.length) {
+        listEl.innerHTML = `<li>${emptyMessage}</li>`;
+        return;
+      }
+
+      links
+        .sort((a, b) => a.localeCompare(b))
+        .forEach((href) => {
+          const item = document.createElement('li');
+          const anchor = document.createElement('a');
+          anchor.href = href;
+          anchor.textContent = `> ${href}`;
+          item.appendChild(anchor);
+          listEl.appendChild(item);
+        });
+    };
+
+    renderLinks('html-list', htmlLinks, 'No HTML documents found.');
+    renderLinks('gemini-list', htmlLinks, 'No Gemini documents found.');
+    renderLinks('markdown-list', markdownLinks, 'No markdown documents found.');
+
+    document.getElementById('html-count').textContent = htmlLinks.length;
+    document.getElementById('gemini-count').textContent = htmlLinks.length;
+    document.getElementById('markdown-count').textContent = markdownLinks.length;
+    document.getElementById('last-sync').textContent = '2025-12-08';
+  </script>
 </body>
 </html>
