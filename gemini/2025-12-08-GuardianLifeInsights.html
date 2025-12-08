@@ -1,0 +1,415 @@
+import React, { useState } from 'react';
+import { 
+  Cloud, 
+  Wind, 
+  Shield, 
+  Code, 
+  Database, 
+  Cpu, 
+  ExternalLink, 
+  CheckCircle, 
+  Menu,
+  X,
+  ChevronRight,
+  TrendingUp,
+  Users,
+  Lightbulb
+} from 'lucide-react';
+
+const GuardianInfographic = () => {
+  const [activeTab, setActiveTab] = useState('timeline');
+  const [selectedTech, setSelectedTech] = useState(null);
+
+  const colors = {
+    primary: "text-cyan-400",
+    bg: "bg-slate-900",
+    card: "bg-slate-800",
+    accent: "border-cyan-500"
+  };
+
+  const timelineEvents = [
+    {
+      year: "2012",
+      title: "Hurricane Sandy",
+      icon: <Wind size={24} />,
+      desc: "The Catalyst. Superstorm Sandy displaced the company, forcing a realization: physical offices are a single point of failure. This initiated the 'Guardian on the Go' remote readiness program.",
+      impact: "100% Laptop Deployment"
+    },
+    {
+      year: "2018",
+      title: "The Great Migration",
+      icon: <Cloud size={24} />,
+      desc: "Data Center Shutdown. Guardian closed its 50-year-old owned data center and migrated majority workloads to the public cloud.",
+      impact: "Partnered with AWS"
+    },
+    {
+      year: "2020",
+      title: "COVID-19 Stress Test",
+      icon: <Shield size={24} />,
+      desc: "The Payoff. Because of the Sandy prep and 2018 cloud move, the transition to 100% remote work during the pandemic was a 'non-event'.",
+      impact: "Zero Downtime"
+    },
+    {
+      year: "Future",
+      title: "The Lake House",
+      icon: <Database size={24} />,
+      desc: "Next Gen Data. Moving from Data Lakes to 'Lake House' architecture to drive predictive customer experiences.",
+      impact: "AI & Automation"
+    }
+  ];
+
+  const techStack = [
+    {
+      id: "aws",
+      name: "AWS Cloud",
+      icon: <Cloud size={40} className="text-orange-400" />,
+      role: "Infrastructure",
+      details: "In Nov 2018, Guardian selected AWS as its preferred cloud provider to close its data centers. Leverages Compute, Database, and Analytics.",
+      verified: true
+    },
+    {
+      id: "eks",
+      name: "Amazon EKS",
+      icon: <Cpu size={40} className="text-blue-400" />,
+      role: "Containerization",
+      details: "Used Elastic Kubernetes Service (EKS) to move from legacy monoliths to microservices, improving scalability.",
+      verified: true
+    },
+    {
+      id: "alip",
+      name: "Accenture ALIP",
+      icon: <Code size={40} className="text-purple-400" />,
+      role: "Legacy Modernization",
+      details: "Replaced policy admin systems (dating back 'before the moon landing') with Accenture Life Insurance Platform (SaaS).",
+      verified: true
+    },
+    {
+      id: "planview",
+      name: "Planview",
+      icon: <Lightbulb size={40} className="text-yellow-400" />,
+      role: "Innovation Mgmt",
+      details: "Powers the 'Idea Marketplace' used for internal innovation challenges and Shark Tank style voting.",
+      verified: true
+    }
+  ];
+
+  const innovationModel = [
+    {
+      level: "Core",
+      desc: "Doing what we do today, but faster, better, cheaper.",
+      example: "RPA (Robotic Process Automation)"
+    },
+    {
+      level: "Adjacent",
+      desc: "Adopting successful ideas from other industries.",
+      example: "Digital Agents / Chatbots"
+    },
+    {
+      level: "Transformational",
+      desc: "Rethinking the business model entirely.",
+      example: "Cloud-first, Data-driven prediction"
+    }
+  ];
+
+  const claims = [
+    {
+      claim: "Shut down data center in 2018",
+      status: "Verified",
+      context: "Confirmed via AWS Press Release (Nov 2018) stating Guardian selected AWS and was closing owned data centers."
+    },
+    {
+      claim: "Guardian on the Go program",
+      status: "Verified",
+      context: "Initiated post-Sandy (2012) to ensure every employee had a laptop and VPN access."
+    },
+    {
+      claim: "Venture Fund existence",
+      status: "Verified",
+      context: "Entity is 'GIS Strategic Ventures LLC', investing in insurtech and fintech startups."
+    }
+  ];
+
+  return (
+    <div className={`min-h-screen ${colors.bg} text-slate-200 font-sans selection:bg-cyan-500 selection:text-white`}>
+      {/* Header */}
+      <header className="border-b border-slate-700 bg-slate-900/90 sticky top-0 z-50 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <Shield className="text-cyan-400" size={32} />
+            <div>
+              <h1 className="text-xl font-bold tracking-wider text-white">GUARDIAN<span className="text-cyan-400">intel</span></h1>
+              <p className="text-xs text-slate-400 uppercase tracking-widest">Technovation Breakdown</p>
+            </div>
+          </div>
+          <nav className="hidden md:flex gap-6">
+            {['timeline', 'tech', 'innovation', 'facts'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`uppercase text-sm font-bold tracking-wide transition-colors ${
+                  activeTab === tab ? 'text-cyan-400 border-b-2 border-cyan-400' : 'text-slate-500 hover:text-white'
+                } pb-1`}
+              >
+                {tab}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        
+        {/* Hero Section */}
+        <section className="mb-12 p-8 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
+          <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
+            <div className="flex-1">
+              <div className="inline-block px-3 py-1 bg-cyan-900/30 text-cyan-400 rounded-full text-xs font-bold mb-4 border border-cyan-500/30">
+                VIDEO ANALYSIS
+              </div>
+              <h2 className="text-4xl font-bold text-white mb-4">How Hurricane Sandy Prepared a 160-Year-Old Company for COVID-19</h2>
+              <p className="text-slate-300 text-lg leading-relaxed mb-6">
+                Dean Del Vecchio (CIO) breaks down the massive digital transformation at Guardian Life. 
+                From legacy mainframes to a cloud-native architecture that enabled a seamless transition to remote work.
+              </p>
+              <div className="flex gap-4">
+                <a href="https://youtu.be/FA5ZkS5Ae4A" target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-2 rounded-lg font-semibold transition-all">
+                  Watch Video <ExternalLink size={16} />
+                </a>
+              </div>
+            </div>
+            <div className="w-full md:w-1/3 bg-black/30 p-6 rounded-xl border border-slate-700">
+              <h3 className="text-xs uppercase text-slate-500 font-bold mb-4 tracking-widest">Key Metrics</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center border-b border-slate-700 pb-2">
+                  <span className="text-slate-400">Cloud Adoption</span>
+                  <span className="text-cyan-400 font-mono font-bold">100% AWS</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-slate-700 pb-2">
+                  <span className="text-slate-400">Legacy Age</span>
+                  <span className="text-red-400 font-mono font-bold">50+ Years</span>
+                </div>
+                <div className="flex justify-between items-center pb-2">
+                  <span className="text-slate-400">Remote Workforce</span>
+                  <span className="text-green-400 font-mono font-bold">4,500+</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Tab Content */}
+        {activeTab === 'timeline' && (
+          <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex items-center gap-2 mb-8">
+              <ChevronRight className="text-cyan-400" />
+              <h3 className="text-2xl font-bold text-white">Chronology of Transformation</h3>
+            </div>
+            <div className="relative">
+              {/* Vertical Line */}
+              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-slate-700 md:left-1/2 md:-ml-0.5"></div>
+              
+              <div className="space-y-12">
+                {timelineEvents.map((event, index) => (
+                  <div key={index} className={`relative flex flex-col md:flex-row gap-8 ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
+                    <div className="flex-1 md:text-right">
+                      {index % 2 === 0 && (
+                        <div className="hidden md:block">
+                          <h4 className="text-4xl font-black text-slate-800 absolute top-0 right-1/2 mr-16 select-none">{event.year}</h4>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Timeline Node */}
+                    <div className="absolute left-8 -ml-4 md:left-1/2 md:-ml-4 w-8 h-8 bg-slate-900 border-2 border-cyan-500 rounded-full flex items-center justify-center z-10 shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+                      <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                    </div>
+
+                    <div className="flex-1 ml-16 md:ml-0">
+                      <div className={`bg-slate-800 p-6 rounded-xl border border-slate-700 hover:border-cyan-500/50 transition-colors group`}>
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="p-2 bg-slate-900 rounded-lg text-cyan-400 group-hover:text-cyan-300">
+                            {event.icon}
+                          </div>
+                          <span className="text-sm font-mono text-cyan-500 font-bold">{event.year}</span>
+                        </div>
+                        <h4 className="text-xl font-bold text-white mb-2">{event.title}</h4>
+                        <p className="text-slate-400 text-sm mb-4 leading-relaxed">{event.desc}</p>
+                        <div className="inline-block px-3 py-1 bg-green-900/30 text-green-400 rounded text-xs font-mono border border-green-500/30">
+                          RESULT: {event.impact}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'tech' && (
+          <section className="animate-in fade-in zoom-in-95 duration-500">
+            <div className="flex items-center gap-2 mb-8">
+              <Cpu className="text-cyan-400" />
+              <h3 className="text-2xl font-bold text-white">Technology Stack Deep Dive</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {techStack.map((tech) => (
+                <div 
+                  key={tech.id}
+                  className="bg-slate-800 p-6 rounded-xl border border-slate-700 hover:bg-slate-750 transition-all cursor-pointer hover:border-cyan-500/30 group"
+                  onClick={() => setSelectedTech(selectedTech === tech.id ? null : tech.id)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-slate-900 rounded-xl border border-slate-700 group-hover:border-cyan-500/50 transition-colors">
+                        {tech.icon}
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-bold text-white">{tech.name}</h4>
+                        <p className="text-xs text-slate-400 uppercase tracking-wider">{tech.role}</p>
+                      </div>
+                    </div>
+                    {tech.verified && <CheckCircle size={16} className="text-green-500" />}
+                  </div>
+                  
+                  <div className={`mt-4 pt-4 border-t border-slate-700/50 overflow-hidden transition-all duration-300 ${selectedTech === tech.id ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <p className="text-slate-300 text-sm leading-relaxed">
+                      {tech.details}
+                    </p>
+                  </div>
+                  {selectedTech !== tech.id && (
+                    <p className="text-xs text-center text-slate-600 mt-4 group-hover:text-cyan-500 transition-colors">Click to expand details</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'innovation' && (
+          <section className="animate-in fade-in slide-in-from-right-4 duration-500">
+             <div className="flex items-center gap-2 mb-8">
+              <Lightbulb className="text-cyan-400" />
+              <h3 className="text-2xl font-bold text-white">Innovation Strategy</h3>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-4 mb-12">
+              {innovationModel.map((item, idx) => (
+                <div key={idx} className="bg-slate-800 border-t-4 border-cyan-500 p-6 rounded-b-xl shadow-lg">
+                  <h4 className="text-4xl font-black text-slate-700 mb-2">0{idx + 1}</h4>
+                  <h5 className="text-xl font-bold text-white mb-2">{item.level}</h5>
+                  <p className="text-slate-400 text-sm mb-4 h-12">{item.desc}</p>
+                  <div className="bg-slate-900 p-3 rounded border border-slate-700">
+                    <span className="text-xs text-slate-500 block mb-1">EXAMPLE</span>
+                    <span className="text-cyan-400 font-mono text-sm">{item.example}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 p-8 rounded-2xl border border-purple-500/30">
+              <div className="flex flex-col md:flex-row items-center gap-8">
+                <div className="flex-1">
+                  <h4 className="text-2xl font-bold text-white mb-2">Workforce Transformation</h4>
+                  <p className="text-slate-300 mb-6">
+                    Technology adoption isn't just about software; it's about people. Guardian implemented two key programs to reskill their workforce.
+                  </p>
+                  <div className="space-y-4">
+                    <div className="flex gap-4 items-start">
+                      <div className="bg-blue-500/20 p-2 rounded text-blue-400 mt-1"><Code size={20} /></div>
+                      <div>
+                        <h5 className="text-white font-bold">Code for Good</h5>
+                        <p className="text-sm text-slate-400">Reskilling non-tech employees (e.g., operations staff) into full-stack developers through bootcamps.</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-4 items-start">
+                      <div className="bg-purple-500/20 p-2 rounded text-purple-400 mt-1"><TrendingUp size={20} /></div>
+                      <div>
+                        <h5 className="text-white font-bold">Automation for Good</h5>
+                        <p className="text-sm text-slate-400">Empowering employees to identify repetitive tasks and build their own RPA bots to automate them.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-slate-900 p-6 rounded-xl border border-slate-700 w-full md:w-80">
+                  <h5 className="text-xs uppercase text-slate-500 font-bold mb-4">Innovation Pipeline</h5>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-white">Idea Marketplace</span>
+                      <span className="text-green-400">Active</span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div className="bg-green-500 w-full h-full"></div>
+                    </div>
+                    
+                    <div className="flex justify-between text-sm mt-2">
+                      <span className="text-white">Innovation Challenges</span>
+                      <span className="text-yellow-400">Quarterly</span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div className="bg-yellow-500 w-3/4 h-full"></div>
+                    </div>
+
+                    <div className="flex justify-between text-sm mt-2">
+                      <span className="text-white">Shark Tank Voting</span>
+                      <span className="text-cyan-400">Verified</span>
+                    </div>
+                    <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div className="bg-cyan-500 w-1/2 h-full"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'facts' && (
+          <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+             <div className="flex items-center gap-2 mb-8">
+              <CheckCircle className="text-green-400" />
+              <h3 className="text-2xl font-bold text-white">Claim Verification</h3>
+            </div>
+            <div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-800">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-900 border-b border-slate-700">
+                    <th className="p-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Claim in Video</th>
+                    <th className="p-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                    <th className="p-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Context & Research</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-700">
+                  {claims.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-700/50 transition-colors">
+                      <td className="p-4 text-white font-medium">{item.claim}</td>
+                      <td className="p-4">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900/30 text-green-400 border border-green-500/30">
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="p-4 text-slate-400 text-sm">{item.context}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-8 p-6 bg-slate-900 rounded-xl border border-slate-800">
+              <h4 className="text-lg font-bold text-white mb-4">External References</h4>
+              <ul className="space-y-2 text-sm text-cyan-400 font-mono">
+                <li><a href="https://www.guardianlife.com/news/release/guardian-life-insurance-selects-aws-its-preferred-cloud-provider" target="_blank" rel="noreferrer" className="hover:underline flex items-center gap-2"><ExternalLink size={12}/> Guardian Selects AWS (Nov 2018 Press Release)</a></li>
+                <li><a href="https://www.metisstrategy.com/interview/dean-del-vecchio/" target="_blank" rel="noreferrer" className="hover:underline flex items-center gap-2"><ExternalLink size={12}/> Metis Strategy Interview Source</a></li>
+                <li><a href="https://www.planview.com/resources/case-study/guardian-financial-group/" target="_blank" rel="noreferrer" className="hover:underline flex items-center gap-2"><ExternalLink size={12}/> Planview Innovation Case Study</a></li>
+              </ul>
+            </div>
+          </section>
+        )}
+
+      </main>
+    </div>
+  );
+};
+
+export default GuardianInfographic;
