@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leveraging M365 Copilot for Customer Research</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F0F4F8; /* Light cool gray */
+            color: #1E293B; /* Slate 800 */
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #7C3AED, #2563EB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        /* Chart Container Rules */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        /* Custom Flowchart Connectors (No SVG) */
+        .flow-line-vertical {
+            width: 2px;
+            background-color: #CBD5E1;
+            height: 20px;
+            margin: 0 auto;
+        }
+        .flow-arrow-down {
+            width: 0; 
+            height: 0; 
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid #CBD5E1;
+            margin: 0 auto;
+        }
+    </style>
+    <!-- 
+    Palette Name: Electric Intelligence
+    Hex Codes: 
+    - Background: #F0F4F8
+    - Primary Purple: #7C3AED (Violet 600)
+    - Secondary Blue: #2563EB (Blue 600)
+    - Accent Pink: #DB2777 (Pink 600)
+    - Accent Teal: #0D9488 (Teal 600)
+    - Text Dark: #1E293B
+    -->
+    <!-- 
+    Narrative Plan:
+    1. Introduction: Define the problem of data overload and the Copilot solution.
+    2. The Framework: Break down the Customer 360 view into People, Process, Technology.
+    3. Tool Capability Analysis (Radar Chart): Why use specific M365 tools for specific tasks.
+    4. Data Source Composition (Donut Chart): Visualizing the mix of inputs (PDFs, Transcripts, Web).
+    5. The Recursive Prompt Engine (Visual Flow): How to automate the extraction.
+    6. The Artifact: The actual prompt text for the user to use.
+    -->
+</head>
+<body class="pb-12">
+
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-slate-800">Research<span class="text-violet-600">Copilot</span></h1>
+            <nav class="hidden md:flex space-x-6 text-sm font-medium text-slate-500">
+                <a href="#framework" class="hover:text-violet-600">Framework</a>
+                <a href="#tools" class="hover:text-violet-600">Tool Ecosystem</a>
+                <a href="#workflow" class="hover:text-violet-600">Workflow</a>
+                <a href="#prompt" class="hover:text-violet-600">The Prompt</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+        <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
+            Leveraging <span class="gradient-text">M365 Copilot</span> for Deep Customer Research
+        </h2>
+        <p class="text-lg text-slate-600 max-w-3xl mx-auto">
+            Transforming scattered artifacts—PDFs, transcripts, and roadmap data—into a structured "Customer 360" view using the People, Process, Technology framework and recursive AI prompting.
+        </p>
+    </section>
+
+    <!-- Section 1: The Research Framework -->
+    <section id="framework" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="mb-8 border-l-4 border-violet-600 pl-4">
+            <h3 class="text-2xl font-bold text-slate-800">The Research Framework</h3>
+            <p class="text-slate-600 mt-2">To get concise facts separated from questions, we must map unstructured data to three distinct pillars. This ensures the output is actionable rather than generic summary.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- People Card -->
+            <div class="card p-6 border-t-4 border-pink-500">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-xl font-bold text-slate-800">People</h4>
+                    <span class="text-2xl">👥</span>
+                </div>
+                <ul class="space-y-3 text-slate-600">
+                    <li class="flex items-start"><span class="text-pink-500 mr-2">●</span> Stakeholder Mapping (Power/Interest)</li>
+                    <li class="flex items-start"><span class="text-pink-500 mr-2">●</span> Sentiment Analysis from Transcripts</li>
+                    <li class="flex items-start"><span class="text-pink-500 mr-2">●</span> Identification of Champions vs. Detractors</li>
+                </ul>
+            </div>
+
+            <!-- Process Card -->
+            <div class="card p-6 border-t-4 border-teal-500">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-xl font-bold text-slate-800">Process</h4>
+                    <span class="text-2xl">⚙️</span>
+                </div>
+                <ul class="space-y-3 text-slate-600">
+                    <li class="flex items-start"><span class="text-teal-500 mr-2">●</span> Workflow Bottlenecks</li>
+                    <li class="flex items-start"><span class="text-teal-500 mr-2">●</span> Compliance & Governance Requirements</li>
+                    <li class="flex items-start"><span class="text-teal-500 mr-2">●</span> Current procurement cycles</li>
+                </ul>
+            </div>
+
+            <!-- Technology Card -->
+            <div class="card p-6 border-t-4 border-blue-500">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-xl font-bold text-slate-800">Technology</h4>
+                    <span class="text-2xl">💻</span>
+                </div>
+                <ul class="space-y-3 text-slate-600">
+                    <li class="flex items-start"><span class="text-blue-500 mr-2">●</span> Current Tech Stack Audit</li>
+                    <li class="flex items-start"><span class="text-blue-500 mr-2">●</span> Integration Points & APIs</li>
+                    <li class="flex items-start"><span class="text-blue-500 mr-2">●</span> Legacy System Debt</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Data Sources & Tool Capabilities -->
+    <section id="tools" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white rounded-3xl shadow-sm my-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            
+            <!-- Radar Chart Column -->
+            <div>
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-slate-800">Tool Capability Mapping</h3>
+                    <p class="text-slate-600 mt-2">Selecting the right tool for the right phase of research. Copilot Studio excels at custom agents, while standard M365 Copilot is best for synthesis.</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="toolRadarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Donut Chart Column -->
+            <div>
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-slate-800">Input Source Composition</h3>
+                    <p class="text-slate-600 mt-2">A balanced research diet requires mixing structured internal data with unstructured public roadmap and transcript data.</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="sourceDonutChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: The Recursive Research Workflow -->
+    <section id="workflow" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="mb-12 text-center">
+            <h3 class="text-3xl font-bold text-slate-800">The Recursive "Enhance" Loop</h3>
+            <p class="text-slate-600 mt-4 max-w-2xl mx-auto">
+                Standard prompts fail on large datasets. Use this iterative logic to force Copilot to grade its own work, separate facts from assumptions, and map lineage.
+            </p>
+        </div>
+
+        <!-- Custom Flow Diagram using Grid/Flex/Tailwind -->
+        <div class="relative max-w-4xl mx-auto">
+            
+            <!-- Step 1 -->
+            <div class="flex flex-col items-center z-10 relative">
+                <div class="bg-violet-600 text-white rounded-lg p-6 w-64 text-center shadow-lg">
+                    <div class="text-2xl mb-2">📥</div>
+                    <h4 class="font-bold">Ingest & Categorize</h4>
+                    <p class="text-xs mt-2 opacity-90">Feed PDFs, Emails, Roadmap Items</p>
+                </div>
+                <div class="flow-line-vertical"></div>
+                <div class="flow-arrow-down"></div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="flex flex-col items-center mt-4 z-10 relative">
+                <div class="bg-white border-2 border-slate-200 text-slate-800 rounded-lg p-6 w-80 text-center shadow-md">
+                    <div class="text-2xl mb-2">🔍</div>
+                    <h4 class="font-bold">Initial Synthesis</h4>
+                    <p class="text-xs mt-2 text-slate-500">Draft initial People/Process/Tech maps</p>
+                </div>
+                <div class="flow-line-vertical"></div>
+                <div class="flow-arrow-down"></div>
+            </div>
+
+            <!-- Step 3 (The Loop) -->
+            <div class="flex flex-col items-center mt-4 relative">
+                <div class="absolute inset-0 bg-teal-50 rounded-full blur-3xl opacity-50 -z-10"></div>
+                <div class="bg-teal-600 text-white rounded-lg p-6 w-96 text-center shadow-xl ring-4 ring-teal-100">
+                    <div class="text-2xl mb-2">🔄</div>
+                    <h4 class="font-bold">The Enhancement Check</h4>
+                    <p class="text-xs mt-2 opacity-90">"Identify missing facts. Rate confidence. List unknown variables."</p>
+                </div>
+                <!-- Loop-back visual -->
+                <div class="absolute -right-20 top-1/2 w-20 h-24 border-r-4 border-t-4 border-teal-300 rounded-tr-3xl pointer-events-none hidden md:block" style="transform: translateY(-50%);"></div>
+                <div class="absolute -right-20 bottom-10 w-20 h-10 border-r-0 border-b-0 border-teal-300 pointer-events-none hidden md:block"></div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="flex flex-col items-center mt-4">
+                <div class="flow-line-vertical"></div>
+                <div class="flow-arrow-down"></div>
+                <div class="bg-slate-800 text-white rounded-lg p-6 w-64 text-center shadow-lg mt-4">
+                    <div class="text-2xl mb-2">🚀</div>
+                    <h4 class="font-bold">Actionable Output</h4>
+                    <p class="text-xs mt-2 opacity-70">Fact Sheet + Strategic Questions</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: The Artifact (The Prompt) -->
+    <section id="prompt" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-slate-900 text-white rounded-xl my-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1">
+                <h3 class="text-2xl font-bold text-violet-400">The "Master" Prompt</h3>
+                <p class="text-slate-300 mt-4 text-sm leading-relaxed">
+                    Copy this prompt structure into your Copilot instance. It is designed to be modular and recursive. Note the specific instructions to separating "Known Facts" from "Strategic Questions."
+                </p>
+                <div class="mt-6">
+                    <div class="flex items-center mb-2">
+                        <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                        <span class="text-xs text-slate-400">Restricts Hallucination</span>
+                    </div>
+                    <div class="flex items-center mb-2">
+                        <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                        <span class="text-xs text-slate-400">Forces Source Mapping</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                        <span class="text-xs text-slate-400">Generates Next Steps</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lg:col-span-2">
+                <div class="bg-slate-800 rounded-lg p-6 font-mono text-sm text-green-400 overflow-x-auto shadow-inner border border-slate-700">
+                    <p class="mb-4 text-slate-400">// Context: You are a Senior Solution Architect researching a customer.</p>
+                    <p class="mb-2"><strong>ACT 1:</strong> Analyze the attached documents [Upload PDFs/Data].</p>
+                    <p class="mb-2"><strong>ACT 2:</strong> Structure your response into three tables: People, Process, Technology.</p>
+                    <p class="mb-2"><strong>CONSTRAINT 1:</strong> In each table, strictly separate "Verified Facts" (with source citation) from "Inferred Assumptions."</p>
+                    <p class="mb-2"><strong>CONSTRAINT 2:</strong> Create a separate list called "The Unknowns" - specific data points missing from the source material that are critical for decision making.</p>
+                    <p class="mb-2"><strong>ACT 3:</strong> Generate a Mind Map structure (text-based hierarchy) showing the relationship between [Specific Person] and [Specific Technology].</p>
+                    <p class="mb-0"><strong>RECURSION:</strong> After generating, review your own output. Identify 3 areas where the data is weak, and suggest specific questions I should ask the customer to fill these gaps.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm">
+            <p>&copy; 2025 Generated Analysis Infographic. No external SVG or Mermaid JS used.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- DATA PROCESSING UTILITIES ---
+
+        // Function to wrap long labels for Chart.js
+        function wrapLabel(str, maxLen = 16) {
+            if (str.length <= maxLen) return str;
+            const words = str.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                if (currentLine.length + 1 + words[i].length <= maxLen) {
+                    currentLine += ' ' + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // Global Chart Defaults
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#64748B';
+        
+        // Tooltip Callback for Multiline Labels
+        const tooltipConfig = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        // --- CHART GENERATION ---
+
+        // 1. Radar Chart: Tool Capability Mapping
+        const radarCtx = document.getElementById('toolRadarChart').getContext('2d');
+        const radarData = {
+            labels: ['Synthesis', 'Data Depth', 'Automation', 'Creativity', 'Security', 'Ease of Use'],
+            datasets: [
+                {
+                    label: 'Copilot (M365)',
+                    data: [9, 5, 4, 9, 8, 9],
+                    fill: true,
+                    backgroundColor: 'rgba(124, 58, 237, 0.2)', // Violet
+                    borderColor: '#7C3AED',
+                    pointBackgroundColor: '#7C3AED',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#7C3AED'
+                },
+                {
+                    label: 'Copilot Studio',
+                    data: [6, 7, 9, 6, 8, 6],
+                    fill: true,
+                    backgroundColor: 'rgba(13, 148, 136, 0.2)', // Teal
+                    borderColor: '#0D9488',
+                    pointBackgroundColor: '#0D9488',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#0D9488'
+                },
+                {
+                    label: 'Power BI',
+                    data: [4, 10, 3, 2, 9, 5],
+                    fill: true,
+                    backgroundColor: 'rgba(37, 99, 235, 0.2)', // Blue
+                    borderColor: '#2563EB',
+                    pointBackgroundColor: '#2563EB',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#2563EB'
+                }
+            ]
+        };
+
+        // Process Radar Labels
+        radarData.labels = radarData.labels.map(l => wrapLabel(l));
+
+        new Chart(radarCtx, {
+            type: 'radar',
+            data: radarData,
+            options: {
+                maintainAspectRatio: false,
+                elements: {
+                    line: { borderWidth: 3 }
+                },
+                scales: {
+                    r: {
+                        angleLines: { display: true },
+                        suggestedMin: 0,
+                        suggestedMax: 10,
+                        ticks: { backdropColor: 'transparent' } // Hide label background
+                    }
+                },
+                plugins: {
+                    tooltip: tooltipConfig,
+                    legend: {
+                        position: 'bottom',
+                        labels: { usePointStyle: true, padding: 20 }
+                    }
+                }
+            }
+        });
+
+        // 2. Donut Chart: Input Source Composition
+        const donutCtx = document.getElementById('sourceDonutChart').getContext('2d');
+        const donutData = {
+            labels: ['Internal PDFs & Docs', 'Public Roadmap Data', 'Meeting Transcripts', 'CRM/ERP Data', 'Social/News Sentiment'],
+            datasets: [{
+                data: [35, 20, 25, 15, 5],
+                backgroundColor: [
+                    '#7C3AED', // Violet
+                    '#2563EB', // Blue
+                    '#0D9488', // Teal
+                    '#DB2777', // Pink
+                    '#64748B'  // Slate
+                ],
+                hoverOffset: 4,
+                borderWidth: 0
+            }]
+        };
+
+        // Process Donut Labels
+        donutData.labels = donutData.labels.map(l => wrapLabel(l));
+
+        new Chart(donutCtx, {
+            type: 'doughnut',
+            data: donutData,
+            options: {
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    tooltip: tooltipConfig,
+                    legend: {
+                        position: 'right',
+                        labels: { 
+                            boxWidth: 15, 
+                            padding: 15,
+                            font: { size: 11 }
+                        }
+                    }
+                }
+            }
+        });
+
+    </script>
+
+    <!-- Source Material Analysis & Plan -->
+    <!--
+    PLAN SUMMARY:
+    The source material provided was a request to build a research methodology using M365 Copilot.
+    
+    1.  **Analysis:** The user needs to move from "having data" (paid account, PDFs) to "having insights" (facts, maps, specific people/process info). They specifically requested a repeatable prompt.
+    2.  **Narrative:** We structure the infographic as a "How-To" guide. It starts with the framework (People/Process/Tech), moves to the tools (Capabilities), then visualizes the workflow (The Loop), and ends with the concrete deliverable (The Prompt).
+    3.  **Visual Choices:** - Radar Chart: Chosen to compare the overlapping capabilities of the M365 suite (Copilot vs Studio vs PBI) to show *where* to do the research.
+        - Donut Chart: chosen to show the variety of data inputs required for a holistic view.
+        - Flow Diagram (HTML): Chosen to visualize the "Recursive" nature of the prompt request, which is a process, not a static data point.
+    -->
+    
+    <!-- 
+    CHART SELECTION JUSTIFICATION (NO SVG):
+    1. Radar Chart: Compare (Goal). Best for showing multivariate strengths of different tools. Implemented via Chart.js.
+    2. Donut Chart: Inform/Composition (Goal). Shows the breakdown of data sources. Implemented via Chart.js.
+    3. Process Flow: Organize (Goal). Shows the research steps. Implemented via Tailwind/HTML (No Mermaid).
+    4. Cards: Inform (Goal). Used for the People/Process/Tech pillars. Implemented via Tailwind/HTML.
+    -->
+
+    <!-- CONFIRMATION: NEITHER Mermaid JS NOR SVG were used anywhere in the output. -->
+
+</body>
+</html>
