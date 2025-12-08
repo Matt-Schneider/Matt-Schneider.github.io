@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPL Electric: Account Intelligence & Challenger Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .chart-container { position: relative; width: 100%; height: 100%; overflow: hidden; }
+        .nav-item.active { border-bottom: 2px solid #ea580c; color: #ea580c; font-weight: 600; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .transition-all-300 { transition: all 0.3s ease; }
+        /* Custom scrollbar for text panels */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals with Corporate Orange/Blue Accents. Background: Slate-50. Accents: Orange-600 (PPL Brand approx), Blue-800 (Corporate). -->
+    <!-- Application Structure Plan: 
+         1. Header: Global context and navigation.
+         2. Executive Dashboard (Home): High-level financial health, strategic pillars, and recent news ticker. Goal: "At a glance" context.
+         3. Strategic Analysis: Interactive "Value Chain" map showing friction points in PPL's operations. Goal: Identify the "Why Change?"
+         4. Buying Committee: A Plotly scatter plot mapping Influence vs. Budget Control. Goal: Target the right people.
+         5. Tech & Gap Analysis: A functional view of their stack vs. needs. Goal: "The Solution".
+         This structure moves from "Context" -> "Problem" -> "People" -> "Solution", mirroring a sales motion.
+    -->
+    <!-- Visualization & Content Choices:
+         1. Financial Overview: Chart.js Bar/Line mix. Shows CapEx trends vs O&M. Justification: Visualizes the "Squeeze" (spending more on assets, needing to cut O&M).
+         2. Buying Center Matrix: Plotly Scatter. Interaction: Hover for bio/incentives. Justification: Essential for sales targeting; interactive scatter is better than a static list.
+         3. Value Chain Friction: HTML/CSS Flex layout with click interactions. Justification: Users need to "drill down" into specific LOBs (Transmission, Distribution) to find specific insights.
+         4. Tech Stack Radar: Chart.js Radar Chart. Interaction: Toggle layers. Justification: Shows coverage vs. gaps in their current IT/OT convergence.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="text-slate-800">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="h-8 w-8 bg-orange-600 rounded flex items-center justify-center text-white font-bold">P</div>
+                    <span class="font-bold text-xl tracking-tight text-slate-900">Account Intel: PPL Corp</span>
+                </div>
+                <div class="flex space-x-8 items-center" id="nav-container">
+                    <!-- Nav items injected by JS -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
+        <div id="app-content">
+            <!-- Dynamic Content Loaded Here -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm">
+            <p>&copy; 2025 Strategic Research Simulation. Generated for Educational Purposes.</p>
+            <p class="mt-2">Data Source: Simulated 10-K, Press Releases, and Market Analysis based on Public Domain Info.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Data Store ---
+        const appData = {
+            meta: {
+                company: "PPL Corporation",
+                ticker: "PPL",
+                hq: "Allentown, PA",
+                revenue: "8.3B (Est)",
+                employees: "~6,600"
+            },
+            financials: {
+                years: ['2020', '2021', '2022', '2023', '2024'],
+                capex: [1.8, 2.1, 2.3, 2.5, 2.8], // Billions
+                om: [1.5, 1.6, 1.55, 1.65, 1.6] // Billions (O&M)
+            },
+            strategicPillars: [
+                {
+                    title: "Grid Modernization",
+                    desc: "Transitioning to a Distributed System Operator (DSO) model to handle two-way power flows.",
+                    insight: "High CapEx on sensors, but data utilization is lagging."
+                },
+                {
+                    title: "Decarbonization",
+                    desc: "Net-zero ambition by 2050; shifting generation mix and supporting EV adoption.",
+                    insight: "Regulatory pressure requires faster reporting than current systems allow."
+                },
+                {
+                    title: "Digital Transformation",
+                    desc: "Unifying IT (Information Tech) and OT (Operational Tech) to improve reliability.",
+                    insight: "The 'Data Silo' risk: Field crews don't have real-time access to SCADA data."
+                }
+            ],
+            stakeholders: [
+                { name: "Vincent Sorgi", role: "CEO", x: 9, y: 9, budget: "Enterprise", type: "Mobilizer", notes: "Focused on 'Utility of the Future'. Needs strategic ROI." },
+                { name: "Francis X. Sullivan", role: "COO", x: 8, y: 7, budget: "Operations", type: "Blocker", notes: "Protects legacy stability. Skeptical of cloud latency." },
+                { name: "Wendy Stark", role: "General Counsel", x: 6, y: 8, budget: "Legal/Risk", type: "Talker", notes: "Concerned with regulatory compliance and liability." },
+                { name: "CIO / Tech Lead", role: "CIO", x: 7, y: 5, budget: "IT Infrastructure", type: "Mobilizer", notes: "Driving the Azure/Data migration. Needs vendor consolidation." },
+                { name: "VP Dist. Ops", role: "VP Distribution", x: 5, y: 6, budget: "Field Ops", type: "Neutral", notes: "Needs tools that work in the rain. Low tolerance for complexity." }
+            ],
+            valueChain: [
+                {
+                    id: "gen",
+                    title: "Generation Procurement",
+                    icon: "⚡",
+                    status: "Stable",
+                    tech: "Legacy ERP, Trading Platforms",
+                    friction: "Market volatility exposure requiring real-time hedging tools."
+                },
+                {
+                    id: "trans",
+                    title: "Transmission",
+                    icon: "🗼",
+                    status: "Risk",
+                    tech: "SCADA, EMS (Energy Mgmt Systems)",
+                    friction: "Aging high-voltage assets. Reactive maintenance model is too costly."
+                },
+                {
+                    id: "dist",
+                    title: "Distribution",
+                    icon: "🏘️",
+                    status: "Critical",
+                    tech: "ADMS, GIS, Field Mobility",
+                    friction: "DER integration (Solar/EV) is destabilizing voltage. Lack of visibility at the edge."
+                },
+                {
+                    id: "cust",
+                    title: "Customer/Retail",
+                    icon: "👥",
+                    status: "Opportunity",
+                    tech: "CRM (Salesforce), Digital Billing",
+                    friction: "High call center volume during storms. Self-service apps are disjointed."
+                }
+            ],
+            techStack: {
+                labels: ['Cloud/Compute', 'Data/Analytics', 'Field Ops', 'Cybersecurity', 'Customer Exp'],
+                current: [70, 40, 60, 80, 50],
+                needed: [90, 90, 90, 95, 80]
+            }
+        };
+
+        // --- State Management ---
+        let currentState = {
+            view: 'dashboard', // dashboard, network, buying, tech
+            selectedLOB: null
+        };
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNav();
+            renderView('dashboard');
+        });
+
+        // --- Navigation Logic ---
+        function renderNav() {
+            const navItems = [
+                { id: 'dashboard', label: 'Executive Summary' },
+                { id: 'network', label: 'Value Chain & Friction' },
+                { id: 'buying', label: 'Buying Committee' },
+                { id: 'tech', label: 'Tech Profile' }
+            ];
+
+            const container = document.getElementById('nav-container');
+            container.innerHTML = navItems.map(item => `
+                <button 
+                    onclick="switchView('${item.id}')"
+                    class="nav-item px-3 py-2 text-sm font-medium transition-colors duration-200 ${currentState.view === item.id ? 'active' : 'text-slate-600 hover:text-orange-600'}"
+                >
+                    ${item.label}
+                </button>
+            `).join('');
+        }
+
+        function switchView(viewId) {
+            currentState.view = viewId;
+            renderNav();
+            renderView(viewId);
+        }
+
+        // --- View Rendering ---
+        function renderView(viewId) {
+            const container = document.getElementById('app-content');
+            container.innerHTML = ''; // Clear current content
+            
+            // Fade effect
+            container.classList.remove('opacity-100');
+            container.classList.add('opacity-0', 'transition-opacity', 'duration-200');
+
+            setTimeout(() => {
+                switch(viewId) {
+                    case 'dashboard': renderDashboard(container); break;
+                    case 'network': renderNetwork(container); break;
+                    case 'buying': renderBuying(container); break;
+                    case 'tech': renderTech(container); break;
+                }
+                container.classList.remove('opacity-0');
+                container.classList.add('opacity-100');
+            }, 200);
+        }
+
+        // --- View 1: Executive Dashboard ---
+        function renderDashboard(container) {
+            container.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Intro Text -->
+                    <div class="lg:col-span-3 bg-white p-6 rounded-lg shadow-sm border border-slate-100">
+                        <h1 class="text-2xl font-bold text-slate-800 mb-2">Executive Summary: The Reliability Paradox</h1>
+                        <p class="text-slate-600 leading-relaxed">
+                            PPL Electric is under immense pressure to modernize its grid ("Grid of the Future") while maintaining affordability. 
+                            The core commercial insight identified is a <strong>Reliability Paradox</strong>: Capital Expenditure (CapEx) on hardware sensors is increasing, 
+                            but without a unified data layer to process this input, Operational Expenditure (O&M) for maintenance is <em>also</em> rising, rather than falling.
+                            They are data-rich but insight-poor.
+                        </p>
+                    </div>
+
+                    <!-- Key Metrics -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-100 flex flex-col justify-between">
+                        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Financial Pressure</h3>
+                        <div class="flex items-end gap-2 mb-2">
+                            <span class="text-4xl font-bold text-slate-900">$2.8B</span>
+                            <span class="text-sm text-green-600 font-medium mb-1">↗ CapEx (Est 2024)</span>
+                        </div>
+                        <p class="text-xs text-slate-500">Record spend on infrastructure hardening.</p>
+                        <div class="mt-6 pt-6 border-t border-slate-100">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium">Regulatory Risk</span>
+                                <span class="text-xs font-bold text-orange-600">HIGH</span>
+                            </div>
+                            <div class="w-full bg-slate-200 rounded-full h-2">
+                                <div class="bg-orange-600 h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart: CapEx vs O&M -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-slate-100">
+                        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">The "Jaws" of Spending</h3>
+                        <div class="chart-container h-64 w-full">
+                            <canvas id="financialChart"></canvas>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2 text-center">Widening gap between CapEx investment and O&M savings implies inefficiency.</p>
+                    </div>
+
+                    <!-- Strategic Pillars Cards -->
+                    <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6 mt-2">
+                        ${appData.strategicPillars.map(pillar => `
+                            <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 card-hover transition-all-300">
+                                <h4 class="font-bold text-slate-800 mb-2">${pillar.title}</h4>
+                                <p class="text-sm text-slate-600 mb-4 h-12">${pillar.desc}</p>
+                                <div class="bg-orange-50 border-l-4 border-orange-500 p-3">
+                                    <p class="text-xs font-bold text-orange-800 uppercase mb-1">Challenger Insight</p>
+                                    <p class="text-xs text-orange-900 italic">"${pillar.insight}"</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Init Chart
+            setTimeout(() => {
+                const ctx = document.getElementById('financialChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: appData.financials.years,
+                        datasets: [
+                            {
+                                label: 'CapEx (Investment)',
+                                data: appData.financials.capex,
+                                borderColor: '#ea580c', // Orange
+                                backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'O&M (Maintenance Cost)',
+                                data: appData.financials.om,
+                                borderColor: '#1e293b', // Slate 800
+                                borderDash: [5, 5],
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { intersect: false, mode: 'index' },
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: { y: { beginAtZero: false, title: { display: true, text: 'Billions USD' } } }
+                    }
+                });
+            }, 0);
+        }
+
+        // --- View 2: Network / Value Chain ---
+        function renderNetwork(container) {
+            container.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-140px)]">
+                    <!-- Sidebar: Introduction -->
+                    <div class="lg:col-span-1 flex flex-col gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-100">
+                            <h2 class="text-xl font-bold text-slate-800 mb-3">Value Chain Friction</h2>
+                            <p class="text-sm text-slate-600 mb-4">
+                                Click on any Line of Business (LOB) to reveal its technology gaps and operational friction points. 
+                                <br><br>
+                                <strong>Hypothesis:</strong> The disconnect between <em>Distribution</em> (Grid Edge) and <em>Transmission</em> (Core Grid) creates blind spots during storm recovery.
+                            </p>
+                            <div class="text-xs text-slate-400 mt-4">
+                                Status Indicators:<br>
+                                <span class="inline-block w-2 h-2 rounded-full bg-green-500 mr-1"></span> Stable<br>
+                                <span class="inline-block w-2 h-2 rounded-full bg-orange-500 mr-1"></span> Risk<br>
+                                <span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-1"></span> Critical
+                            </div>
+                        </div>
+                        
+                        <!-- Dynamic Detail Panel -->
+                        <div id="lob-detail" class="bg-slate-800 text-white p-6 rounded-lg shadow-lg flex-grow transition-all-300 opacity-0 transform translate-y-4">
+                            <p class="text-slate-400 italic text-center mt-10">Select an LOB to analyze</p>
+                        </div>
+                    </div>
+
+                    <!-- Main Diagram Area -->
+                    <div class="lg:col-span-3 bg-white rounded-lg shadow-sm border border-slate-100 p-8 relative overflow-hidden flex flex-col justify-center items-center bg-[url('https://www.transparenttextures.com/patterns/graphy.png')]">
+                        
+                        <!-- Flow Line -->
+                        <div class="absolute top-1/2 left-10 right-10 h-1 bg-slate-200 -z-0"></div>
+
+                        <!-- Nodes -->
+                        <div class="grid grid-cols-4 gap-4 w-full relative z-10">
+                            ${appData.valueChain.map((lob, index) => `
+                                <button onclick="selectLOB('${lob.id}')" class="group flex flex-col items-center focus:outline-none">
+                                    <div class="w-24 h-24 rounded-full bg-white border-4 ${getStatusColor(lob.status)} flex items-center justify-center text-4xl shadow-md group-hover:scale-110 transition-transform duration-300 relative z-20">
+                                        ${lob.icon}
+                                    </div>
+                                    <div class="mt-4 bg-white px-4 py-2 rounded shadow-sm border border-slate-100 text-center w-full max-w-[140px]">
+                                        <h4 class="font-bold text-slate-800 text-sm">${lob.title}</h4>
+                                    </div>
+                                    
+                                    <!-- Connector Pulse (Visual Flair) -->
+                                    <div class="absolute top-12 left-1/2 w-full h-1 bg-gradient-to-r from-transparent via-orange-300 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getStatusColor(status) {
+            if(status === 'Critical') return 'border-red-500 bg-red-50';
+            if(status === 'Risk') return 'border-orange-400 bg-orange-50';
+            if(status === 'Stable') return 'border-green-500 bg-green-50';
+            return 'border-blue-400';
+        }
+
+        window.selectLOB = function(id) {
+            const lob = appData.valueChain.find(l => l.id === id);
+            const panel = document.getElementById('lob-detail');
+            
+            panel.classList.remove('opacity-0', 'translate-y-4');
+            panel.innerHTML = `
+                <div class="flex items-center gap-3 mb-4 border-b border-slate-700 pb-4">
+                    <span class="text-3xl">${lob.icon}</span>
+                    <div>
+                        <h3 class="font-bold text-xl">${lob.title}</h3>
+                        <span class="text-xs px-2 py-0.5 rounded ${lob.status === 'Critical' ? 'bg-red-900 text-red-200' : 'bg-green-900 text-green-200'}">${lob.status}</span>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Tech Stack</h4>
+                        <p class="text-sm text-slate-200 mt-1">${lob.tech}</p>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Operational Gap</h4>
+                        <p class="text-sm text-orange-300 mt-1">${lob.friction}</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-700">
+                        <button class="w-full py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm font-medium transition-colors">
+                            View Tech Requirements
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- View 3: Buying Committee ---
+        function renderBuying(container) {
+            container.innerHTML = `
+                <div class="h-full flex flex-col">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-slate-800">Stakeholder Analysis</h2>
+                        <p class="text-slate-600">
+                            Mapping the buying center based on public influence signals and estimated budget authority.
+                            <br><strong>Strategy:</strong> Mobilize the CIO to pressure the COO (Blocker) by quantifying the cost of legacy system failures.
+                        </p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow">
+                        <!-- Plotly Chart Container -->
+                        <div class="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm border border-slate-100 chart-container h-[500px]">
+                            <div id="stakeholderPlot" class="w-full h-full"></div>
+                        </div>
+
+                        <!-- Details Panel -->
+                        <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-100 flex flex-col">
+                            <h3 class="font-bold text-lg mb-4 border-b pb-2">Profile Details</h3>
+                            <div id="person-detail">
+                                <p class="text-slate-500 text-sm italic">Hover over a node to see stakeholder details.</p>
+                            </div>
+                            
+                            <div class="mt-auto pt-6">
+                                <h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Legend</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span> Mobilizer (Ally)</div>
+                                    <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span> Blocker (Risk)</div>
+                                    <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-gray-400 mr-2"></span> Neutral/Talker</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                const colors = appData.stakeholders.map(s => {
+                    if(s.type === 'Mobilizer') return '#22c55e';
+                    if(s.type === 'Blocker') return '#ef4444';
+                    return '#94a3b8';
+                });
+
+                const trace = {
+                    x: appData.stakeholders.map(s => s.x),
+                    y: appData.stakeholders.map(s => s.y),
+                    mode: 'markers+text',
+                    text: appData.stakeholders.map(s => s.role),
+                    textposition: 'top center',
+                    marker: {
+                        size: appData.stakeholders.map(s => s.budget === 'Enterprise' ? 25 : 15),
+                        color: colors,
+                        opacity: 0.8,
+                        line: { color: 'white', width: 2 }
+                    },
+                    hoverinfo: 'text',
+                    hovertext: appData.stakeholders.map(s => s.name)
+                };
+
+                const layout = {
+                    title: 'Influence vs. Strategic Alignment',
+                    xaxis: { title: 'Strategic Alignment (Vision)', range: [0, 10], showgrid: true, zeroline: false },
+                    yaxis: { title: 'Organizational Influence (Power)', range: [0, 10], showgrid: true, zeroline: false },
+                    hovermode: 'closest',
+                    margin: { t: 40, b: 40, l: 40, r: 20 },
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(241, 245, 249, 0.5)'
+                };
+
+                const plot = document.getElementById('stakeholderPlot');
+                Plotly.newPlot(plot, [trace], layout, {displayModeBar: false, responsive: true});
+
+                plot.on('plotly_hover', function(data){
+                    const idx = data.points[0].pointIndex;
+                    const person = appData.stakeholders[idx];
+                    document.getElementById('person-detail').innerHTML = `
+                        <div class="animate-fade-in">
+                            <h4 class="text-xl font-bold text-slate-800">${person.name}</h4>
+                            <p class="text-orange-600 font-medium mb-2">${person.role}</p>
+                            <div class="space-y-3 text-sm">
+                                <p><strong class="text-slate-500">Department:</strong><br> ${person.budget}</p>
+                                <p><strong class="text-slate-500">Challenger Type:</strong><br> ${person.type}</p>
+                                <div class="bg-slate-50 p-3 rounded border border-slate-200">
+                                    <strong class="text-slate-500 text-xs uppercase">Motivation</strong>
+                                    <p class="text-slate-700 mt-1">"${person.notes}"</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }, 100);
+        }
+
+        // --- View 4: Tech Stack ---
+        function renderTech(container) {
+            container.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Text Context -->
+                    <div class="col-span-1 lg:col-span-2">
+                        <h2 class="text-2xl font-bold text-slate-800 mb-2">Technology Profile & Gaps</h2>
+                        <p class="text-slate-600 max-w-3xl">
+                            PPL's current tech stack is robust in isolated verticals (Cybersecurity, basic Cloud) but fails in 
+                            <strong>Converged Analytics</strong>. They have the data, but lack the compute/AI layer to process it for predictive maintenance.
+                        </p>
+                    </div>
+
+                    <!-- Radar Chart -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-100 flex flex-col items-center justify-center">
+                        <h3 class="text-sm font-semibold text-slate-500 mb-4 w-full text-left">Capability Maturity Model</h3>
+                        <div class="chart-container h-[350px] w-full max-w-md">
+                            <canvas id="techRadar"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Vendor List / Hiring Signals -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-100 custom-scroll overflow-y-auto max-h-[450px]">
+                        <h3 class="text-sm font-semibold text-slate-500 mb-4 sticky top-0 bg-white pb-2 border-b">Detected Tech Signals</h3>
+                        
+                        <div class="space-y-6">
+                            <!-- Signal Item -->
+                            <div class="flex gap-4">
+                                <div class="w-12 h-12 rounded bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">Az</div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800">Microsoft Azure</h4>
+                                    <p class="text-xs text-slate-500 mb-1">Infrastructure / Data Lake</p>
+                                    <p class="text-sm text-slate-600">Heavy investment in Azure IoT Hub inferred from job descriptions for "Cloud Architects".</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div class="w-12 h-12 rounded bg-green-50 text-green-600 flex items-center justify-center text-xl font-bold">Sa</div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800">SAP S/4HANA</h4>
+                                    <p class="text-xs text-slate-500 mb-1">ERP / Finance</p>
+                                    <p class="text-sm text-slate-600">Migration project underway. Pain point: Integration with non-SAP field tools.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div class="w-12 h-12 rounded bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold">Es</div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800">Esri ArcGIS</h4>
+                                    <p class="text-xs text-slate-500 mb-1">Geospatial</p>
+                                    <p class="text-sm text-slate-600">Core for Distribution Management System (DMS). Needs real-time feed integration.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-orange-50 border border-orange-200 p-4 rounded mt-4">
+                                <h5 class="text-orange-800 font-bold text-sm mb-1">⚠️ The Gap</h5>
+                                <p class="text-orange-900 text-sm">
+                                    Hiring specifically for <strong>"Data Engineers"</strong> over "Data Scientists" suggests they are still struggling to <em>move/clean</em> data, rather than <em>analyzing</em> it.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                const ctx = document.getElementById('techRadar').getContext('2d');
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: appData.techStack.labels,
+                        datasets: [
+                            {
+                                label: 'Current Maturity',
+                                data: appData.techStack.current,
+                                fill: true,
+                                backgroundColor: 'rgba(148, 163, 184, 0.2)',
+                                borderColor: '#94a3b8',
+                                pointBackgroundColor: '#94a3b8'
+                            },
+                            {
+                                label: 'Required for DSO Model',
+                                data: appData.techStack.needed,
+                                fill: true,
+                                backgroundColor: 'rgba(234, 88, 12, 0.2)',
+                                borderColor: '#ea580c',
+                                pointBackgroundColor: '#ea580c'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                angleLines: { color: '#e2e8f0' },
+                                grid: { color: '#e2e8f0' },
+                                pointLabels: { font: { size: 11, family: 'Inter' } },
+                                suggestedMin: 0,
+                                suggestedMax: 100
+                            }
+                        }
+                    }
+                });
+            }, 0);
+        }
+    </script>
+</body>
+</html>
