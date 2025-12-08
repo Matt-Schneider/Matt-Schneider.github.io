@@ -3,86 +3,368 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Matt Schneider</title>
+  <title>Matt Schneider // Retro BBS</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #f9f9f9; color: #333; }
-    header { text-align: center; margin-bottom: 2rem; }
-    nav ul { list-style: none; padding: 0; display: flex; gap: 1rem; justify-content: center; }
-    nav a { text-decoration: none; color: #007acc; }
-    nav a:hover { text-decoration: underline; }
-    main section { margin-bottom: 2rem; background: #fff; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    footer { margin-top: 3rem; text-align: center; font-size: 0.9rem; color: #666; }
-    h2 { border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+    :root {
+      --bg: #050c14;
+      --panel: rgba(10, 24, 40, 0.85);
+      --accent: #43f0a5;
+      --accent-2: #12b6ff;
+      --text: #c6ffda;
+      --muted: #6dd4ff;
+      --shadow: 0 0 12px rgba(67, 240, 165, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 20%, rgba(18, 182, 255, 0.05), transparent 35%),
+                  radial-gradient(circle at 80% 10%, rgba(67, 240, 165, 0.05), transparent 40%),
+                  linear-gradient(#050c14, #030911 50%, #02060c);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', 'Courier New', monospace;
+      line-height: 1.6;
+      padding: 24px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    body::before {
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(12, 240, 165, 0.04),
+        rgba(12, 240, 165, 0.04) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      opacity: 0.6;
+    }
+
+    body::after {
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 255, 200, 0.15) 50%,
+        rgba(0, 0, 0, 0) 100%
+      );
+      animation: flicker 4s infinite;
+      opacity: 0.2;
+    }
+
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 0.2; }
+      20%, 24%, 55% { opacity: 0.05; }
+      22% { opacity: 0.35; }
+    }
+
+    .crt-shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      border: 2px solid var(--accent);
+      background: var(--panel);
+      box-shadow: var(--shadow), 0 0 0 1px rgba(18, 182, 255, 0.35);
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .crt-shell::before {
+      content: '::MATT-NODE::';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    header {
+      border: 1px solid rgba(67, 240, 165, 0.4);
+      padding: 16px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+      background: linear-gradient(135deg, rgba(67, 240, 165, 0.08), rgba(18, 182, 255, 0.05));
+    }
+
+    .ascii {
+      white-space: pre;
+      color: var(--accent);
+      text-shadow: 0 0 8px rgba(18, 182, 255, 0.5);
+      font-size: 14px;
+      margin: 0 0 10px 0;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-size: 13px;
+      margin: 4px 0 0;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    nav a {
+      color: var(--accent);
+      text-decoration: none;
+      padding: 6px 10px;
+      border: 1px solid rgba(67, 240, 165, 0.45);
+      background: rgba(5, 12, 20, 0.8);
+      box-shadow: 0 0 10px rgba(18, 182, 255, 0.2);
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    nav a:hover {
+      color: #02060c;
+      background: var(--accent);
+      box-shadow: 0 0 16px rgba(67, 240, 165, 0.7);
+    }
+
+    main {
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      border: 1px solid rgba(67, 240, 165, 0.35);
+      padding: 14px;
+      background: rgba(0, 10, 20, 0.65);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+
+    .panel h2::before {
+      content: '//' attr(data-label);
+      color: var(--accent);
+      margin-right: 8px;
+      font-weight: 600;
+    }
+
+    ul { list-style: none; padding-left: 0; margin: 10px 0 0; }
+    li { margin: 6px 0; }
+
+    a {
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(67, 240, 165, 0.4);
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    a:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .status-card {
+      border: 1px dashed rgba(18, 182, 255, 0.45);
+      padding: 10px;
+      background: rgba(3, 8, 15, 0.9);
+      color: var(--muted);
+      font-size: 13px;
+      position: relative;
+    }
+
+    .status-card strong { color: var(--accent); }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(67, 240, 165, 0.7), transparent);
+      margin: 10px 0;
+      opacity: 0.7;
+    }
+
+    .log {
+      font-family: 'IBM Plex Mono', 'Courier New', monospace;
+      background: rgba(3, 10, 16, 0.9);
+      border: 1px solid rgba(18, 182, 255, 0.3);
+      padding: 10px;
+      color: var(--muted);
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 13px;
+    }
+
+    footer {
+      margin-top: 18px;
+      text-align: right;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    footer span { color: var(--accent); }
+
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      .ascii { font-size: 12px; }
+      nav a { flex: 1 1 45%; text-align: center; }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Welcome to Matt Schneider's Website</h1>
-    <p>Explore the available pages and documents below.</p>
-  </header>
+  <div class="crt-shell">
+    <header>
+      <pre class="ascii"> __  __       _   _     _        _____ _               _           _
+|  \/  | __ _| |_| |__ | | ___  |  ___(_)_ __ ___  ___| |__   __ _| |_
+| |\/| |/ _` | __| '_ \| |/ _ \ | |_  | | '__/ _ \/ __| '_ \ / _` | __|
+| |  | | (_| | |_| |_) | |  __/ |  _| | | | |  __/ (__| | | | (_| | |_
+|_|  |_|\__,_|\__|_.__/|_|\___| |_|   |_|_|  \___|\___|_| |_|\__,_|\__|
+</pre>
+      <div class="subtitle">Welcome to Matt Schneider's Retro Access Node // Est. 2025</div>
+      <nav aria-label="Quick links">
+        <a href="#html-content">[HTML Pages]</a>
+        <a href="#markdown-content">[Markdown Docs]</a>
+        <a href="#history">[System Log]</a>
+        <a href="https://github.com/Matt-Schneider" target="_blank" rel="noreferrer">[Operator GitHub]</a>
+      </nav>
+    </header>
 
-  <main>
-    <section id="html-content">
-      <h2>HTML Pages</h2>
-      <ul id="html-list"></ul>
-    </section>
+    <main>
+      <section class="panel" id="status" aria-live="polite">
+        <h2 data-label="Status">Node Status</h2>
+        <div class="status-grid">
+          <div class="status-card">HTML Index: <strong id="html-count">--</strong> entries</div>
+          <div class="status-card">Markdown Index: <strong id="md-count">--</strong> entries</div>
+          <div class="status-card">Last Sync: <strong id="last-sync">initializing</strong></div>
+        </div>
+      </section>
 
-    <section id="markdown-content">
-      <h2>Markdown Documents</h2>
-      <ul id="markdown-list"></ul>
-    </section>
+      <section class="panel" id="html-content">
+        <h2 data-label="Catalog">HTML Pages</h2>
+        <div class="divider"></div>
+        <ul id="html-list"></ul>
+      </section>
 
-      <section id="history">
-        <h2>History</h2>
+      <section class="panel" id="markdown-content">
+        <h2 data-label="Catalog">Markdown Documents</h2>
+        <div class="divider"></div>
+        <ul id="markdown-list"></ul>
+      </section>
+
+      <section class="panel" id="history">
+        <h2 data-label="Log">System Log</h2>
+        <div class="divider"></div>
         <ul>
           <li>2025-08-03: Added homepage with links to other pages and created this history section.</li>
           <li>2025-08-03: Updated homepage to list all HTML and Markdown files automatically.</li>
         </ul>
       </section>
+
+      <section class="panel" aria-live="polite">
+        <h2 data-label="Console">Terminal Feed</h2>
+        <div class="divider"></div>
+        <div id="log" class="log">[BOOT] Awaiting data feed...</div>
+      </section>
     </main>
 
     <footer>
-      <p>&copy; 2025 Matt Schneider</p>
+      <p>&copy; <span>2025</span> Matt Schneider // Designed with <span>retro-futurism</span> in mind.</p>
     </footer>
-    <script>
-      async function loadFiles() {
-        const repo = 'Matt-Schneider/Matt-Schneider.github.io';
-        try {
-          const res = await fetch(`https://api.github.com/repos/${repo}/git/trees/main?recursive=1`);
-          if (!res.ok) throw new Error('Unable to fetch repository contents');
-          const data = await res.json();
-          const htmlList = document.getElementById('html-list');
-          const mdList = document.getElementById('markdown-list');
-          data.tree.forEach(item => {
-            if (item.type === 'blob') {
-              if (item.path.endsWith('.html') && item.path !== 'index.html') {
-                const li = document.createElement('li');
-                const a = document.createElement('a');
-                a.href = item.path;
-                a.textContent = item.path;
-                li.appendChild(a);
-                htmlList.appendChild(li);
-              } else if (item.path.endsWith('.md')) {
-                const li = document.createElement('li');
-                const a = document.createElement('a');
-                a.href = item.path;
-                a.textContent = item.path;
-                li.appendChild(a);
-                mdList.appendChild(li);
-              }
+  </div>
+
+  <script>
+    async function loadFiles() {
+      const repo = 'Matt-Schneider/Matt-Schneider.github.io';
+      const htmlList = document.getElementById('html-list');
+      const mdList = document.getElementById('markdown-list');
+      const htmlCount = document.getElementById('html-count');
+      const mdCount = document.getElementById('md-count');
+      const lastSync = document.getElementById('last-sync');
+      const log = document.getElementById('log');
+
+      const appendLog = (message) => {
+        const now = new Date().toLocaleTimeString();
+        log.innerHTML += `\n[${now}] ${message}`;
+        log.scrollTop = log.scrollHeight;
+      };
+
+      try {
+        appendLog('Establishing link to repository tree...');
+        const res = await fetch(`https://api.github.com/repos/${repo}/git/trees/main?recursive=1`);
+        if (!res.ok) throw new Error('Unable to fetch repository contents');
+        const data = await res.json();
+        let htmlEntries = 0;
+        let mdEntries = 0;
+
+        data.tree.forEach(item => {
+          if (item.type === 'blob') {
+            if (item.path.endsWith('.html') && item.path !== 'index.html') {
+              htmlEntries++;
+              const li = document.createElement('li');
+              const a = document.createElement('a');
+              a.href = item.path;
+              a.textContent = `> ${item.path}`;
+              li.appendChild(a);
+              htmlList.appendChild(li);
+            } else if (item.path.endsWith('.md')) {
+              mdEntries++;
+              const li = document.createElement('li');
+              const a = document.createElement('a');
+              a.href = item.path;
+              a.textContent = `> ${item.path}`;
+              li.appendChild(a);
+              mdList.appendChild(li);
             }
-          });
-          if (!htmlList.children.length) {
-            htmlList.innerHTML = '<li>No HTML pages found.</li>';
           }
-          if (!mdList.children.length) {
-            mdList.innerHTML = '<li>No markdown documents found.</li>';
-          }
-        } catch (e) {
-          console.error(e);
+        });
+
+        htmlCount.textContent = htmlEntries || '0';
+        mdCount.textContent = mdEntries || '0';
+        lastSync.textContent = new Date().toLocaleString();
+
+        if (!htmlEntries) {
+          htmlList.innerHTML = '<li>No HTML pages found.</li>';
         }
+        if (!mdEntries) {
+          mdList.innerHTML = '<li>No markdown documents found.</li>';
+        }
+
+        appendLog('Data stream locked. Index populated successfully.');
+      } catch (e) {
+        console.error(e);
+        appendLog('Connection error: ' + e.message);
+        htmlList.innerHTML = '<li>Unable to load HTML index.</li>';
+        mdList.innerHTML = '<li>Unable to load Markdown index.</li>';
+        htmlCount.textContent = 'ERR';
+        mdCount.textContent = 'ERR';
+        lastSync.textContent = 'FAILED';
       }
-      document.addEventListener('DOMContentLoaded', loadFiles);
-    </script>
-  </body>
+    }
+
+    document.addEventListener('DOMContentLoaded', loadFiles);
+  </script>
+</body>
 </html>
