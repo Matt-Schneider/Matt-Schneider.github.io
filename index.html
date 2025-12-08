@@ -247,6 +247,7 @@
       <nav aria-label="Quick links">
         <a href="#html-content">[HTML Pages]</a>
         <a href="#markdown-content">[Markdown Docs]</a>
+        <a href="#gemini-content">[Gemini Links]</a>
         <a href="#history">[System Log]</a>
         <a href="https://github.com/Matt-Schneider" target="_blank" rel="noreferrer">[Operator GitHub]</a>
       </nav>
@@ -258,6 +259,7 @@
         <div class="status-grid">
           <div class="status-card">HTML Index: <strong id="html-count">--</strong> entries</div>
           <div class="status-card">Markdown Index: <strong id="md-count">--</strong> entries</div>
+          <div class="status-card">Gemini Index: <strong id="gemini-count">--</strong> entries</div>
           <div class="status-card">Last Sync: <strong id="last-sync">initializing</strong></div>
         </div>
       </section>
@@ -272,6 +274,12 @@
         <h2 data-label="Catalog">Markdown Documents</h2>
         <div class="divider"></div>
         <ul id="markdown-list"></ul>
+      </section>
+
+      <section class="panel" id="gemini-content">
+        <h2 data-label="Catalog">Gemini Files</h2>
+        <div class="divider"></div>
+        <ul id="gemini-list"></ul>
       </section>
 
       <section class="panel" id="history">
@@ -300,8 +308,10 @@
       const repo = 'Matt-Schneider/Matt-Schneider.github.io';
       const htmlList = document.getElementById('html-list');
       const mdList = document.getElementById('markdown-list');
+      const geminiList = document.getElementById('gemini-list');
       const htmlCount = document.getElementById('html-count');
       const mdCount = document.getElementById('md-count');
+      const geminiCount = document.getElementById('gemini-count');
       const lastSync = document.getElementById('last-sync');
       const log = document.getElementById('log');
 
@@ -318,9 +328,11 @@
         const data = await res.json();
         let htmlEntries = 0;
         let mdEntries = 0;
+        let geminiEntries = 0;
 
         data.tree.forEach(item => {
           if (item.type === 'blob') {
+            const inGemini = item.path.startsWith('gemini/');
             if (item.path.endsWith('.html') && item.path !== 'index.html') {
               htmlEntries++;
               const li = document.createElement('li');
@@ -338,11 +350,32 @@
               li.appendChild(a);
               mdList.appendChild(li);
             }
+
+            if (inGemini) {
+              geminiEntries++;
+              const li = document.createElement('li');
+              const a = document.createElement('a');
+              a.href = item.path;
+              a.textContent = `> ${item.path}`;
+              li.appendChild(a);
+              geminiList.appendChild(li);
+
+              if (!item.path.endsWith('.html') && !item.path.endsWith('.md')) {
+                htmlEntries++;
+                const htmlLi = document.createElement('li');
+                const htmlA = document.createElement('a');
+                htmlA.href = item.path;
+                htmlA.textContent = `> ${item.path}`;
+                htmlLi.appendChild(htmlA);
+                htmlList.appendChild(htmlLi);
+              }
+            }
           }
         });
 
         htmlCount.textContent = htmlEntries || '0';
         mdCount.textContent = mdEntries || '0';
+        geminiCount.textContent = geminiEntries || '0';
         lastSync.textContent = new Date().toLocaleString();
 
         if (!htmlEntries) {
@@ -350,6 +383,9 @@
         }
         if (!mdEntries) {
           mdList.innerHTML = '<li>No markdown documents found.</li>';
+        }
+        if (!geminiEntries) {
+          geminiList.innerHTML = '<li>No Gemini files found.</li>';
         }
 
         appendLog('Data stream locked. Index populated successfully.');
