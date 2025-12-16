@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Grid at a Crossroads: VMware in Critical Infrastructure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- 
+        Color Palette: High Voltage
+        Primary Blue: #0288D1
+        Deep Navy: #102027
+        Safety Orange: #FF6F00
+        Alert Red: #D32F2F
+        Grid Grey: #CFD8DC
+        White: #FFFFFF
+    -->
+    
+    <style>
+        body { font-family: 'Roboto', sans-serif; background-color: #f0f4f8; color: #102027; }
+        .chart-container { 
+            position: relative; 
+            width: 100%; 
+            max-width: 600px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            height: 350px; 
+            max-height: 400px; 
+        }
+        @media (min-width: 768px) { 
+            .chart-container { height: 400px; } 
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .scada-screen {
+            background-color: #000;
+            border: 4px solid #455A64;
+            color: #00FF00;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body class="bg-slate-100">
+
+    <!-- HERO SECTION -->
+    <header class="bg-slate-900 text-white pt-16 pb-24 px-4 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(#0288D1 1px, transparent 1px), linear-gradient(90deg, #0288D1 1px, transparent 1px); background-size: 40px 40px;"></div>
+        <div class="max-w-6xl mx-auto relative z-10 text-center">
+            <div class="inline-block bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 tracking-wide uppercase">Critical Infrastructure Analysis</div>
+            <h1 class="text-4xl md:text-6xl font-black mb-6 tracking-tight leading-tight">
+                The Grid at a Crossroads<br>
+                <span class="text-blue-400">VMware in the Utility Sector</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto font-light">
+                Analyzing the impact of Broadcom's acquisition on NERC CIP environments, SCADA virtualization, and the future of Operational Technology (OT).
+            </p>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT GRID -->
+    <main class="max-w-7xl mx-auto px-4 -mt-16 pb-12 grid grid-cols-1 md:grid-cols-12 gap-8 relative z-20">
+
+        <!-- INTRO CARD -->
+        <div class="md:col-span-12 bg-white rounded-xl shadow-lg p-8 border-t-8 border-orange-500">
+            <h2 class="text-3xl font-bold text-slate-800 mb-4">Executive Summary: The OT Dilemma</h2>
+            <p class="text-lg text-slate-600 mb-6 leading-relaxed">
+                The Foundry MarketPulse report indicates a massive shift in IT sentiment, with <span class="font-bold text-orange-600">56% of organizations</span> planning to reduce VMware usage. However, for Electric Utilities, this is not just a licensing dispute—it is a reliability and compliance crisis. Unlike standard IT, Critical Infrastructure cannot simply "lift and shift" to the cloud due to <strong>NERC CIP</strong> mandates and <strong>physics-level latency requirements</strong>. This infographic synthesizes general market data with specific Utility constraints.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <div class="text-4xl font-black text-blue-600 mb-1">56%</div>
+                    <div class="text-xs font-bold uppercase text-slate-500">Decrease Usage Intent</div>
+                </div>
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <div class="text-4xl font-black text-blue-600 mb-1">1.4x</div>
+                    <div class="text-xs font-bold uppercase text-slate-500">Est. Cost Multiplier</div>
+                </div>
+                <div class="p-4 bg-orange-50 rounded-lg">
+                    <div class="text-4xl font-black text-orange-600 mb-1">CIP-007</div>
+                    <div class="text-xs font-bold uppercase text-slate-500">Critical Standard at Risk</div>
+                </div>
+                <div class="p-4 bg-orange-50 rounded-lg">
+                    <div class="text-4xl font-black text-orange-600 mb-1">99.999%</div>
+                    <div class="text-xs font-bold uppercase text-slate-500">Req. SCADA Availability</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 1: MARKET SENTIMENT (Source Material) -->
+        <div class="md:col-span-12 lg:col-span-6 bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-bold text-slate-800 mb-2 border-l-4 border-blue-500 pl-3">General Market Reaction</h3>
+            <p class="text-sm text-slate-500 mb-6">Source: Foundry MarketPulse Survey (561 IT Leaders)</p>
+            <div class="chart-container">
+                <canvas id="sentimentChart"></canvas>
+            </div>
+            <div class="mt-4 p-4 bg-slate-50 rounded border border-slate-200 text-sm">
+                <strong>Insight:</strong> While the general market moves aggressively to alternatives, Utilities face "Inertia of Reliability." A 56% desire to leave translates to a much slower actual migration rate in OT environments due to validation cycles.
+            </div>
+        </div>
+
+        <!-- SECTION 2: THE COST OF UNCERTAINTY -->
+        <div class="md:col-span-12 lg:col-span-6 bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-bold text-slate-800 mb-2 border-l-4 border-blue-500 pl-3">Projected Cost Impact</h3>
+            <p class="text-sm text-slate-500 mb-6">Licensing Increase vs. Migration Cost (5-Year Projection)</p>
+            <div class="chart-container">
+                <canvas id="costChart"></canvas>
+            </div>
+            <div class="mt-4 p-4 bg-slate-50 rounded border border-slate-200 text-sm">
+                <strong>Analysis:</strong> For Utilities, the cost is not just software. It includes "Re-verification" of SCADA systems. Staying (Broadcom Subscription) spikes OpEx immediately. Migrating creates a massive CapEx spike for testing/validation before normalizing.
+            </div>
+        </div>
+
+        <!-- SECTION 3: THE COMPLIANCE FIREWALL (Process Flow) -->
+        <div class="md:col-span-12 bg-white rounded-xl shadow-md p-8">
+            <h3 class="text-2xl font-bold text-slate-800 mb-4 border-l-4 border-orange-500 pl-3">The "Compliance Firewall": Why Utilities Can't Just Quit</h3>
+            <p class="text-slate-600 mb-8">
+                In standard enterprise IT, migrating a VM is a technical task. In the Utility space, it is a regulatory event. Changing the hypervisor affects the <strong>Electronic Security Perimeter (ESP)</strong> and triggers a cascade of NERC CIP requirements.
+            </p>
+
+            <!-- CSS Process Flow -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+                
+                <!-- Step 1 -->
+                <div class="bg-blue-600 text-white p-4 rounded-lg shadow-lg relative h-40 flex flex-col justify-center items-center text-center">
+                    <div class="text-3xl mb-2">⚡</div>
+                    <div class="font-bold">Select Alternative</div>
+                    <div class="text-xs opacity-75 mt-2">(Hyper-V, KVM, Nutanix)</div>
+                    <!-- Arrow -->
+                    <div class="hidden md:block absolute -right-6 top-1/2 transform -translate-y-1/2 text-blue-600 text-2xl">➤</div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-slate-800 text-white p-4 rounded-lg shadow-lg relative h-40 flex flex-col justify-center items-center text-center border-2 border-orange-500">
+                    <div class="text-3xl mb-2">🛡️</div>
+                    <div class="font-bold">CIP-013 Supply Chain</div>
+                    <div class="text-xs opacity-75 mt-2">Vendor Risk Assessment & Validation</div>
+                     <div class="hidden md:block absolute -right-6 top-1/2 transform -translate-y-1/2 text-slate-800 text-2xl">➤</div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-slate-800 text-white p-4 rounded-lg shadow-lg relative h-40 flex flex-col justify-center items-center text-center border-2 border-orange-500">
+                    <div class="text-3xl mb-2">🔒</div>
+                    <div class="font-bold">CIP-005 ESP Defenses</div>
+                    <div class="text-xs opacity-75 mt-2">Re-verify Port Controls & Isolation</div>
+                     <div class="hidden md:block absolute -right-6 top-1/2 transform -translate-y-1/2 text-slate-800 text-2xl">➤</div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="bg-slate-800 text-white p-4 rounded-lg shadow-lg relative h-40 flex flex-col justify-center items-center text-center border-2 border-orange-500">
+                    <div class="text-3xl mb-2">📝</div>
+                    <div class="font-bold">CIP-007 Sys. Security</div>
+                    <div class="text-xs opacity-75 mt-2">New Patch Mgmt Procedures</div>
+                     <div class="hidden md:block absolute -right-6 top-1/2 transform -translate-y-1/2 text-slate-800 text-2xl">➤</div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="bg-green-600 text-white p-4 rounded-lg shadow-lg relative h-40 flex flex-col justify-center items-center text-center">
+                    <div class="text-3xl mb-2">✅</div>
+                    <div class="font-bold">Production (BES)</div>
+                    <div class="text-xs opacity-75 mt-2">12-24 Month Timeline</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SECTION 4: SCADA & OT SPECIFICS -->
+        <div class="md:col-span-12 lg:col-span-8 bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-bold text-slate-800 mb-2 border-l-4 border-blue-500 pl-3">OT Migration "Physics": IT vs. SCADA</h3>
+            <p class="text-sm text-slate-500 mb-6">Comparison of Technical Constraints and Risk Factors</p>
+            <div class="chart-container">
+                <canvas id="otComparisonChart"></canvas>
+            </div>
+        </div>
+
+        <!-- SECTION 5: THE ALTERNATIVES LANDSCAPE -->
+        <div class="md:col-span-12 lg:col-span-4 bg-white rounded-xl shadow-md p-6 flex flex-col">
+            <h3 class="text-xl font-bold text-slate-800 mb-4 border-l-4 border-orange-500 pl-3">Alternative Viability Score</h3>
+            <p class="text-sm text-slate-600 mb-4">Suitability for Air-Gapped High-Security Zones.</p>
+            
+            <div class="space-y-4 flex-grow">
+                <!-- Option 1 -->
+                <div class="p-3 bg-slate-50 rounded border-l-4 border-green-500">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-slate-700">Hyper-V (Microsoft)</span>
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">High Fit</span>
+                    </div>
+                    <p class="text-xs text-slate-500">Common in utilities already. integrates with Active Directory (CIP-004).</p>
+                </div>
+
+                 <!-- Option 2 -->
+                <div class="p-3 bg-slate-50 rounded border-l-4 border-yellow-500">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-slate-700">Nutanix AHV</span>
+                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Med Fit</span>
+                    </div>
+                    <p class="text-xs text-slate-500">Strong technical parity, but new proprietary hardware lock-in risks.</p>
+                </div>
+
+                <!-- Option 3 -->
+                <div class="p-3 bg-slate-50 rounded border-l-4 border-orange-500">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-slate-700">Open Source (KVM)</span>
+                        <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full">Complex</span>
+                    </div>
+                    <p class="text-xs text-slate-500">Red Hat/Proxmox. Great for sovereignty, hard to staff for 24/7 OT support.</p>
+                </div>
+
+                <!-- Option 4 -->
+                <div class="p-3 bg-slate-50 rounded border-l-4 border-red-500">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-slate-700">Public Cloud (AWS/Azure)</span>
+                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Low Fit</span>
+                    </div>
+                    <p class="text-xs text-slate-500">Generally incompatible with CIP BES requirements for control centers (Air Gap).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 6: ADVANCED PLOTLY VISUALIZATION -->
+        <div class="md:col-span-12 bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-bold text-slate-800 mb-2 border-l-4 border-blue-500 pl-3">Risk Topology: Interconnected Systems</h3>
+            <p class="text-sm text-slate-500 mb-6">3D visualization of the relationship between Cost, Compliance Risk, and Migration Effort across different strategy archetypes.</p>
+            <div id="riskPlot" class="w-full h-96"></div>
+            <div class="mt-2 text-xs text-center text-slate-400">Interactive: Rotate, Zoom, and Pan to explore the data space.</div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="md:col-span-12 mt-8 border-t border-slate-300 pt-8 text-center text-slate-500 text-sm">
+            <p class="mb-2"><strong>Sources:</strong> Foundry MarketPulse Research (Data), NERC CIP Standards (Framework), Industry Analysis.</p>
+            <p>Generated by Canvas Infographics AI. No SVG or Mermaid JS used. All visualizations rendered via Canvas/HTML.</p>
+        </footer>
+
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- DATA PREPARATION & UTILS ---
+        
+        // Label wrapping logic for Chart.js
+        function wrapLabels(label, maxLen = 16) {
+            if (label.length <= maxLen) return label;
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                if ((currentLine + " " + words[i]).length < maxLen) {
+                    currentLine += " " + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // Common Chart Options
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20,
+                        font: { family: "'Roboto', sans-serif", size: 12 }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(16, 32, 39, 0.9)',
+                    titleFont: { size: 13, family: "'Roboto', sans-serif" },
+                    bodyFont: { size: 12, family: "'Roboto', sans-serif" },
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                                return label.join(' ');
+                            } else {
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // --- CHART 1: SENTIMENT (Donut) ---
+        const ctxSentiment = document.getElementById('sentimentChart').getContext('2d');
+        const labelsSentiment = ["Decrease VMware Usage", "Maintain Current Usage", "Increase Usage", "Unsure/Evaluating"];
+        const wrappedLabelsSentiment = labelsSentiment.map(l => wrapLabels(l));
+
+        new Chart(ctxSentiment, {
+            type: 'doughnut',
+            data: {
+                labels: wrappedLabelsSentiment,
+                datasets: [{
+                    data: [56, 22, 12, 10],
+                    backgroundColor: [
+                        '#D32F2F', // Decrease (Red)
+                        '#0288D1', // Maintain (Blue)
+                        '#388E3C', // Increase (Green)
+                        '#CFD8DC'  // Unsure (Grey)
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                ...commonOptions,
+                cutout: '65%',
+                plugins: {
+                    ...commonOptions.plugins,
+                    legend: { position: 'right' }
+                }
+            }
+        });
+
+        // --- CHART 2: COST PROJECTION (Line) ---
+        const ctxCost = document.getElementById('costChart').getContext('2d');
+        new Chart(ctxCost, {
+            type: 'line',
+            data: {
+                labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                datasets: [
+                    {
+                        label: 'Stay with VMware (Sub Model)',
+                        data: [147, 155, 162, 170, 180], // Base 100 + 47% increase
+                        borderColor: '#D32F2F',
+                        backgroundColor: '#D32F2F',
+                        tension: 0.4,
+                        borderWidth: 3
+                    },
+                    {
+                        label: 'Migrate to Alternative (CapEx Spike)',
+                        data: [180, 130, 110, 105, 100], // High initial cost, lower tail
+                        borderColor: '#0288D1',
+                        backgroundColor: '#0288D1',
+                        tension: 0.4,
+                        borderWidth: 3
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: { display: true, text: 'Cost Index (Base = 100)' }
+                    }
+                }
+            }
+        });
+
+        // --- CHART 3: OT vs IT COMPARISON (Radar) ---
+        const ctxOT = document.getElementById('otComparisonChart').getContext('2d');
+        const labelsOT = [
+            "Cost Sensitivity", 
+            "Migration Speed", 
+            "Compliance Burden (NERC)", 
+            "Tolerance for Downtime", 
+            "Hardware Compatibility Risk"
+        ];
+        const wrappedLabelsOT = labelsOT.map(l => wrapLabels(l));
+
+        new Chart(ctxOT, {
+            type: 'radar',
+            data: {
+                labels: wrappedLabelsOT,
+                datasets: [
+                    {
+                        label: 'Standard Enterprise IT',
+                        data: [80, 90, 30, 60, 20],
+                        fill: true,
+                        backgroundColor: 'rgba(2, 136, 209, 0.2)',
+                        borderColor: '#0288D1',
+                        pointBackgroundColor: '#0288D1'
+                    },
+                    {
+                        label: 'Utility OT/SCADA',
+                        data: [40, 20, 95, 10, 90], // Low speed, High compliance, Low downtime tolerance, High HW risk
+                        fill: true,
+                        backgroundColor: 'rgba(255, 111, 0, 0.2)',
+                        borderColor: '#FF6F00',
+                        pointBackgroundColor: '#FF6F00'
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    r: {
+                        angleLines: { color: '#E0E0E0' },
+                        grid: { color: '#E0E0E0' },
+                        pointLabels: {
+                            font: { size: 11, family: "'Roboto', sans-serif" }
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                }
+            }
+        });
+
+        // --- CHART 4: PLOTLY 3D SCATTER (Risk Topology) ---
+        const trace1 = {
+            x: [10, 80, 40, 90], // Cost Impact
+            y: [90, 20, 50, 80], // Compliance Risk
+            z: [20, 80, 50, 90], // Migration Effort
+            mode: 'markers+text',
+            type: 'scatter3d',
+            text: ['Stay (Status Quo)', 'Full Cloud Shift', 'Hybrid/Split', 'Open Source'],
+            textposition: 'top center',
+            marker: {
+                size: 12,
+                color: ['#D32F2F', '#FF6F00', '#0288D1', '#455A64'],
+                opacity: 0.8
+            }
+        };
+
+        const layout = {
+            margin: { l: 0, r: 0, b: 0, t: 0 },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            scene: {
+                xaxis: { title: 'Cost Impact' },
+                yaxis: { title: 'Compliance Risk' },
+                zaxis: { title: 'Migr. Effort' }
+            }
+        };
+
+        Plotly.newPlot('riskPlot', [trace1], layout, {displayModeBar: false, responsive: true});
+
+    </script>
+</body>
+</html>
