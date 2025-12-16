@@ -1,0 +1,551 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  ArrowRight, 
+  ArrowLeft, 
+  TrendingDown, 
+  TrendingUp, 
+  AlertTriangle, 
+  Clock, 
+  DollarSign, 
+  Server, 
+  Shield, 
+  Users,
+  PieChart,
+  Activity,
+  CheckCircle,
+  XCircle,
+  BarChart3
+} from 'lucide-react';
+
+// --- Components ---
+
+const Slide = ({ children, isActive }) => {
+  if (!isActive) return null;
+  return (
+    <div className="flex flex-col h-full w-full animate-in fade-in slide-in-from-right-4 duration-500">
+      {children}
+    </div>
+  );
+};
+
+const StatCard = ({ title, value, subtext, icon: Icon, color = "blue" }) => (
+  <div className={`bg-white p-6 rounded-xl shadow-sm border border-${color}-100 flex flex-col items-center text-center hover:shadow-md transition-shadow`}>
+    {Icon && <Icon className={`w-8 h-8 text-${color}-600 mb-3`} />}
+    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">{title}</h3>
+    <div className={`text-3xl font-bold text-${color}-700 my-2`}>{value}</div>
+    {subtext && <p className="text-xs text-gray-400">{subtext}</p>}
+  </div>
+);
+
+const ProgressBar = ({ label, value, max, color }) => (
+  <div className="mb-4">
+    <div className="flex justify-between mb-1">
+      <span className="text-sm font-medium text-gray-700">{label}</span>
+      <span className="text-sm font-medium text-gray-500">{value}%</span>
+    </div>
+    <div className="w-full bg-gray-200 rounded-full h-2.5">
+      <div 
+        className={`bg-${color}-600 h-2.5 rounded-full transition-all duration-1000 ease-out`} 
+        style={{ width: `${(value/max)*100}%` }}
+      ></div>
+    </div>
+  </div>
+);
+
+// --- Sections ---
+
+const IntroSlide = () => (
+  <div className="flex flex-col items-center justify-center h-full text-center p-8 space-y-8">
+    <div className="bg-blue-50 p-6 rounded-full">
+      <Activity className="w-16 h-16 text-blue-600" />
+    </div>
+    <div>
+      <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
+        The Post-Broadcom Era
+      </h1>
+      <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+        A Meta-Analysis of Market Sentiment, Migration Strategies, and Economic Impact (2024)
+      </p>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full text-left mt-8">
+      <div className="border-l-4 border-red-500 pl-4 py-2">
+        <h3 className="font-bold text-gray-900">Crisis of Certainty</h3>
+        <p className="text-sm text-gray-500">Uncertainty is now a top driver for IT strategy shifts.</p>
+      </div>
+      <div className="border-l-4 border-yellow-500 pl-4 py-2">
+        <h3 className="font-bold text-gray-900">1.47x Cost Multiplier</h3>
+        <p className="text-sm text-gray-500">Average expected cost increase for existing customers.</p>
+      </div>
+      <div className="border-l-4 border-blue-500 pl-4 py-2">
+        <h3 className="font-bold text-gray-900">The Great Migration</h3>
+        <p className="text-sm text-gray-500">56% of orgs expect to decrease VMware usage.</p>
+      </div>
+    </div>
+    <p className="text-sm text-gray-400 mt-auto">Source: Foundry/CIO, CloudBolt, Civo, Rimini Street</p>
+  </div>
+);
+
+const SentimentSlide = () => (
+  <div className="flex flex-col h-full p-4 md:p-8">
+    <h2 className="text-3xl font-bold text-gray-900 mb-2">The Sentiment Crash</h2>
+    <p className="text-gray-600 mb-8">Customer satisfaction has decoupled from product quality. The tech works; the relationship is broken.</p>
+    
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center flex-grow">
+      <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+        <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center">
+          <Users className="w-5 h-5 mr-2" /> Satisfaction Shift (Pre vs. Post)
+        </h3>
+        
+        <div className="space-y-6">
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>"Best" Satisfaction (Rating 8-9)</span>
+              <span className="text-red-500 font-bold">-16 pts</span>
+            </div>
+            <div className="relative h-8 bg-gray-200 rounded overflow-hidden flex">
+              <div className="h-full bg-green-500 flex items-center justify-center text-white text-xs font-bold" style={{width: '61%'}}>Pre: 61%</div>
+              <div className="absolute top-0 left-0 h-full bg-green-600 opacity-50" style={{width: '45%'}}></div>
+              <div className="absolute top-0 right-0 h-full flex items-center pr-2">
+                <span className="text-xs font-bold text-gray-600">Post: 45%</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>"Net Negative" Sentiment (Rating 1-5)</span>
+              <span className="text-red-600 font-bold">+700%</span>
+            </div>
+            <div className="relative h-8 bg-gray-200 rounded overflow-hidden flex">
+              <div className="h-full bg-red-300 flex items-center justify-center text-gray-800 text-xs font-bold" style={{width: '1%'}}>1%</div>
+              <div className="h-full bg-red-500 flex items-center justify-center text-white text-xs font-bold animate-pulse" style={{width: '8%'}}>8%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <StatCard 
+          title="Intent to Migrate" 
+          value="56%" 
+          subtext="Expect to decrease usage" 
+          icon={TrendingDown}
+          color="orange"
+        />
+        <StatCard 
+          title="Disruption Level" 
+          value="95%" 
+          subtext="View acquisition as disruptive" 
+          icon={AlertTriangle}
+          color="red"
+        />
+        <StatCard 
+          title="Product Trust" 
+          value="79%" 
+          subtext="Still satisfied with the SOFTWARE" 
+          icon={Shield}
+          color="green"
+        />
+        <StatCard 
+          title="Price Hike Risk" 
+          value="73%" 
+          subtext="Expect extreme cost increases" 
+          icon={DollarSign}
+          color="purple"
+        />
+      </div>
+    </div>
+  </div>
+);
+
+const CostCalculator = () => {
+  const [currentSpend, setCurrentSpend] = useState(100000);
+  const [multiplier, setMultiplier] = useState(1.47);
+  
+  const projected = Math.round(currentSpend * multiplier);
+  const diff = projected - currentSpend;
+
+  return (
+    <div className="flex flex-col h-full p-4 md:p-8">
+      <h2 className="text-3xl font-bold text-gray-900 mb-2">The "Broadcom Tax"</h2>
+      <p className="text-gray-600 mb-8">
+        Foundry data suggests an average 1.47x multiplier, though edge cases in the mid-market report up to 10x increases due to bundling.
+      </p>
+
+      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden flex flex-col md:flex-row h-full max-h-[500px]">
+        
+        {/* Input Section */}
+        <div className="p-8 bg-gray-50 md:w-1/2 flex flex-col justify-center space-y-8">
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">
+              Annual License Spend ($)
+            </label>
+            <input 
+              type="number" 
+              value={currentSpend}
+              onChange={(e) => setCurrentSpend(Number(e.target.value))}
+              className="w-full p-3 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">
+              Market Segment Impact
+            </label>
+            <div className="space-y-2">
+              <button 
+                onClick={() => setMultiplier(1.47)}
+                className={`w-full text-left p-3 rounded-lg border transition-all ${multiplier === 1.47 ? 'bg-blue-50 border-blue-500 ring-1 ring-blue-500' : 'bg-white border-gray-300 hover:bg-gray-50'}`}
+              >
+                <div className="font-bold text-gray-800">Average Enterprise (1.47x)</div>
+                <div className="text-xs text-gray-500">Based on Foundry weighted average</div>
+              </button>
+              
+              <button 
+                onClick={() => setMultiplier(2.0)}
+                className={`w-full text-left p-3 rounded-lg border transition-all ${multiplier === 2.0 ? 'bg-blue-50 border-blue-500 ring-1 ring-blue-500' : 'bg-white border-gray-300 hover:bg-gray-50'}`}
+              >
+                <div className="font-bold text-gray-800">Mid-Market Standard (2.0x)</div>
+                <div className="text-xs text-gray-500">Loss of generic discounts & bundling</div>
+              </button>
+
+              <button 
+                onClick={() => setMultiplier(4.0)}
+                className={`w-full text-left p-3 rounded-lg border transition-all ${multiplier === 4.0 ? 'bg-blue-50 border-blue-500 ring-1 ring-blue-500' : 'bg-white border-gray-300 hover:bg-gray-50'}`}
+              >
+                <div className="font-bold text-gray-800">SMB / Essentials (4.0x - 10x)</div>
+                <div className="text-xs text-gray-500">Forced move from Essentials to Standard/VVF</div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Result Section */}
+        <div className="p-8 md:w-1/2 bg-white flex flex-col justify-center items-center text-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <DollarSign className="w-64 h-64 text-green-500" />
+          </div>
+          
+          <h3 className="text-gray-500 font-medium uppercase tracking-widest mb-4">Projected Annual Cost</h3>
+          <div className="text-5xl font-extrabold text-gray-900 mb-2">
+            ${projected.toLocaleString()}
+          </div>
+          <div className="flex items-center text-red-500 font-bold bg-red-50 px-4 py-2 rounded-full">
+            <TrendingUp className="w-5 h-5 mr-2" />
+            +${diff.toLocaleString()} Increase
+          </div>
+          
+          <div className="mt-8 text-sm text-gray-500 text-left w-full border-t pt-4">
+            <p className="mb-2"><strong>Hidden Costs Not Included:</strong></p>
+            <ul className="list-disc pl-4 space-y-1">
+              <li>Hardware Refresh (HCL Compliance)</li>
+              <li>"Shelfware" Inefficiency (Paying for unused vSAN/NSX)</li>
+              <li>Migration Labor & Dual-Running Costs</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MigrationPhysics = () => {
+  const [vmCount, setVmCount] = useState(500);
+  const minsPerVm = 62;
+  
+  const totalHours = Math.round((vmCount * minsPerVm) / 60);
+  const engineerYears = (totalHours / 2000).toFixed(1); // Assuming 2000 hour work year
+  const engineerMonths = Math.round(totalHours / 160); // Assuming 160 hour work month
+
+  return (
+    <div className="flex flex-col h-full p-4 md:p-8">
+      <h2 className="text-3xl font-bold text-gray-900 mb-2">The Physics of Migration</h2>
+      <p className="text-gray-600 mb-8">
+        Foundry research quantified the "Technical Migration Tax" at <strong>62 minutes per VM</strong>. This creates significant inertia.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
+        <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+          <h3 className="text-lg font-bold text-gray-800 mb-4">Migration Effort Estimator</h3>
+          
+          <div className="mb-8">
+            <label className="block text-sm font-bold text-gray-700 mb-2">
+              Number of VMs to Migrate: <span className="text-blue-600 text-xl">{vmCount}</span>
+            </label>
+            <input 
+              type="range" 
+              min="100" 
+              max="5000" 
+              step="50"
+              value={vmCount}
+              onChange={(e) => setVmCount(Number(e.target.value))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            />
+            <div className="flex justify-between text-xs text-gray-400 mt-2">
+              <span>100 VMs</span>
+              <span>5,000 VMs</span>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center">
+                <Clock className="w-5 h-5 text-gray-500 mr-3" />
+                <span className="text-gray-700 font-medium">Total Technical Hours</span>
+              </div>
+              <span className="text-2xl font-bold text-gray-900">{totalHours.toLocaleString()}</span>
+            </div>
+            
+            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-100">
+              <div className="flex items-center">
+                <Users className="w-5 h-5 text-blue-500 mr-3" />
+                <span className="text-blue-800 font-medium">Engineer Months (1 FTE)</span>
+              </div>
+              <span className="text-2xl font-bold text-blue-900">{engineerMonths}</span>
+            </div>
+
+             <div className="flex items-center justify-between p-4 bg-indigo-50 rounded-lg border border-indigo-100">
+              <div className="flex items-center">
+                <Server className="w-5 h-5 text-indigo-500 mr-3" />
+                <span className="text-indigo-800 font-medium">Engineer Years</span>
+              </div>
+              <span className="text-2xl font-bold text-indigo-900">{engineerYears}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col justify-center space-y-6">
+          <div className="bg-amber-50 p-6 rounded-xl border-l-4 border-amber-400">
+            <h4 className="font-bold text-amber-800 mb-2 flex items-center"><AlertTriangle className="w-4 h-4 mr-2"/> The "Iceberg" Warning</h4>
+            <p className="text-sm text-amber-800">
+              The 62-minute figure typically covers V2V conversion. It <strong>excludes</strong>:
+            </p>
+            <ul className="list-disc pl-5 mt-2 text-sm text-amber-800 space-y-1">
+              <li>Dependency Mapping</li>
+              <li>App Owner Approvals</li>
+              <li>Backup Reconfiguration</li>
+              <li>IP Address Management</li>
+              <li>User Acceptance Testing (UAT)</li>
+            </ul>
+          </div>
+          
+          <div className="bg-gray-800 text-white p-6 rounded-xl font-mono text-sm leading-relaxed overflow-hidden relative">
+            <div className="absolute top-2 right-2 opacity-20 text-xs">ASCII_ART_MODE: ON</div>
+            <pre className="whitespace-pre">
+{`
+      |
+      |   [ MIGRATION FRICTION ]
+      |
+100% -+           .
+      |         . '
+ 75% -+       .'    <-- 89% Need New Staff
+      |     .'
+ 50% -+   .'
+      | .'          <-- 62 Mins/VM
+ 25% -+
+      |
+ 0%  -+-------------------------
+      Cost    Staff   Time   Risk
+`}
+            </pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AlternativesSlide = () => (
+  <div className="flex flex-col h-full p-4 md:p-8">
+    <h2 className="text-3xl font-bold text-gray-900 mb-6">The Landscape of Alternatives</h2>
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
+      {/* Hyper-V */}
+      <div className="bg-white rounded-xl shadow border-t-4 border-blue-600 p-4 flex flex-col">
+        <div className="flex justify-between items-start mb-4">
+          <h3 className="font-bold text-lg">Hyper-V / Azure Stack</h3>
+          <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">25% Interest</span>
+        </div>
+        <p className="text-sm text-gray-600 mb-4 flex-grow">The "Default" fallback for Windows shops. Often viewed as 'free' due to Windows Server licensing.</p>
+        <div className="space-y-2 text-xs">
+          <div className="flex items-center text-green-600"><CheckCircle className="w-3 h-3 mr-2" /> Familiar Management</div>
+          <div className="flex items-center text-green-600"><CheckCircle className="w-3 h-3 mr-2" /> Active Directory Integ.</div>
+          <div className="flex items-center text-red-500"><XCircle className="w-3 h-3 mr-2" /> Feature Parity Gap</div>
+        </div>
+      </div>
+
+      {/* Cloud */}
+      <div className="bg-white rounded-xl shadow border-t-4 border-orange-500 p-4 flex flex-col">
+         <div className="flex justify-between items-start mb-4">
+          <h3 className="font-bold text-lg">Public Cloud</h3>
+          <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full">51% Interest</span>
+        </div>
+        <p className="text-sm text-gray-600 mb-4 flex-grow">Ultimate exit, but shifting from Lift & Shift (VMC) to Refactoring (Native EC2) due to costs.</p>
+        <div className="space-y-2 text-xs">
+          <div className="flex items-center text-green-600"><CheckCircle className="w-3 h-3 mr-2" /> No Hardware Mgmt</div>
+          <div className="flex items-center text-green-600"><CheckCircle className="w-3 h-3 mr-2" /> Scalability</div>
+          <div className="flex items-center text-red-500"><XCircle className="w-3 h-3 mr-2" /> Cost Unpredictability</div>
+        </div>
+      </div>
+
+      {/* Nutanix */}
+      <div className="bg-white rounded-xl shadow border-t-4 border-green-600 p-4 flex flex-col">
+         <div className="flex justify-between items-start mb-4">
+          <h3 className="font-bold text-lg">Nutanix AHV</h3>
+          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">14% Interest</span>
+        </div>
+        <p className="text-sm text-gray-600 mb-4 flex-grow">The premium functional equivalent. Closest to VCF experience but requires HCI hardware.</p>
+        <div className="space-y-2 text-xs">
+          <div className="flex items-center text-green-600"><CheckCircle className="w-3 h-3 mr-2" /> Migration Tools (Move)</div>
+          <div className="flex items-center text-green-600"><CheckCircle className="w-3 h-3 mr-2" /> Unified Management</div>
+          <div className="flex items-center text-red-500"><XCircle className="w-3 h-3 mr-2" /> Premium Pricing</div>
+        </div>
+      </div>
+
+      {/* Open Source */}
+      <div className="bg-white rounded-xl shadow border-t-4 border-purple-600 p-4 flex flex-col">
+         <div className="flex justify-between items-start mb-4">
+          <h3 className="font-bold text-lg">KVM / Proxmox</h3>
+          <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">24% Interest</span>
+        </div>
+        <p className="text-sm text-gray-600 mb-4 flex-grow">The "Sovereign" choice. Massive interest in SMB/Mid-market. High skills barrier.</p>
+        <div className="space-y-2 text-xs">
+          <div className="flex items-center text-green-600"><CheckCircle className="w-3 h-3 mr-2" /> No Licensing Cost</div>
+          <div className="flex items-center text-green-600"><CheckCircle className="w-3 h-3 mr-2" /> Vendor Independence</div>
+          <div className="flex items-center text-red-500"><XCircle className="w-3 h-3 mr-2" /> Enterprise Support Gap</div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const StrategySlide = () => (
+  <div className="flex flex-col h-full p-4 md:p-8">
+    <h2 className="text-3xl font-bold text-gray-900 mb-6">Strategic Archetypes</h2>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full overflow-y-auto">
+      
+      <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-blue-400 transition-colors">
+        <div className="flex items-center mb-3">
+          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-4 font-bold text-blue-700">1</div>
+          <h3 className="text-xl font-bold text-gray-800">The "All-In" Adopter</h3>
+        </div>
+        <p className="text-sm text-gray-600 mb-3"><strong>Profile:</strong> Large Enterprise, Regulated, VCF user.</p>
+        <p className="text-sm text-gray-600"><strong>Strategy:</strong> Renew & Consolidate. Swallow the cost to gain the efficiency of the full stack. Bet on Broadcom's 564% ROI promise.</p>
+      </div>
+
+      <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-green-400 transition-colors">
+        <div className="flex items-center mb-3">
+          <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-4 font-bold text-green-700">2</div>
+          <h3 className="text-xl font-bold text-gray-800">The Hybrid Diversifier</h3>
+        </div>
+        <p className="text-sm text-gray-600 mb-3"><strong>Profile:</strong> Mid-to-Large, diverse workloads.</p>
+        <p className="text-sm text-gray-600"><strong>Strategy:</strong> "Cap and Contain." Keep legacy on VMware, build NEW on Cloud/Nutanix. Reduce core count to manage renewal costs.</p>
+      </div>
+
+      <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-red-400 transition-colors">
+        <div className="flex items-center mb-3">
+          <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-4 font-bold text-red-700">3</div>
+          <h3 className="text-xl font-bold text-gray-800">The "Rip & Replace"</h3>
+        </div>
+        <p className="text-sm text-gray-600 mb-3"><strong>Profile:</strong> Mid-market, cost-sensitive.</p>
+        <p className="text-sm text-gray-600"><strong>Strategy:</strong> Complete exit to Hyper-V or Nutanix within 18 months. Requires heavy investment in migration staffing.</p>
+      </div>
+
+      <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-amber-400 transition-colors">
+        <div className="flex items-center mb-3">
+          <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mr-4 font-bold text-amber-700">4</div>
+          <h3 className="text-xl font-bold text-gray-800">The "Sweat it Out"</h3>
+        </div>
+        <p className="text-sm text-gray-600 mb-3"><strong>Profile:</strong> Stable legacy stack, perpetual licenses.</p>
+        <p className="text-sm text-gray-600"><strong>Strategy:</strong> Drop Support. Use 3rd party maintenance (Rimini Street) to extend life 3-5 years while planning a cloud-native exit.</p>
+      </div>
+
+    </div>
+  </div>
+);
+
+// --- Main App ---
+
+export default function InteractiveInfographic() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const slides = [
+    { id: 'intro', component: IntroSlide },
+    { id: 'sentiment', component: SentimentSlide },
+    { id: 'cost', component: CostCalculator },
+    { id: 'migration', component: MigrationPhysics },
+    { id: 'alternatives', component: AlternativesSlide },
+    { id: 'strategy', component: StrategySlide },
+  ];
+
+  const nextSlide = () => setCurrentSlide(prev => Math.min(prev + 1, slides.length - 1));
+  const prevSlide = () => setCurrentSlide(prev => Math.max(prev - 1, 0));
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const CurrentComponent = slides[currentSlide].component;
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-100 font-sans text-gray-900 overflow-hidden">
+      
+      {/* Top Bar */}
+      <div className="bg-white border-b px-6 py-4 flex justify-between items-center shadow-sm z-10">
+        <div className="flex items-center space-x-2">
+          <BarChart3 className="text-blue-600 w-6 h-6" />
+          <span className="font-bold text-lg tracking-tight">VMware Market Analysis</span>
+        </div>
+        <div className="text-sm text-gray-500 hidden md:block">
+          Use Arrow Keys to Navigate
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-grow relative overflow-hidden flex items-center justify-center p-4 md:p-8">
+        <div className="w-full max-w-6xl h-full bg-white rounded-2xl shadow-xl overflow-hidden relative">
+          <div className="absolute inset-0 p-6 md:p-10 overflow-y-auto">
+             <Slide isActive={true}>
+               <CurrentComponent />
+             </Slide>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="bg-white border-t px-6 py-4 flex justify-between items-center z-10">
+        <button 
+          onClick={prevSlide}
+          disabled={currentSlide === 0}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${currentSlide === 0 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100'}`}
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Previous</span>
+        </button>
+
+        <div className="flex space-x-2">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${idx === currentSlide ? 'bg-blue-600 w-8' : 'bg-gray-300 hover:bg-gray-400'}`}
+            />
+          ))}
+        </div>
+
+        <button 
+          onClick={nextSlide}
+          disabled={currentSlide === slides.length - 1}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${currentSlide === slides.length - 1 ? 'text-gray-300 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+        >
+          <span>Next</span>
+          <ArrowRight className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  );
+}
